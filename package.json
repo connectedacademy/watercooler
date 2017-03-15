@@ -1,0 +1,22 @@
+{
+  "name": "watercooler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@openlab.ncl.ac.uk:17150/connected-academy/watercooler.git"
+  },
+  "dependencies": {
+    "include-all": "^1.0.0",
+    "rc": "1.0.1",
+    "sails": "~0.12.13",
+    "sails-disk": "~0.10.9"
+  },
+  "scripts": {
+    "debug": "node debug app.js",
+    "start": "node app.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
