@@ -8,6 +8,10 @@
  * For more information on configuration, check out:
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.http.html
  */
+var osprey = require('osprey');
+var join = require('path').join;
+var ramlpath = join(__dirname, '..', 'spec', 'watercooler.raml');
+
 
 module.exports.http = {
 
@@ -29,7 +33,9 @@ module.exports.http = {
   * router is invoked by the "router" middleware below.)                     *
   *                                                                          *
   ***************************************************************************/
-
+    // order:[
+    //   'raml'
+    // ],
     // order: [
     //   'startRequestTimer',
     //   'cookieParser',
@@ -53,6 +59,8 @@ module.exports.http = {
   * Example custom middleware; logs each request to the console.              *
   *                                                                           *
   ****************************************************************************/
+
+
 
     // myRequestLogger: function (req, res, next) {
     //     console.log("Requested :: ", req.method, req.url);

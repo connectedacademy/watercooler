@@ -1,29 +1,45 @@
-/**
- * Built-in Log Configuration
- * (sails.config.log)
- *
- * Configure the log level for your app, as well as the transport
- * (Underneath the covers, Sails uses Winston for logging, which
- * allows for some pretty neat custom transports/adapters for log messages)
- *
- * For more information on the Sails logger, check out:
- * http://sailsjs.org/#!/documentation/concepts/Logging
- */
+var winston = require('winston');
+var customLogger = new winston.Logger();
+
+// A console transport logging debug and above.
+customLogger.add(winston.transports.Console, {
+  level: 'debug',
+  colorize: true
+});
+
+// REMOTE LOGGING TO LOGGLY
+// require('winston-loggly-bulk');
+// customLogger.add(winston.transports.Loggly, {
+//   subdomain: process.env.LOGGLY_API_DOMAIN,
+//   token:process.env.LOGGLY_API_KEY,
+//   tags:['watercooler'],
+//   level:'error',
+//   json: true
+// });
+
+//LOCAL LOGGING TO ORIENTDB
+// require('winston-orientdb').OrientDB;
+// customLogger.add(winston.transports.OrientDB, {
+//   level:'info',
+//   connection:{
+//     host: process.env.ORIENTDB_HOST,
+//     port: process.env.ORIENTDB_PORT,
+//     username: process.env.ORIENTDB_USERNAME,
+//     password: process.env.ORIENTDB_PASSWORD,
+//   },
+//   db:{
+//     name: process.env.ORIENTDB_DB,
+//     username: process.env.ORIENTDB_USERNAME,
+//     password: process.env.ORIENTDB_PASSWORD
+//   },
+//   storeHost: true
+// });
 
 module.exports.log = {
+  // Pass in our custom logger, and pass all log levels through.
+  custom: customLogger,
+  level: 'debug',
 
-  /***************************************************************************
-  *                                                                          *
-  * Valid `level` configs: i.e. the minimum log level to capture with        *
-  * sails.log.*()                                                            *
-  *                                                                          *
-  * The order of precedence for log levels from lowest to highest is:        *
-  * silly, verbose, info, debug, warn, error                                 *
-  *                                                                          *
-  * You may also set the level to "silent" to suppress all logs.             *
-  *                                                                          *
-  ***************************************************************************/
-
-  // level: 'info'
-
+  // Disable captain's log so it doesn't prefix or stringify our meta data.
+  inspect: false
 };
