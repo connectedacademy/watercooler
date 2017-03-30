@@ -21,29 +21,31 @@
  */
 
 module.exports.routes = {
+  '/': 'AuthController.root',
 
-  /***************************************************************************
-  *                                                                          *
-  * Make the view located at `views/homepage.ejs` (or `views/homepage.jade`, *
-  * etc. depending on your default view engine) your home page.              *
-  *                                                                          *
-  * (Alternatively, remove this and add an `index.html` file in your         *
-  * `assets` directory)                                                      *
-  *                                                                          *
-  ***************************************************************************/
+  'GET /course/spec':'CourseController.spec',
+  'GET /course/hubs':'CourseController.hubs',
 
-  // '/': {
-  //   view: 'homepage'
-  // }
+  'GET /auth/login':'AuthController.login',
+  'GET /auth/logout':'AuthController.logout',
+  'GET /auth/twitter_callback':'AuthController.twitter_callback',
+  'GET /auth/github_callback':'AuthController.github_callback',
+  'GET /auth/dashboard':'AuthController.dashboard',
+  'GET /auth/fail':'AuthController.fail',
 
-  /***************************************************************************
-  *                                                                          *
-  * Custom routes here...                                                    *
-  *                                                                          *
-  * If a request to a URL doesn't match any of the custom routes above, it   *
-  * is matched against Sails route blueprints. See `config/blueprints.js`    *
-  * for configuration options and examples.                                  *
-  *                                                                          *
-  ***************************************************************************/
-  '/': 'AuthController.root'
+  'GET /admin/login':'AuthController.admin',
+  'GET /admin/logout':'AuthController.admin_logout',  
+  'GET /admin/editor':'AdminController.editor',
+  'POST /admin/credentials':'AdminController.editor',
+  'GET /admin/content':'AdminController.content',
+  'GET /admin/users':'AdminController.users',
+  
+  'GET /classroom/mycode/:hub/:class':'ClassroomController.mycode',
+  'GET /classroom/users/:hub/:class':'ClassroomController.users',
+
+  'GET /messages/list/:class/:start-segment-:end-segment':'MessagesController.list',
+  'GET /messages/visualisation/:class/:segment':'MessagesController.visualisation',
+  'GET /messages/likes/:uri':'MessagesController.likes',
+  'GET /messages/subscribe/:class/:start-segment-:end-segment':'MessagesController.subscribe',
+  'POST /messages/create':'MessagesController.create'
 };

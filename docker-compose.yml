@@ -10,7 +10,8 @@ services:
       - ./api:/usr/src/app/api
       - ./config:/usr/src/app/config
       - ./views:/usr/src/app/views
-    command: nodemon --inspect=0.0.0.0:5858 -x "node --harmony-async-await" -L app.js
+      - ../spec:/usr/src/app/spec:ro
+    command: nodemon --debug=0.0.0.0:5858 -x "node --harmony-async-await" -L app.js
     ports:
       - "4000:1337"
       - "5858:5858"

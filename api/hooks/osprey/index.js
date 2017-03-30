@@ -1,6 +1,6 @@
 const osprey = require('osprey');
 const join = require('path').join;
-const path = join(__dirname, '..','..','..','..','spec', 'watercooler.raml')
+const path = join(__dirname, '..','..','..','spec', 'watercooler.raml')
 
 module.exports = function (sails){
 
@@ -13,8 +13,8 @@ module.exports = function (sails){
         cb();
       }
       catch (e) { 
-        cb();
-        //cb(e.message);
+         cb();
+        //  cb(e.message);
       };
     }
   }

@@ -1,18 +1,15 @@
-/**
- * AuthController
- *
- * @description :: Server-side logic for managing Auths
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
- */
-
-// const passport = require('passport');
+let pjson = require('../..//package.json');
+let os = require('os');
 
 module.exports = {
 
 	root: (req,res) =>
     {
         return res.json({
-            msg:'Watercooler Running'
+            msg:'Watercooler Running',
+            version: pjson.version,
+            host: os.hostname(),
+            uptime: process.uptime()
         })
     },
 
@@ -33,18 +30,21 @@ module.exports = {
         sails.passport.authenticate('github')(req,res,next);
     },
 
+    admin_logout: (req,res,next)=>{
+        req.logout();
+        return res.ok('Logged out successfully.');
+    },
+
     github_callback: (req,res,next)=>{
         sails.passport.authenticate('github',{successRedirect: '/auth/dashboard', failureRedirect: '/auth/fail' })(req,res,next);
     },
 
     dashboard: (req,res)=>{
-        return res.json({
-            msg:'Logged Into Admin -- replace with redirect to static content'
-        });
+        return res.ok('Logged In -- replace with redirect to static content');
     },
 
     fail: (req,res)=>{
-        return res.status(403).json({
+        return res.serverError({
             msg: 'Failed to login -- replace with redirect to static content'
         })
     }
