@@ -25,6 +25,9 @@ module.exports = function forbidden (data) {
   }
   else sails.log.verbose('Sending 403 ("Forbidden") response');
 
-  return res.status(403).json(data);
+  return res.status(403).json({
+    msg: 'Not Authorised',
+    data: data
+  });
 };
 

@@ -8,9 +8,17 @@ module.exports.policies = {
         'admin':[true],
         'twitter_callback':[true],
         'github_callback':[true],
-        'dashboard':[true],
+        'dashboard':['isUser',true],
         'fail':[true],
         'logout':[true],
         'admin_logout':[true]
+    },
+    'admin':
+    {
+        '*':['isAdmin']
+    },
+    'messages':
+    {
+        '*':['isUser']
     }
 };

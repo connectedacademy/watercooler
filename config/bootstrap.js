@@ -27,9 +27,39 @@ module.exports.bootstrap = function(cb) {
     },
     function(token, tokenSecret, profile, cb) {
         User.findOrCreate({ 
-            twitterId: profile.id
-        }, function (err, user) {
-            return cb(err, user);
+            account_number: 'twitter-'+profile.id
+        },
+        {
+          account_number: 'twitter-'+profile.id,
+          _raw: profile._json,
+          credentials:{
+            token:token,
+            tokenSecret:tokenSecret
+          },
+          name: profile.displayName,
+          service: profile.provider,
+          account: profile.username,
+          lang: profile._json.lang
+        }, async function (err, user) {
+            try
+            {
+              await user.save({
+                _raw: profile._json,
+                credentials:{
+                  token:token,
+                  tokenSecret:tokenSecret
+                },
+                name: profile.displayName,
+                service: profile.provider,
+                account: profile.username,
+                lang: profile._json.lang
+              });
+              return cb(err, user);
+            }
+            catch (e)
+            {
+              return cb(err);
+            }
         });
     }
   ));
@@ -40,9 +70,39 @@ module.exports.bootstrap = function(cb) {
     callbackURL: "http://127.0.0.1:4000/auth/github_callback"
   },
   function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ githubId: profile.id }, function (err, user) {
-      return cb(err, user);
-    });
+      User.findOrCreate({ 
+            account_number: 'github-'+profile.id
+        },
+        {
+          account_number: 'github-'+profile.id,
+          _raw: profile._json,
+          credentials:{
+            accessToken:accessToken,
+            refreshToken:refreshToken
+          },
+          name: profile.displayName,
+          service: profile.provider,
+          account: profile.username
+        }, async function (err, user) {
+          try
+          {
+            await user.save({
+              _raw: profile._json,
+              credentials:{
+                accessToken:accessToken,
+                refreshToken:refreshToken
+              },
+              name: profile.displayName,
+              service: profile.provider,
+              account: profile.username
+            });
+            return cb(err, user);
+          }
+          catch (e)
+          {
+            return cb(err);
+          }
+      });
   }
   ));
 
