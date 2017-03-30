@@ -9,9 +9,11 @@ services:
     volumes:
       - ./api:/usr/src/app/api
       - ./config:/usr/src/app/config
-    command: nodemon -x "node --harmony-async-await" -L app.js
+      - ./views:/usr/src/app/views
+    command: nodemon --inspect=0.0.0.0:5858 -x "node --harmony-async-await" -L app.js
     ports:
       - "4000:1337"
+      - "5858:5858"
     networks: 
       - dev_ca-back-network
     env_file: .env

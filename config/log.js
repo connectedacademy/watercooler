@@ -38,7 +38,7 @@ customLogger.add(winston.transports.Console, {
 module.exports.log = {
   // Pass in our custom logger, and pass all log levels through.
   custom: customLogger,
-  level: 'debug',
+  level: 'verbose',
 
   // Disable captain's log so it doesn't prefix or stringify our meta data.
   inspect: false
