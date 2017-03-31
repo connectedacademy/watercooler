@@ -27,6 +27,7 @@ module.exports = {
     },
 
     getSpec: async (req,res) => {
+        // console.log(req.course);
         console.log('Should be getting ' + req.course.url + '/config/spec.yaml');
         let raw = await fs.readFile(__dirname + '/../../spec/examples/spec.yaml');
         return yaml.safeLoad(raw);

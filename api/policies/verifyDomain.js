@@ -1,10 +1,11 @@
 //TODO verify this domain is a whitelisted one
+let URL = require('url');
 
 module.exports = async (req,res,next) =>{
-    sails.log.verbose('Verifying domain',req.url, req.get('referer'));
+    sails.log.verbose('Verifying domain',req.url, URL.parse(req.get('referer')).hostname);
 
     var verified = await DomainControl.verifyDomain(req,res);
-    if (verified!==false)
+    if (verified)
     {
         req.course = verified;
         next();
@@ -13,7 +14,7 @@ module.exports = async (req,res,next) =>{
     {
         res.forbidden({
             err:'INVALID_DOMAIN',
-            msg:req.get('referer') + ' is not a valid Connected Academy course.'
+            msg: req.get('referer') + ' is not a valid Connected Academy course.'
         });
     }
 }

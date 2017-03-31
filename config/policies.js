@@ -1,6 +1,6 @@
 var passport = require('passport');
 module.exports.policies = {
-    '*':['verifyDomain','jsononly'],
+    '*':['verifyDomain','jsononly','cors'],
     'auth':
     {
         'root':[true],

@@ -32,12 +32,7 @@ module.exports.http = {
 
   passportInit    : require('passport').initialize(),
   passportSession : require('passport').session(),
-  /***************************************************************************
-  *                                                                          *
-  * The order in which middleware should be run for HTTP request. (the Sails *
-  * router is invoked by the "router" middleware below.)                     *
-  *                                                                          *
-  ***************************************************************************/
+
     order: [
       'startRequestTimer',
       'cookieParser',
@@ -57,13 +52,6 @@ module.exports.http = {
       '404',
       '500'
     ],
-
-  /****************************************************************************
-  *                                                                           *
-  * Example custom middleware; logs each request to the console.              *
-  *                                                                           *
-  ****************************************************************************/
-
 
 
     myRequestLogger: function (req, res, next) {
