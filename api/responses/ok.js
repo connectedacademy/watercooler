@@ -9,7 +9,7 @@ module.exports = function sendOK (data) {
 
   // Set status code
   return res.status(200).json({
-    msg:data
+    msg: data
   });
 
   

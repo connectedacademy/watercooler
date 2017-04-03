@@ -13,6 +13,8 @@ requestify.cacheTransporter(requestify.coreCacheTransporters.redis(rediscache));
 
 module.exports = {
 
+    //TODO -- only cache validated YAML response from the server, to make sure a bad version is not cached.
+
     get: async (uri, req, res)=>{
         let response = await requestify.get(uri,{
             cache: true

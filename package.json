@@ -29,7 +29,10 @@
     "winston-orientdb": "0.0.2",
     "js-yaml": "3.8.2",
     "fs-promise": "2.0.2",
-    "requestify": "0.2.5"
+    "requestify": "0.2.5",
+    "raml-validate":"1.1.1",
+    "raml-1-parser": "1.1.19",
+    "raml-js-validator": "0.5.1"
   },
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",

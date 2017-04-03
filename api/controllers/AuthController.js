@@ -40,10 +40,12 @@ module.exports = {
     },
 
     dashboard: (req,res)=>{
+        //TODO - redirection to main URI
         return res.ok('Logged In -- replace with redirect to static content');
     },
 
     fail: (req,res)=>{
+        //TODO - redirection to main URI
         return res.serverError({
             msg: 'Failed to login -- replace with redirect to static content'
         })

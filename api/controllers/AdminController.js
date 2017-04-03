@@ -7,12 +7,11 @@ module.exports = {
     },
 
     credentials: (req,res)=>{
-
+        return res.ok('Updated Credentials');
     },
 
     content: (req,res)=>{
-
-
+        
     },
 
     users: (req,res)=>{
