@@ -13,7 +13,8 @@ cache:
   paths:
   - node_modules/
 
-test_async:
+test_main:
   script:
+   - git clone ssh://git@openlab.ncl.ac.uk:17150/connected-academy/spec.git
    - npm install
    - npm test
