@@ -12,34 +12,9 @@ const validator = new Validator(
     "--validate-response"
 );
 
-describe('Auto Endpoint Validator', function() {
-    it('should have valid endpoints', function (done) {
-        validator.validate();
-    });
-});
-
-// var validate = require('raml-validate')();
-// var RAMLVersion = 'RAML10';
-
-// var Objects = {};
-// spec.types().forEach((n)=>
-// {
-//     // console.log(n.toJSON());
-//     Objects[n.name()] = {
-//         validate: validate(n.toJSON()),
-//         spec: n
-//     }
-// },
-// RAMLVersion
-// )
-
-// // console.log(Objects);
-// for (var n in Objects)
-// {
-//     console.log(Objects[n].spec.toJSON());
-// }
-
-// _.(Objects,(n)=>{
-//     console.log(n.validate({}));
+// describe('Auto Endpoint Validator', function() {
+//     it('should have valid endpoints', function (done) {
+//         validator.validate();
+//     });
 // });
 

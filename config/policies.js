@@ -20,5 +20,9 @@ module.exports.policies = {
     'messages':
     {
         '*':['isUser']
+    },
+    'classroom':
+    {
+        '*':['isUser']
     }
 };
