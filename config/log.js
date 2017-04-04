@@ -7,15 +7,15 @@ customLogger.add(winston.transports.Console, {
   colorize: true
 });
 
-// REMOTE LOGGING TO LOGGLY
-// require('winston-loggly-bulk');
-// customLogger.add(winston.transports.Loggly, {
-//   subdomain: process.env.LOGGLY_API_DOMAIN,
-//   token:process.env.LOGGLY_API_KEY,
-//   tags:['watercooler'],
-//   level:'error',
-//   json: true
-// });
+//REMOTE LOGGING TO LOGGLY
+require('winston-loggly-bulk');
+customLogger.add(winston.transports.Loggly, {
+  subdomain: process.env.LOGGLY_API_DOMAIN,
+  token:process.env.LOGGLY_API_KEY,
+  tags:['watercooler'],
+  level:'error',
+  json: true
+});
 
 //LOCAL LOGGING TO ORIENTDB
 // require('winston-orientdb').OrientDB;

@@ -12,6 +12,9 @@ before(function(done) {
     },
     models:{
       connection:'sails-disk'
+    },
+    session:{
+      host:'redis'
     }
   }, function(err) {
     if (err) return done(err);

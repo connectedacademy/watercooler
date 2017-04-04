@@ -1,5 +1,7 @@
 # Watercooler
 
+[![build status](https://openlab.ncl.ac.uk/gitlab/connected-academy/watercooler/badges/master/build.svg)](https://openlab.ncl.ac.uk/gitlab/connected-academy/watercooler/commits/master)
+
 Backend JSON REST API for Connected Academy.
 
 ## Development
