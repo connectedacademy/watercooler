@@ -15,7 +15,6 @@ cache:
 
 test_main:
   script:
-   - echo $API_KEY
-   - git clone https://gitlab-ci-token:$API_TOKEN@openlab.ncl.ac.uk/gitlab/connected-academy/spec.git
+   - git clone https://gitlab-ci-token:$API_KEY@openlab.ncl.ac.uk/gitlab/connected-academy/spec.git
    - npm install
    - npm test
