@@ -15,6 +15,10 @@ before(function(done) {
     },
     session:{
       host:'redis'
+    },
+    sockets:
+    {
+      host:'redis'
     }
   }, function(err) {
     if (err) return done(err);
