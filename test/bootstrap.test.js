@@ -14,11 +14,13 @@ before(function(done) {
       connection:'sails-disk'
     },
     session:{
-      host:'redis'
+      host: 'redis',
+      port: 6379
     },
     sockets:
     {
-      host:'redis'
+      host: 'redis',
+      port: 6379
     }
   }, function(err) {
     if (err) return done(err);
