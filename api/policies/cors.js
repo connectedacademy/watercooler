@@ -11,7 +11,7 @@ module.exports = async function(req,res,next)
     if (url && _.find(whiteList.courses,(w)=>{
         return w.domain == url.hostname;
     }) || url.hostname == 'localhost'){
-        console.log(url);
+        // console.log(url);
         res.header("Access-Control-Allow-Origin", url.protocol + '//' + url.host);
         return next();
     }
