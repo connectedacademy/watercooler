@@ -1,4 +1,4 @@
-let pjson = require('../..//package.json');
+let pjson = require('../../package.json');
 let os = require('os');
 
 module.exports = {
@@ -58,10 +58,13 @@ module.exports = {
     me: (req,res)=>{
         if (req.session.passport)
         {
+            let user = req.session.passport.user;
+            delete user.credentials;
+
             return res.json({
-                user: (req.session.passport.user.service=='twitter')? req.session.passport.user : null,
-                admin: (req.session.passport.user.service=='github')? req.session.passport.user : null
-            })
+                user: (user.service=='twitter')? user : null,
+                admin: (user.service=='github')? user : null
+            });
         }
         else
         {

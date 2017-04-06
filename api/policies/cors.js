@@ -18,6 +18,7 @@ module.exports = async function(req,res,next)
             // console.log(url);
             sails.log.verbose('CORS Allowed',req.url, url.hostname);                    
             res.header("Access-Control-Allow-Origin", url.protocol + '//' + url.host);
+            res.header("Access-Control-Allow-Credentials", "true");
             return next();
         }
         else

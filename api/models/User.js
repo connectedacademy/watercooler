@@ -8,6 +8,12 @@ module.exports = {
     name: 'string',
     lang: 'string',
     credentials: 'json'
+  },
+
+  toJSON : (obj)=>
+  {
+    delete obj.credentials;
+    return obj;
   }
 };
 
