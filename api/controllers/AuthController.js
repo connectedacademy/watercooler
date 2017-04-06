@@ -29,6 +29,8 @@ module.exports = {
     },
 
     admin: (req,res,next)=>{
+        //verify referer / origin, if valid, then allow and save into session        
+        req.session.redirecturi = req.get('origin') || req.get('referer');        
         sails.passport.authenticate('github')(req,res,next);
     },
 
@@ -38,15 +40,33 @@ module.exports = {
     },
 
     github_callback: (req,res,next)=>{
-        sails.passport.authenticate('github',{successRedirect: '/auth/dashboard', failureRedirect: '/auth/fail' })(req,res,next);
+        sails.passport.authenticate('github',{successRedirect: '/auth/admindashboard', failureRedirect: '/auth/fail' })(req,res,next);
     },
 
     dashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + '#/dashboard');    
+        return res.redirect(req.session.redirecturi + '#/dashboard');
+    },
+
+    admindashboard: (req,res)=>{
+        return res.redirect(req.session.redirecturi + '#/admin');
     },
 
     fail: async (req,res)=>{
        return res.redirect(req.session.redirecturi + '#/loginfail');
+    },
+
+    me: (req,res)=>{
+        if (req.session.passport)
+        {
+            return res.json({
+                user: (req.session.passport.user.service=='twitter')? req.session.passport.user : null,
+                admin: (req.session.passport.user.service=='github')? req.session.passport.user : null
+            })
+        }
+        else
+        {
+            return res.forbidden();
+        }
     }
 };
 

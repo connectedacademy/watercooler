@@ -9,9 +9,11 @@ module.exports.policies = {
         'twitter_callback':[true],
         'github_callback':[true],
         'dashboard':['isUser',true],
+        'admindashboard':['isAdmin',true],        
         'fail':[true],
         'logout':[true],
-        'admin_logout':[true]
+        'admin_logout':[true],
+        'me':['verifyDomain','jsononly','cors']
     },
     'admin':
     {

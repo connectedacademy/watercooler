@@ -13,17 +13,13 @@ let GitHubStrategy = require('passport-github');
 
 module.exports.bootstrap = function(cb) {
 
-  // It's very important to trigger this callback method when you are finished
-  // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
-
-
   sails.passport = require('passport');
 
 
   sails.passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_KEY,
     consumerSecret: process.env.TWITTER_SECRET,
-    callbackURL: "http://localhost:4000/auth/twitter_callback"
+    callbackURL: process.env.HOST + "/auth/twitter_callback"
     },
     function(token, tokenSecret, profile, cb) {
         User.findOrCreate({ 
@@ -67,7 +63,7 @@ module.exports.bootstrap = function(cb) {
   sails.passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: "http://localhost:4000/auth/github_callback"
+    callbackURL: process.env.HOST + "/auth/github_callback"
   },
   function(accessToken, refreshToken, profile, cb) {
       User.findOrCreate({ 

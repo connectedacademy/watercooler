@@ -31,7 +31,9 @@ module.exports.routes = {
   'GET /auth/twitter_callback':'AuthController.twitter_callback',
   'GET /auth/github_callback':'AuthController.github_callback',
   'GET /auth/dashboard':'AuthController.dashboard',
+  'GET /auth/admindashboard':'AuthController.admindashboard',  
   'GET /auth/fail':'AuthController.fail',
+  'GET /auth/me':'AuthController.me',
 
   'GET /admin/login':'AuthController.admin',
   'GET /admin/logout':'AuthController.admin_logout',  
