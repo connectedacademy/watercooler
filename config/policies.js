@@ -4,8 +4,8 @@ module.exports.policies = {
     'auth':
     {
         'root':[true],
-        'login':[true],
-        'admin':[true],
+        'login':['verifyDomain'],
+        'admin':['verifyDomain'],
         'twitter_callback':[true],
         'github_callback':[true],
         'dashboard':['isUser',true],

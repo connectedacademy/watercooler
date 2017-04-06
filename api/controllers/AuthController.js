@@ -23,6 +23,8 @@ module.exports = {
     },
 
     login: (req,res,next) =>{
+        //verify referer / origin, if valid, then allow and save into session
+        req.session.redirecturi = req.get('origin') || req.get('referer');
         sails.passport.authenticate('twitter')(req,res,next);
     },
 
@@ -40,15 +42,11 @@ module.exports = {
     },
 
     dashboard: (req,res)=>{
-        //TODO: - redirection to main URI
-        return res.ok('Logged In -- replace with redirect to static content');
+        return res.redirect(req.session.redirecturi + '#/dashboard');    
     },
 
-    fail: (req,res)=>{
-        //TODO: - redirection to main URI
-        return res.serverError({
-            msg: 'Failed to login -- replace with redirect to static content'
-        })
+    fail: async (req,res)=>{
+       return res.redirect(req.session.redirecturi + '#/loginfail');
     }
 };
 

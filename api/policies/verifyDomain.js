@@ -1,10 +1,10 @@
 let URL = require('url');
 
 module.exports = async (req,res,next) =>{
-    sails.log.verbose('Verifying domain',req.url, URL.parse(req.get('referer')).hostname);
 
     try
     {
+        sails.log.verbose('Verifying domain',req.url, URL.parse(req.get('referer')).hostname);
         var verified = await DomainControl.verifyDomain(req,res);
         if (verified)
         {
@@ -21,6 +21,7 @@ module.exports = async (req,res,next) =>{
     }
     catch (e)
     {
+        sails.log.verbose('Failed to verify domain',req.url);        
         return res.serverError(e);
     }
 }

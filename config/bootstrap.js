@@ -23,7 +23,7 @@ module.exports.bootstrap = function(cb) {
   sails.passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_KEY,
     consumerSecret: process.env.TWITTER_SECRET,
-    callbackURL: "http://127.0.0.1:4000/auth/twitter_callback"
+    callbackURL: "http://localhost:4000/auth/twitter_callback"
     },
     function(token, tokenSecret, profile, cb) {
         User.findOrCreate({ 
@@ -67,7 +67,7 @@ module.exports.bootstrap = function(cb) {
   sails.passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: "http://127.0.0.1:4000/auth/github_callback"
+    callbackURL: "http://localhost:4000/auth/github_callback"
   },
   function(accessToken, refreshToken, profile, cb) {
       User.findOrCreate({ 
