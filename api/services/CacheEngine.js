@@ -8,12 +8,12 @@ let rediscache = redis.createClient({
 })
 requestify.cacheTransporter(requestify.coreCacheTransporters.redis(rediscache));
 
-//TODO cache response from the github to prevent backlog
-//TODO replace with real data
+//TODO: cache response from the github to prevent backlog
+//TODO: replace with real data
 
 module.exports = {
 
-    //TODO -- only cache validated YAML response from the server, to make sure a bad version is not cached.
+    //TODO: -- only cache validated YAML response from the server, to make sure a bad version is not cached.
 
     get: async (uri, req, res)=>{
         let response = await requestify.get(uri,{
@@ -23,14 +23,14 @@ module.exports = {
     },
 
     getHubs: async (req,res)=>{
-        console.log('Should be getting ' + req.course.url + '/config/hubs.yaml');
+        sails.log.verbose('Should be getting ' + req.course.url + '/config/hubs.yaml, actually serving examples/hubs.yaml');
         let raw = await fs.readFile(__dirname + '/../../spec/examples/hubs.yaml');
         return yaml.safeLoad(raw);
     },
 
     getSpec: async (req,res) => {
         // console.log(req.course);
-        console.log('Should be getting ' + req.course.url + '/config/spec.yaml');
+        sails.log.verbose('Should be getting ' + req.course.url + '/config/spec.yaml, actually serving examples/spec.yaml');
         let raw = await fs.readFile(__dirname + '/../../spec/examples/spec.yaml');
         return yaml.safeLoad(raw);
     },

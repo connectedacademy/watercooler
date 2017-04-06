@@ -15,14 +15,14 @@ module.exports.policies = {
     },
     'admin':
     {
-        '*':['isAdmin']
+        '*':['isAdmin','verifyDomain','jsononly','cors']
     },
     'messages':
     {
-        '*':['isUser']
+        '*':['isUser','verifyDomain','jsononly','cors']
     },
     'classroom':
     {
-        '*':['isUser']
+        '*':['isUser','verifyDomain','jsononly','cors']
     }
 };
