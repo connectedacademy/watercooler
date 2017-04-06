@@ -12,9 +12,7 @@ module.exports = async function(req,res,next)
 
         // let domain = url.host;
         //set allowed origin
-        if (_.find(whiteList.courses,(w)=>{
-            return w.domain == url.hostname;
-        }) || url.hostname == 'localhost'){
+        if (_.find(whiteList.courses,(w)=>{ return w.domain == url.hostname; }) || url.hostname == 'localhost'){
             // console.log(url);
             sails.log.verbose('CORS Allowed',req.url, url.hostname);                    
             res.header("Access-Control-Allow-Origin", url.protocol + '//' + url.host);
@@ -23,8 +21,18 @@ module.exports = async function(req,res,next)
         }
         else
         {
-            sails.log.verbose('CORS forbidden',req.url, url.hostname);        
-            return res.forbidden();
+            if (process.env.DEBUG_MODE==="true")
+            {
+                sails.log.verbose('CORS in DEBUG allowed for blank origin');
+                res.header("Access-Control-Allow-Origin", '*');
+                res.header("Access-Control-Allow-Credentials", "true");
+                return res.next();
+            }
+            else
+            {
+                sails.log.verbose('CORS forbidden',req.url, url.hostname);        
+                return res.forbidden();
+            }
         }
     }
     catch (e)

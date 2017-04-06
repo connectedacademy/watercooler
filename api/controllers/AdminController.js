@@ -7,6 +7,9 @@ module.exports = {
     },
 
     credentials: (req,res)=>{
+
+        //update credentials for the current logged in user (github)
+
         return res.ok('Updated Credentials');
     },
 

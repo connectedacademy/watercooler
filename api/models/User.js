@@ -7,7 +7,8 @@ module.exports = {
     _raw: 'json',
     name: 'string',
     lang: 'string',
-    credentials: 'json'
+    credentials: 'json',
+    hub_id: 'string'
   },
 
   toJSON : (obj)=>

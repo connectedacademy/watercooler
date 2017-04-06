@@ -24,6 +24,7 @@ module.exports = {
 
     login: (req,res,next) =>{
         //verify referer / origin, if valid, then allow and save into session
+        console.log(req.get('origin') || req.get('referer'));
         req.session.redirecturi = req.get('origin') || req.get('referer');
         sails.passport.authenticate('twitter')(req,res,next);
     },
@@ -55,11 +56,13 @@ module.exports = {
        return res.redirect(req.session.redirecturi + '#/loginfail');
     },
 
-    me: (req,res)=>{
+    me: async (req,res)=>{
         if (req.session.passport)
         {
-            let user = req.session.passport.user;
+
+            let user = await User.findOne(req.session.passport.user.id);
             delete user.credentials;
+            delete user._raw;
 
             return res.json({
                 user: (user.service=='twitter')? user : null,
@@ -69,6 +72,25 @@ module.exports = {
         else
         {
             return res.forbidden();
+        }
+    },
+
+    profile: async (req,res)=>{
+        try
+        {
+            var user = await User.findOne(req.session.passport.user.id);
+            user.hub_id = req.body.hub_id;
+            user.lang = req.body.lang;
+            user.save(function(err){
+                if (err)
+                    return res.serverError(err);
+                else
+                    return res.ok('Profile updated');
+            });
+        }
+        catch(e)
+        {
+            return res.serverError(e);
         }
     }
 };

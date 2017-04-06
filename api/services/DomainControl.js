@@ -18,7 +18,7 @@ module.exports = {
                 isvalid = entry;
         });
 
-        if (domain == 'localhost' && process.env.DEBUG)
+        if (domain == 'localhost' && process.env.DEBUG_MODE=='true')
         {
             return whitelist.courses[_.first(Object.keys(whitelist.courses))];
         }

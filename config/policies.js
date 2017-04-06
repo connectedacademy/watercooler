@@ -13,7 +13,8 @@ module.exports.policies = {
         'fail':[true],
         'logout':[true],
         'admin_logout':[true],
-        'me':['verifyDomain','jsononly','cors']
+        'me':['verifyDomain','jsononly','cors'],
+        'profile':['isUser','verifyDomain','jsononly','cors']
     },
     'admin':
     {

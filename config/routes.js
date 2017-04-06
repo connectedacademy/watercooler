@@ -34,6 +34,7 @@ module.exports.routes = {
   'GET /auth/admindashboard':'AuthController.admindashboard',  
   'GET /auth/fail':'AuthController.fail',
   'GET /auth/me':'AuthController.me',
+  'POST /auth/profile':'AuthController.profile',
 
   'GET /admin/login':'AuthController.admin',
   'GET /admin/logout':'AuthController.admin_logout',  
