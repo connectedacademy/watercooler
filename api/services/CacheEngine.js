@@ -35,6 +35,13 @@ module.exports = {
         return yaml.safeLoad(raw);
     },
 
+    getQuestions: async (req,res) => {
+        // console.log(req.course);
+        sails.log.verbose('Should be getting ' + req.course.url + '/config/questions.yaml, actually serving examples/questions.yaml');
+        let raw = await fs.readFile(__dirname + '/../../spec/examples/questions.yaml');
+        return yaml.safeLoad(raw);
+    },
+
     dummyData: async (file) =>{
         let raw = await fs.readFile(__dirname + '/../../spec/examples/' + file);
         return raw;

@@ -16,9 +16,11 @@ module.exports = {
     }
   },
 
-  toJSON : (obj)=>
+  toJSON : ()=>
   {
+    let obj = this.toObject();
     delete obj.credentials;
+    delete obj._raw;
     return obj;
   }
 };

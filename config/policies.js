@@ -29,5 +29,11 @@ module.exports.policies = {
     'classroom':
     {
         '*':['isUser','verifyDomain','jsononly','cors']
+    },
+    'analytics':
+    {
+        'response':['isUser','verifyDomain','jsononly','cors'],
+        'question':['isUser','verifyDomain','jsononly','cors'],
+        'answers':['verifyDomain','isAdmin','jsononly','cors']
     }
 };
