@@ -9,16 +9,18 @@ module.exports.policies = {
         'twitter_callback':[true],
         'github_callback':[true],
         'dashboard':['isUser',true],
-        'admindashboard':['isAdmin',true],        
+        'admindashboard':['verifyDomain','isAdmin',true],        
         'fail':[true],
         'logout':[true],
         'admin_logout':[true],
         'me':['verifyDomain','jsononly','cors'],
-        'profile':['isUser','verifyDomain','jsononly','cors']
+        'profile':['isUser','verifyDomain','jsononly','cors'],
+        'register':['isUser','verifyDomain','jsononly','cors']
     },
     'admin':
     {
-        '*':['isAdmin','verifyDomain','jsononly','cors']
+        '*':['verifyDomain','isAdmin','jsononly','cors'],
+        'editor':['verifyDomain']
     },
     'messages':
     {

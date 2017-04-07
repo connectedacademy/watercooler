@@ -102,6 +102,8 @@ module.exports.bootstrap = function(cb) {
   }
   ));
 
+
+
   sails.passport.serializeUser(function (user, done) {
 	  done(null, user);
 	});

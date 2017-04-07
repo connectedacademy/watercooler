@@ -35,11 +35,12 @@ module.exports.routes = {
   'GET /auth/fail':'AuthController.fail',
   'GET /auth/me':'AuthController.me',
   'POST /auth/profile':'AuthController.profile',
+  'POST /auth/register':'AuthController.register',
 
   'GET /admin/login':'AuthController.admin',
   'GET /admin/logout':'AuthController.admin_logout',  
   'GET /admin/editor':'AdminController.editor',
-  'POST /admin/credentials':'AdminController.editor',
+  'POST /admin/credentials':'AdminController.credentials',
   'GET /admin/content':'AdminController.content',
   'GET /admin/users':'AdminController.users',
   

@@ -30,7 +30,7 @@ module.exports = {
     },
 
     admin: (req,res,next)=>{
-        //verify referer / origin, if valid, then allow and save into session        
+        //verify referer / origin, if valid, then allow and save into session
         req.session.redirecturi = req.get('origin') || req.get('referer');        
         sails.passport.authenticate('github')(req,res,next);
     },
@@ -76,6 +76,8 @@ module.exports = {
     },
 
     profile: async (req,res)=>{
+
+        //TODO: change this to use registrations collection
         try
         {
             var user = await User.findOne(req.session.passport.user.id);
@@ -92,6 +94,24 @@ module.exports = {
         {
             return res.serverError(e);
         }
+    },
+
+    register: async (req,res) =>{
+
+        //TODO: add validation and check for needed fields:
+
+        let user = await User.findOne(req.session.passport.user.id);
+
+        //check there is not an existing registration for this course
+        req.body.course = req.course.domain;
+        user.registrations.add(req.body);
+        
+        user.save(function(err){
+            if (err)
+                return res.serverError(err);
+            else
+                return res.ok('Registration Complete');
+        });
     }
 };
 

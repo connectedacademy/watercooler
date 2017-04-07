@@ -8,7 +8,12 @@ module.exports = {
     name: 'string',
     lang: 'string',
     credentials: 'json',
-    hub_id: 'string'
+    registrations:
+    {
+      collection: 'Registration',
+      via:'user',
+      dominant:true
+    }
   },
 
   toJSON : (obj)=>
