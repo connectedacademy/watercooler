@@ -31,7 +31,7 @@ global.bodyCheck = bodyCheck;
 before(function(done) {
 
   // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(8000);
+  this.timeout(10000);
 
   sails.lift({
     // configuration for testing purposes
