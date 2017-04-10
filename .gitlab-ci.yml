@@ -23,6 +23,6 @@ cache:
 
 test_main:
   script:
-   - git clone https://gitlab-ci-token:$CI_BUILD_TOKEN@openlab.ncl.ac.uk/gitlab/connected-academy/spec.git
    - npm install
+   - git clone https://gitlab-ci-token:$CI_BUILD_TOKEN@openlab.ncl.ac.uk/gitlab/connected-academy/spec.git
    - npm test
