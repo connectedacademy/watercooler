@@ -15,7 +15,7 @@ variables:
   ORIENTDB_USERNAME: root
   ORIENTDB_HOST: orientdb
   REDIS_HOST: redis
-  REDIS_PORT: 6379
+  REDIS_PORT: "6379"
 
 cache:
   paths:
