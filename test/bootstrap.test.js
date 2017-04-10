@@ -10,9 +10,6 @@ before(function(done) {
     log:{
       level: 'error'
     },
-    models:{
-      connection:'sails-disk'
-    },
     session:{
       host: 'redis',
       port: 6379
@@ -21,6 +18,9 @@ before(function(done) {
     {
       host: 'redis',
       port: 6379
+    },
+    models: {
+      migrate: 'create'
     }
   }, function(err) {
     if (err) return done(err);
