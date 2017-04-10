@@ -1,5 +1,7 @@
 var sails = require('sails');
 
+let yaml = require('js-yaml');
+let fs = require('fs');
 var flat = require('flat');
 var _ = require('lodash');
 
@@ -26,7 +28,18 @@ let bodyCheck = function(body, comparefile)
     throw new Error("Result does not match the required fields");
 }
 
+let bodyCheckYaml = function(body, comparefile)
+{
+  fs.readFile('../spec/examples/' + comparefile + '.yaml', (data)=>{
+    let yaml = yaml.safeLoad(data);
+    if (!_.deepTypeMatch(body,yaml))
+      throw new Error("Result does not match the required yaml fields");
+  });
+}
+
 global.bodyCheck = bodyCheck;
+global.bodyCheckYaml = bodyCheckYaml;
+
 
 before(function(done) {
 

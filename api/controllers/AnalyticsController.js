@@ -1,11 +1,14 @@
 module.exports = {
 
     question: async (req,res)=>{
-        let questions = await CacheEngine.getQuestions(req,res);
-        //randomly pick a question:
-        return res.json(_.sample(questions));
+        //TODO: select questions by other parameters, not just random:
+        let class_in_course = req.param('class');
+        let content_type_in_class = req.param('content_type');
 
-        // return res.dummyLoad('question.json');
+        let questions = await CacheEngine.getQuestions(req,res);
+        let question = _.sample(questions)
+        //randomly pick a question:
+        return res.json(question);
     },
 
     response: async (req,res)=>{
@@ -30,11 +33,11 @@ module.exports = {
     answers: async (req,res)=>{
         //get the questions:
         let questions = await CacheEngine.getQuestions(req,res);
-        let answers = await Answer.find({course:req.course.domain}).populate('user');
+        let answers = await Answer.find({course:req.course.domain});
         let results = _.map(questions,(q)=>{
             return {
                 question: q,
-                answers: _.find(answers,{question_id:q.id})
+                answers: _.filter(answers,{question_id:q.id})
             }
         });
 
