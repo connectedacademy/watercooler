@@ -14,7 +14,9 @@ variables:
   ORIENTDB_DB: testdb
   ORIENTDB_USERNAME: root
   ORIENTDB_HOST: orientdb
-  
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+
 cache:
   paths:
   - node_modules/
