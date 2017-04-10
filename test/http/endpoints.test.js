@@ -1,31 +1,33 @@
 var request = require('supertest');
 var expect = require('chai').expect;
 
-// var _ = require('lodash');
 var flat = require('flat');
 var _ = require('lodash');
 
-var deepTypeMatch = function(expected, actual)
+_.deepTypeMatch = function(expected, actual)
 {
-  //map types:
-  var flatted = flat(expected);
-  // console.log(flatted);
-  var mapped = _.forOwn(flatted,(v,k)=>{
-    return typeof(flatted[k])
-  })
-  console.log(mapped);
-  // throw JSON.stringify(expectedtypes);
-  //deep compare:
+  var exp_flatted = flat(expected);
+  var exp_mapped = _.mapValues(exp_flatted,(v,k)=>{
+    return typeof(exp_flatted[k])
+  });
+  var act_flatted = flat(actual);
+  var act_mapped = _.mapValues(act_flatted,(v,k)=>{
+    return typeof(act_flatted[k])
+  });
+
+  return _.isEqual(act_mapped,exp_mapped);
 };
 
- deepTypeMatch({
-    msg:'string msg',
-    second:{
-      third:'asdasdas'}
-  },
-  {
-    msg:345
-  });
+let bodyCheck = function(body, comparefile)
+{
+  let example = comparefile;
+  if (_.isString(comparefile))
+    example = require('../spec/examples/' + comparefile + '.json');
+  if (!_.deepTypeMatch(body,example))
+    throw new Error("Result does not match the required fields");
+}
+
+global.bodyCheck = bodyCheck;
 
 describe('Auth', function() {
   
@@ -66,8 +68,6 @@ describe('Auth', function() {
             msg:'string msg'
           },
           response.body);
-
-          // expect(response.body).to.have.property('msg');
         });
     });
   });

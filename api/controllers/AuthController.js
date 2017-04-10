@@ -59,7 +59,6 @@ module.exports = {
     me: async (req,res)=>{
         if (req.session.passport)
         {
-
             let user = await User.findOne(req.session.passport.user.id);
             delete user.credentials;
             delete user._raw;

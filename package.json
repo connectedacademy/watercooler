@@ -38,7 +38,7 @@
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",
     "start": "node --harmony-async-await app.js",
-    "test":"mocha --harmony-async-await test/bootstrap.test.js test/**/*.test.js"
+    "test":"nyc mocha --harmony-async-await test/bootstrap.test.js test/**/*.test.js"
   },
   "author": "Open Lab",
   "license": "MIT",
@@ -46,6 +46,7 @@
     "mocha": "^3.2.0",
     "supertest": "^3.0.0",
     "chai":"3.5.0",
-    "lodash.clonedeepwith":"4.5.0"
+    "nyc":"10.2.0",
+    "flat":"2.0.1"
   }
 }
