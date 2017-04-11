@@ -22,6 +22,7 @@
     "sails-disk": "~0.10.9",
     "sails-orientdb": "0.10.60",
     "socket.io-redis": "4.0.0",
+    "sails-memory":"0.10.7",
     "uuid": "3.0.1",
     "waterline-orientdb": "0.10.43",
     "winston": "2.3.1",

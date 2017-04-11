@@ -3,6 +3,43 @@ let os = require('os');
 
 module.exports = {
 
+
+    testadminlogin: (req,res)=>
+    {
+        req.session.redirecturi = req.get('origin') || req.get('referer');
+        if (process.env.DEBUG_MODE=='true')
+        {
+            let testuser = require('../../spec/examples/adminuser.json');
+            req.login(testuser, (err)=>
+            {
+                // console.log(err);
+                return res.redirect('/auth/admindashboard');
+            });
+        }
+        else
+        {
+            return res.forbidden('NOT IN DEBUG MODE');
+        }
+    },
+
+    testuserlogin: (req,res)=>{
+        req.session.redirecturi = req.get('origin') || req.get('referer');
+        if (process.env.DEBUG_MODE=='true')
+        {
+            let testuser = require('../../spec/examples/normaluser.json');
+            req.login(testuser, (err)=>
+            {
+                // console.log(err);
+                
+                return res.redirect('/auth/dashboard');
+            });
+        }
+        else
+        {
+             return res.forbidden('NOT IN DEBUG MODE');
+        }
+    },
+
 	root: (req,res) =>
     {
         return res.json({
@@ -24,7 +61,7 @@ module.exports = {
 
     login: (req,res,next) =>{
         //verify referer / origin, if valid, then allow and save into session
-        console.log(req.get('origin') || req.get('referer'));
+        // console.log(req.get('origin') || req.get('referer'));
         req.session.redirecturi = req.get('origin') || req.get('referer');
         sails.passport.authenticate('twitter')(req,res,next);
     },

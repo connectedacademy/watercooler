@@ -9,7 +9,7 @@ module.exports = async function(req,res,next)
         //TODO: check admin authentication for this course:
 
         let git = req.course.repo;
-        console.log(git);
+        // console.log(git);
 
 
         return next();

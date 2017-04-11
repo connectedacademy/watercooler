@@ -15,7 +15,9 @@ module.exports.policies = {
         'admin_logout':[true],
         'me':['verifyDomain','jsononly','cors'],
         'profile':['isUser','verifyDomain','jsononly','cors'],
-        'register':['isUser','verifyDomain','jsononly','cors']
+        'register':['isUser','verifyDomain','jsononly','cors'],
+        'testadminlogin':['verifyDomain'],
+        'testuserlogin':['verifyDomain']
     },
     'admin':
     {
@@ -32,7 +34,7 @@ module.exports.policies = {
     },
     'analytics':
     {
-        'response':['isUser','verifyDomain','jsononly','cors'],
+        'submit':['isUser','verifyDomain','jsononly','cors'],
         'question':['isUser','verifyDomain','jsononly','cors'],
         'answers':['verifyDomain','isAdmin','jsononly','cors']
     }

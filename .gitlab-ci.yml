@@ -5,7 +5,6 @@ image: node:latest
 
 services:
   - redis:latest
-  - orientdb:latest
 
 variables:
   ORIENTDB_ROOT_PASSWORD: testpassword

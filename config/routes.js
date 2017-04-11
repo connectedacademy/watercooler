@@ -53,8 +53,13 @@ module.exports.routes = {
   'GET /messages/subscribe/:class/:startsegment/:endsegment':'MessagesController.subscribe',
   'POST /messages/create':'MessagesController.create',
 
-  'POST /analytics/answer/reponse':'AnalyticsController.response',
+  'POST /analytics/answer/response':'AnalyticsController.submit',
   'GET /analytics/answers':'AnalyticsController.answers',
-  'GET /analytics/question/:class/:content':'AnalyticsController.question'  
+  'GET /analytics/question/:class/:content':'AnalyticsController.question',
+
+
+  'GET /auth/testadminlogin':'AuthController.testadminlogin',
+  'GET /auth/testuserlogin':'AuthController.testuserlogin'
+  
 
 };

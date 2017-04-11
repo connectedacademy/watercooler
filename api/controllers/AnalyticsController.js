@@ -11,7 +11,7 @@ module.exports = {
         return res.json(question);
     },
 
-    response: async (req,res)=>{
+    submit: async (req,res)=>{
         try
         {
             await Answer.create({

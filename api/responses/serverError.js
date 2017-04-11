@@ -31,6 +31,5 @@ module.exports = function serverError (data) {
       msg: data.reason || 'Server Error',
       data:data
     });
-
 };
 

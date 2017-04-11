@@ -21,7 +21,10 @@ module.exports = async (req,res,next) =>{
     }
     catch (e)
     {
-        sails.log.verbose('Failed to verify domain',req.url);        
-        return res.serverError(e);
+        sails.log.verbose('Failed to verify domain',req.url);
+        return res.forbidden({
+            err:'INVALID_DOMAIN',
+            msg:'No valid Origin or Referer header were provided'
+        });
     }
 }
