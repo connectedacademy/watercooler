@@ -10,6 +10,6 @@ module.exports = async function dummyLoad (filename) {
   sails.log.verbose('Sending 200 ("Dummy") response: ',filename);
 
   let data = await fs.readFile(__dirname + '/../../spec/examples/' + filename);
-  return res.status(200).send(data);
+  return res.status(200).type('json').send(data);
 };
 

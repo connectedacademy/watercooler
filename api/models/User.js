@@ -8,6 +8,8 @@ module.exports = {
     name: 'string',
     lang: 'string',
     credentials: 'json',
+    profile: 'string',
+    link: 'string',
     registrations:
     {
       collection: 'Registration',
