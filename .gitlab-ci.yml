@@ -15,6 +15,10 @@ variables:
   ORIENTDB_HOST: orientdb
   REDIS_HOST: redis
   REDIS_PORT: "6379"
+  TWITTER_KEY: test
+  TWITTER_SECRET: test
+  GITHUB_CLIENT_ID: test
+  GITHUB_CLIENT_SECRET: test
 
 cache:
   paths:
