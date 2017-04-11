@@ -7,7 +7,7 @@ module.exports = {
     testadminlogin: (req,res)=>
     {
         req.session.redirecturi = req.get('origin') || req.get('referer');
-        if (process.env.DEBUG_MODE=='true')
+        if (process.env.CI)
         {
             let testuser = require('../../spec/examples/adminuser.json');
             req.login(testuser, (err)=>
@@ -24,7 +24,7 @@ module.exports = {
 
     testuserlogin: (req,res)=>{
         req.session.redirecturi = req.get('origin') || req.get('referer');
-        if (process.env.DEBUG_MODE=='true')
+        if (process.env.CI)
         {
             let testuser = require('../../spec/examples/normaluser.json');
             req.login(testuser, (err)=>
