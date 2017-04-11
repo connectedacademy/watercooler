@@ -19,6 +19,7 @@ variables:
   TWITTER_SECRET: test
   GITHUB_CLIENT_ID: test
   GITHUB_CLIENT_SECRET: test
+  TEST_DOMAIN: http://testclass.connectedacademy.io
 
 cache:
   paths:
