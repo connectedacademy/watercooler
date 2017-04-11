@@ -50,7 +50,7 @@ before(function(done) {
   sails.lift({
     // configuration for testing purposes
     log:{
-      level: 'error'
+      level: 'verbose'
     },
     session:{
       host: 'redis',
