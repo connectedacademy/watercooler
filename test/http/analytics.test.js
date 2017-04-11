@@ -57,7 +57,9 @@ describe('Analytics', function() {
             });
         })
         .end(done);
+        
     });
+
   });
 
 });

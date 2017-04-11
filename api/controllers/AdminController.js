@@ -51,10 +51,10 @@ module.exports = {
     },
 
     content: (req,res)=>{
-        return res.serverError();
+        return res.json([]);
     },
 
     users: (req,res)=>{
-        return res.serverError();        
+        return res.json([]);
     }
 }
