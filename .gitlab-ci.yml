@@ -20,6 +20,8 @@ variables:
   GITHUB_CLIENT_ID: test
   GITHUB_CLIENT_SECRET: test
   TEST_DOMAIN: http://testclass.connectedacademy.io
+  MASTER_REPO: https://connectedacademy.io/
+  EDITOR_URI: http://prose.io/
 
 cache:
   paths:
