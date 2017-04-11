@@ -73,18 +73,26 @@ before(function(done) {
     global.useragent =  request.agent(sails.hooks.http.app);
     global.adminagent = request.agent(sails.hooks.http.app);
 
-    //DO LOGIN WITH AUTH
-    await global.useragent
-    .get('/auth/testuserlogin')
-    .set('Referer',process.env.TEST_DOMAIN)
-    .expect(302);
-
-    await global.adminagent
-      .get('/auth/testadminlogin')
+    try
+    {
+      //DO LOGIN WITH AUTH
+      await global.useragent
+      .get('/auth/testuserlogin')
       .set('Referer',process.env.TEST_DOMAIN)
       .expect(302);
 
-    done(err, sails);
+      await global.adminagent
+        .get('/auth/testadminlogin')
+        .set('Referer',process.env.TEST_DOMAIN)
+        .expect(302);
+      
+      done(err, sails);
+    }
+    catch (e)
+    {
+      throw new Error("Test Environment not Setup Properly " + e);
+    }
+
   });
 });
 

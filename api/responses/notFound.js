@@ -10,7 +10,8 @@ module.exports = function notFound (data, options) {
 
   // Set status code
   return res.status(404).json({
-    msg: 'Not Found - ' + data
+    msg: 'Not Found',
+    data: data
   })
 
 };
