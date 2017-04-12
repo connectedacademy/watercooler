@@ -9,9 +9,9 @@ module.exports.policies = {
         'twitter_callback':[true],
         'github_callback':[true],
         'dashboard':['isUser',true],
-        'admindashboard':['verifyDomain','isAdmin',true],        
+        'admindashboard':['verifyDomain','isAdmin',true],
         'fail':[true],
-        'logout':[true],
+        'logout':['cors'],
         'admin_logout':[true],
         'me':['verifyDomain','jsononly','cors'],
         'profile':['isUser','verifyDomain','jsononly','cors'],
@@ -26,7 +26,7 @@ module.exports.policies = {
     },
     'messages':
     {
-        '*':['isUser','verifyDomain','jsononly','cors']
+        '*':['cors','isUser','verifyDomain','jsononly']
     },
     'classroom':
     {
