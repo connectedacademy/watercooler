@@ -19,6 +19,7 @@ describe('Course Info', function() {
   describe('Spec',function(done){
 
     it ('should return valid spec',function(done){
+      
       request(sails.hooks.http.app)
           .get('/course/spec')
           .set('Referer',process.env.TEST_DOMAIN)
@@ -26,6 +27,7 @@ describe('Course Info', function() {
             bodyCheckYaml(res.body,'spec');
           })
           .expect(200,done);
+
     });
 
   });
@@ -33,6 +35,7 @@ describe('Course Info', function() {
   describe('Hubs',function(done){
 
     it ('should return valid spec',function(done){
+
       request(sails.hooks.http.app)
           .get('/course/spec')
           .set('Referer',process.env.TEST_DOMAIN)
@@ -40,6 +43,7 @@ describe('Course Info', function() {
             bodyCheckYaml(res.body,'hubs');
           })
           .expect(200,done);
+
     });
 
   });

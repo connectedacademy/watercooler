@@ -1,22 +1,40 @@
-// var request = require('supertest');
-// var expect = require('chai').expect;
+var request = require('supertest');
+var expect = require('chai').expect;
 
-// describe('In-Situ Classroom', function() {
+describe('In-Situ Classroom', function() {
 
-//   describe('My Code',function(done){
-//       it ('should return valid code',function(done){
-        
-//       });
-//   });
+  describe('#My Code',function(done){
 
-//   describe('Users',function(done){
-//       it ('should require admin',function(done){
-      
-//       });
+      it ('should return valid code',function(done){
 
-//       it ('should return list of users',function(done){
-      
-//       });
-//   });
+        global.useragent
+        .get('/classroom/mycode/1/1')
+        .set('Referer',process.env.TEST_DOMAIN)
+        .expect(200)
+        .expect((res)=>{
+            bodyCheck(res.body,'mycode');
+        })
+        .end(done);
 
-// });
+      });
+
+  });
+
+  describe('#Users',function(done){
+
+      it ('should return list of users',function(done){
+
+        global.useragent
+        .get('/classroom/users/1/1')
+        .set('Referer',process.env.TEST_DOMAIN)
+        .expect((res)=>{
+            expect(res.body).to.be.an.array;
+        })
+        .expect(200)
+        .end(done);
+
+      });
+
+  });
+
+});

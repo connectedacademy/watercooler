@@ -22,12 +22,17 @@ variables:
   TEST_DOMAIN: http://testclass.connectedacademy.io
   MASTER_REPO: https://connectedacademy.io/
   EDITOR_URI: http://prose.io/
+  HOST: localhost
 
 cache:
   paths:
   - node_modules/
 
-test_main:
+stages:
+  - test
+
+test:
+  stage: test
   script:
    - npm install
    - git clone https://gitlab-ci-token:$CI_BUILD_TOKEN@openlab.ncl.ac.uk/gitlab/connected-academy/spec.git

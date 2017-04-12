@@ -10,10 +10,15 @@ module.exports = {
         if (process.env.CI)
         {
             let testuser = require('../../spec/examples/adminuser.json');
-            req.login(testuser, (err)=>
-            {
-                // console.log(err);
-                return res.redirect('/auth/admindashboard');
+
+            User.create(testuser).exec((err,user)=>{
+                
+                req.login(user, (err)=>
+                {
+                    // console.log(err);
+                    return res.redirect('/auth/admindashboard');
+                });
+
             });
         }
         else
@@ -27,11 +32,15 @@ module.exports = {
         if (process.env.CI)
         {
             let testuser = require('../../spec/examples/normaluser.json');
-            req.login(testuser, (err)=>
-            {
-                // console.log(err);
-                
-                return res.redirect('/auth/dashboard');
+
+            User.create(testuser).exec((err,user)=>{
+                // console.log()
+                req.login(user, (err)=>
+                {
+                    // console.log(err);
+                    
+                    return res.redirect('/auth/dashboard');
+                });
             });
         }
         else
@@ -96,14 +105,21 @@ module.exports = {
     me: async (req,res)=>{
         if (req.session.passport)
         {
-            let user = await User.findOne(req.session.passport.user.id);
-            delete user.credentials;
-            delete user._raw;
+            try
+            {
+                let user = await User.findOne(req.session.passport.user.id);
+                delete user.credentials;
+                delete user._raw;
 
-            return res.json({
-                user: (user.service=='twitter')? user : null,
-                admin: (user.service=='github')? user : null
-            });
+                return res.json({
+                    user: (user.service=='twitter')? user : null,
+                    admin: (user.service=='github')? user : null
+                });
+            }
+            catch (e)
+            {
+                return res.serverError(e);
+            }
         }
         else
         {

@@ -36,14 +36,6 @@ describe('Analytics', function() {
 
   describe('Answers',function(){
 
-    // it('should not work for user access', function (done) {
-        
-    
-
-
-    // });
-
-
     it ('should return list of users',function(done){
 
         global.adminagent
@@ -52,9 +44,20 @@ describe('Analytics', function() {
         .expect(200)
         .expect((res)=>{
             expect(res.body).to.be.an.array;
-            // console.log(res.body);
+            _.each(res.body, (b)=>{
+                _.each(b.answers,(a)=>{
+                    bodyCheck(b,{
+                        "question_id":1,
+                        "user":"tombartindale",
+                        "class":1,
+                        "content_index":4,
+                        "answer":4
+                    });
+                });
+            });
         })
         .end(done);
+        
     });
 
   });

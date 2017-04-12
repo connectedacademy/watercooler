@@ -1,3 +1,5 @@
+process.env.CI = true
+
 var sails = require('sails');
 var request = require('supertest');
 
@@ -16,6 +18,10 @@ _.deepTypeMatch = function(expected, actual)
   var act_mapped = _.mapValues(act_flatted,(v,k)=>{
     return typeof(act_flatted[k])
   });
+
+  // console.log(act_mapped);
+  // console.log(exp_mapped);
+  
 
   return _.isEqual(act_mapped,exp_mapped);
 };
@@ -50,7 +56,7 @@ before(function(done) {
   sails.lift({
     // configuration for testing purposes
     log:{
-      level: 'verbose'
+      level: 'error'
     },
     session:{
       host: 'redis',
