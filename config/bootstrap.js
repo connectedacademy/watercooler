@@ -23,10 +23,11 @@ module.exports.bootstrap = function(cb) {
     },
     function(token, tokenSecret, profile, cb) {
         User.findOrCreate({ 
-            account_number: 'twitter-'+profile.id
+            service: profile.provider,
+            account_number: profile.id
         },
         {
-          account_number: 'twitter-'+profile.id,
+          account_number: profile.id,
           _raw: profile._json,
           credentials:{
             token:token,
@@ -67,10 +68,11 @@ module.exports.bootstrap = function(cb) {
   },
   function(accessToken, refreshToken, profile, cb) {
       User.findOrCreate({ 
-            account_number: 'github-'+profile.id
+            service: profile.provider,
+            account_number: profile.id
         },
         {
-          account_number: 'github-'+profile.id,
+          account_number: profile.id,
           _raw: profile._json,
           credentials:{
             accessToken:accessToken,
