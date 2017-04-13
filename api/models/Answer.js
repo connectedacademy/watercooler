@@ -1,4 +1,6 @@
 module.exports = {
+  orientdbClass : 'document',
+
   attributes: {
     course: 'string',
     user:

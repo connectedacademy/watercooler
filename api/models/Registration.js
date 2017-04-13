@@ -1,4 +1,7 @@
 module.exports = {
+    
+  orientdbClass : 'document',
+  
   attributes: {
     course: "string",
     hub_id: "string",

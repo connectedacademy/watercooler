@@ -26,9 +26,6 @@ module.exports.connections = {
 
   orient: {
     adapter: 'sails-orientdb',
-    options:{
-      databaseType : 'document'
-    },
     host: process.env.ORIENTDB_HOST,
     port: process.env.ORIENTDB_PORT,
     user: process.env.ORIENTDB_USERNAME,

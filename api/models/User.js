@@ -1,4 +1,6 @@
 module.exports = {
+  
+  orientdbClass : 'V',
 
   attributes: {
     account_number:'string',

@@ -4,6 +4,7 @@ module.exports = {
         try
         {
             var data = await CacheEngine.getSpec(req,res);
+            data.baseUri = req.course.url + '/content/';
             return res.json(data);
         }
         catch (e)
