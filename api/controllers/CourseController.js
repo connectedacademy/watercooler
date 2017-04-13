@@ -5,9 +5,7 @@ module.exports = {
         {
             var data = await CacheEngine.getSpec(req,res);
 
-            //TODO: put this back when dns issues sorted
-            // data.baseUri = req.course.url + '/content/';
-            data.baseUri = "https://connectedacademy.github.io/testclass/content/"
+            data.baseUri = req.course.url + '/content/';
 
             return res.json(data);
         }
