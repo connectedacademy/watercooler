@@ -22,6 +22,7 @@ module.exports.bootstrap = function(cb) {
     callbackURL: process.env.HOST + "/auth/twitter_callback"
     },
     function(token, tokenSecret, profile, cb) {
+
         User.findOrCreate({ 
             service: profile.provider,
             account_number: profile.id
@@ -36,22 +37,27 @@ module.exports.bootstrap = function(cb) {
           name: profile.displayName,
           service: profile.provider,
           account: profile.username,
-          lang: profile._json.lang
+          lang: profile._json.lang,
+          profile: profile._json.profile_image_url_https,
+          link: profile._json.url
         }, async function (err, user) {
             try
             {
-              await user.save({
-                _raw: profile._json,
-                credentials:{
+              user._raw= profile._json;
+              user.credentials={
                   token:token,
                   tokenSecret:tokenSecret
-                },
-                name: profile.displayName,
-                service: profile.provider,
-                account: profile.username,
-                lang: profile._json.lang
+                };
+              user.name= profile.displayName;
+              user.service= profile.provider;
+              user.account= profile.username;
+              user.lang= profile._json.lang;
+              user.profile= profile._json.profile_image_url_https;
+              user.link= profile._json.url;
+
+              user.save(function(err){
+                return cb(err, user);
               });
-              return cb(err, user);
             }
             catch (e)
             {
@@ -67,6 +73,7 @@ module.exports.bootstrap = function(cb) {
     callbackURL: process.env.HOST + "/auth/github_callback"
   },
   function(accessToken, refreshToken, profile, cb) {
+
       User.findOrCreate({ 
             service: profile.provider,
             account_number: profile.id
@@ -84,17 +91,21 @@ module.exports.bootstrap = function(cb) {
         }, async function (err, user) {
           try
           {
-            await user.save({
-              _raw: profile._json,
-              credentials:{
+
+            user._raw = profile._json;
+            user.credentials = {
                 accessToken:accessToken,
                 refreshToken:refreshToken
-              },
-              name: profile.displayName,
-              service: profile.provider,
-              account: profile.username
+              };
+            user.name= profile.displayName;
+            user.service= profile.provider;
+            user.account= profile.username;
+            user.profile= profile._json.avatar_url;
+            user.link= profile._json.html_url;
+            
+            user.save(function(err){
+              return cb(err, user);
             });
-            return cb(err, user);
           }
           catch (e)
           {
