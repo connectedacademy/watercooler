@@ -36,6 +36,8 @@ module.exports.routes = {
   'GET /auth/me':'AuthController.me',
   'POST /auth/profile':'AuthController.profile',
   'POST /auth/register':'AuthController.register',
+  'GET /auth/registrationquestions':'AuthController.registrationquestions',
+  
 
   'GET /admin/login':'AuthController.admin',
   'GET /admin/logout':'AuthController.admin_logout',  
@@ -59,7 +61,18 @@ module.exports.routes = {
 
 
   'GET /auth/testadminlogin':'AuthController.testadminlogin',
-  'GET /auth/testuserlogin':'AuthController.testuserlogin'
+  'GET /auth/testuserlogin':'AuthController.testuserlogin',
   
+
+  // DISCUSSION MODULE
+
+  'GET /discussion/available/:class/:schedule':'DiscussionController.available',
+  'GET /discussion/subscribe/:media':'DiscussionController.subscribe',
+  'POST /discussion/create':'DiscussionController.create',
+  'GET /discussion/messages/:media':'DiscussionController.messages',
+  'GET /discussion/submission/:media':'DiscussionController.submission',
+  'GET /discussion/list/:class/:phase':'DiscussionController.list'
+  
+
 
 };

@@ -148,6 +148,16 @@ module.exports = {
         }
     },
 
+    registrationquestions: async (req,res)=>{
+        let questions = await CacheEngine.getQuestions(req,res);
+        //randomly pick a question:
+        let data = {
+            release: questions.release,
+            questions: questions.registration
+        };
+        return res.json(data);
+    },
+
     register: async (req,res) =>{
 
         //TODO: add validation and check for needed fields:

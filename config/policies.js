@@ -3,7 +3,7 @@ module.exports.policies = {
     '*':['verifyDomain','jsononly','cors'],
     'auth':
     {
-        'root':[true],
+        'root':['jsononly'],
         'login':['verifyDomain'],
         'admin':['verifyDomain'],
         'twitter_callback':[true],
@@ -16,6 +16,7 @@ module.exports.policies = {
         'me':['verifyDomain','jsononly','cors'],
         'profile':['isUser','verifyDomain','jsononly','cors'],
         'register':['isUser','verifyDomain','jsononly','cors'],
+        'registrationquestions':['isUser','verifyDomain','jsononly','cors'],
         'testadminlogin':['verifyDomain'],
         'testuserlogin':['verifyDomain']
     },
@@ -37,5 +38,8 @@ module.exports.policies = {
         'submit':['isUser','verifyDomain','jsononly','cors'],
         'question':['isUser','verifyDomain','jsononly','cors'],
         'answers':['verifyDomain','isAdmin','jsononly','cors']
+    },
+    'discussion':{
+        '*':['isUser','verifyDomain','jsononly','cors']
     }
 };
