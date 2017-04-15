@@ -28,8 +28,8 @@ module.exports = function serverError (data) {
   return res.status(500).json(
     {
       err: data.name.toUpperCase() || 'SERVER_ERROR',
-      msg: data.reason || 'Server Error',
-      data:data
+      msg: data.reason || data.toString() || 'Server Error',
+      data: data
     });
 };
 

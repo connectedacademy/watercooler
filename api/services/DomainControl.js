@@ -30,9 +30,10 @@ module.exports = {
 
     getWhitelist: async (req,res)=>{
         
-        let whitelist_raw = await CacheEngine.get(master_config);
+        let whitelist = await CacheEngine.getYaml(master_config);
+        return whitelist;
         //load whitelist
-        return whitelist = await yaml.safeLoad(whitelist_raw);
+        // return whitelist = await yaml.safeLoad(whitelist_raw);
     }
 
 }

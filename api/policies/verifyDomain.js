@@ -21,6 +21,7 @@ module.exports = async (req,res,next) =>{
     }
     catch (e)
     {
+        console.log(e);
         sails.log.verbose('Failed to verify domain',req.url);
         return res.forbidden({
             err:'INVALID_DOMAIN',
