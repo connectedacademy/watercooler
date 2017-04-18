@@ -3,9 +3,28 @@ module.exports = {
 
   attributes: {
     message: 'text',
-    read: 'datetime',
-    content_id: 'string', //content it relates to
-    
+    readAt: 'datetime',
+    relates_to: 
+    {
+      model: 'Submission' //content it relates to
+    }, 
+    touser:{
+      model: 'User'
+    },
+    fromuser:
+    {
+      model: 'User'
+    },
+
+    toJSON :function()
+    {
+      let obj = this.toObject();
+      delete obj['@type'];
+      delete obj['@class'];
+      delete obj['@version'];
+      return obj;
+    }
+
   }
 };
 

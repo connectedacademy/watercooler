@@ -10,13 +10,6 @@ let Promise = require('bluebird');
 Promise.promisifyAll(redis.RedisClient.prototype);
 
 requestify.cacheTransporter(requestify.coreCacheTransporters.redis(rediscache));
-
-//TODO: cache response from the github to prevent backlog
-//TODO: replace with real data
-
-
-//TODO: -- only cache validated YAML response from the server, to make sure a bad version is not cached.
-
 let get =  async (uri)=>{
     let response = await requestify.get(uri,{
         cache: true

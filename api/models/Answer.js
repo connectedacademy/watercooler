@@ -10,6 +10,15 @@ module.exports = {
     question_id: 'integer',
     class: 'integer',
     content_index: 'integer',
-    answer: 'string'
+    answer: 'string',
+
+    toJSON :function()
+    {
+      let obj = this.toObject();
+      delete obj['@type'];
+      delete obj['@class'];
+      delete obj['@version'];
+      return obj;
+    }
   }
 };

@@ -25,4 +25,9 @@ module.exports = {
         // get ready for next week
 
     // Final questionaire push
+
+    // notification of a new peer discussion message
+    newPeerMessage: (message)=>{
+        sails.log.verbose('Sending offline notification about new peer message',message);
+    }
 }

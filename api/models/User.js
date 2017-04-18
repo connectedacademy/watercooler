@@ -17,15 +17,20 @@ module.exports = {
       collection: 'Registration',
       via:'user',
       dominant:true
+    },
+
+    toJSON :function()
+    {
+      let obj = this.toObject();
+      delete obj.credentials;
+      delete obj._raw;
+      delete obj['@type'];
+      delete obj['@class'];
+      delete obj['@version'];
+      return obj;
     }
   },
 
-  toJSON : ()=>
-  {
-    let obj = this.toObject();
-    delete obj.credentials;
-    delete obj._raw;
-    return obj;
-  }
+ 
 };
 

@@ -68,10 +68,11 @@ module.exports.routes = {
 
   'GET /discussion/available/:class/:schedule':'DiscussionController.available',
   'GET /discussion/subscribe/:media':'DiscussionController.subscribe',
-  'POST /discussion/create':'DiscussionController.create',
+  'POST /discussion/create/:media':'DiscussionController.create',
   'GET /discussion/messages/:media':'DiscussionController.messages',
   'GET /discussion/submission/:media':'DiscussionController.submission',
-  'GET /discussion/list/:class/:phase':'DiscussionController.list'
+  'GET /discussion/list/:class/:schedule':'DiscussionController.list',
+  'POST /discussion/read/:message':'DiscussionController.read'
   
 
 

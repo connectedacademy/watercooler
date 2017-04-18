@@ -40,6 +40,7 @@ module.exports.policies = {
         'answers':['verifyDomain','isAdmin','jsononly','cors']
     },
     'discussion':{
-        '*':['isUser','verifyDomain','jsononly','cors']
+        '*':['isUser','verifyDomain','jsononly','cors'],
+        'subscribe':['socketonly','isUser','verifyDomain','jsononly','cors']
     }
 };
