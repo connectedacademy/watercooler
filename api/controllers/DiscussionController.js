@@ -103,7 +103,18 @@ module.exports = {
         try
         {
          
-            let data = await Submission.find({
+            //get discussion for submissions I participate in:
+
+            let participated = await Submission.find({
+                course: req.course.domain,
+                class: req.param('class'),
+                schedule: req.param('schedule')
+            }).populate('discussion',{
+                fromuser: req.session.passport.user.id
+            });
+
+            //get discussions for submissions I own:
+            let own = await Submission.find({
                 user: req.session.passport.user.id,
                 course: req.course.domain,
                 class: req.param('class'),
@@ -111,12 +122,18 @@ module.exports = {
             })
             .populate('discussion');
 
-            _.each(data,(dat)=>{
+            _.each(own,(dat)=>{
                 dat.unread = _.size(_.filter(dat.discussion,(d)=>{
                     return !d.readAt;
                 }));
                 dat.messages = _.size(dat.discussion);
-            })
+            });
+
+            let merge = own.concat(participated);
+
+            result = _.uniq(merge, function(r){
+                return r.id
+            });
 
             return res.json({
                 scope:{
@@ -124,7 +141,7 @@ module.exports = {
                     class: req.param('class'),
                     schedule: req.param('schedule')                    
                 },
-                data: data
+                data: result
             });
         }
         catch (e)
