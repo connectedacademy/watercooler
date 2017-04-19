@@ -76,7 +76,8 @@ module.exports = {
     getQuestions: async (req,res) => {
         if (process.env.LIVE_DATA=='true')
         {
-            return CacheEngine.getYaml(req.course.url + '/course/config/questions.yaml');            
+            //TODO: Service function to check valid language
+            return CacheEngine.getYaml(req.course.url + '/course/config/questions/' + req.session.passport.user.lang + '.yaml');
         }
         else
         {
