@@ -107,9 +107,12 @@ module.exports = {
         {
             try
             {
-                let user = await User.findOne(req.session.passport.user.id);
-                delete user.credentials;
-                delete user._raw;
+                var user = await User.findOne(req.session.passport.user.id).populate('registrations',{
+                    course: req.course.domain
+                });
+
+                user.registration = _.first(user.registrations);
+                user.registrations = null;
 
                 return res.json({
                     user: (user.service=='twitter')? user : null,

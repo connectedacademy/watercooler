@@ -7,10 +7,12 @@ module.exports = {
     hub_id: "string",
     region: "string",
     age: "string",
+    consent:'boolean',
     user:
     {
       model: 'User'
     },
+    registration_info:'json',
     
     toJSON :function()
     {
