@@ -17,7 +17,6 @@ let get =  async (uri)=>{
     return response.body;
 };
 
-
 module.exports = {
 
     getYaml : async (url) =>
@@ -51,11 +50,11 @@ module.exports = {
     getHubs: async (req,res)=>{
         if (process.env.LIVE_DATA=='true')
         {
-            return CacheEngine.getYaml(req.course.url + '/config/hubs.yaml');
+            return CacheEngine.getYaml(req.course.url + '/course/config/hubs.yaml');
         }
         else
         {
-            sails.log.verbose('Should be getting ' + req.course.url + '/config/hubs.yaml, actually serving examples/hubs.yaml');
+            sails.log.verbose('Should be getting ' + req.course.url + '/course/config/hubs.yaml, actually serving examples/hubs.yaml');
             let raw = await fs.readFile(__dirname + '/../../spec/examples/hubs.yaml');
             return yaml.safeLoad(raw);
         }
@@ -64,11 +63,11 @@ module.exports = {
     getSpec: async (req,res) => {
         if (process.env.LIVE_DATA=='true')
         {
-            return CacheEngine.getYaml(req.course.url + '/config/spec.yaml');            
+            return CacheEngine.getYaml(req.course.url + '/course/config/spec.yaml');            
         }
         else
         {
-            sails.log.verbose('Should be getting ' + req.course.url + '/config/spec.yaml, actually serving examples/spec.yaml');
+            sails.log.verbose('Should be getting ' + req.course.url + '/course/config/spec.yaml, actually serving examples/spec.yaml');
             let raw = await fs.readFile(__dirname + '/../../spec/examples/spec.yaml');
             return yaml.safeLoad(raw);
         }
@@ -77,12 +76,12 @@ module.exports = {
     getQuestions: async (req,res) => {
         if (process.env.LIVE_DATA=='true')
         {
-            return CacheEngine.getYaml(req.course.url + '/config/questions.yaml');            
+            return CacheEngine.getYaml(req.course.url + '/course/config/questions.yaml');            
         }
         else
         {
             // console.log(req.course);
-            sails.log.verbose('Should be getting ' + req.course.url + '/config/questions.yaml, actually serving examples/questions.yaml');
+            sails.log.verbose('Should be getting ' + req.course.url + '/course/config/questions.yaml, actually serving examples/questions.yaml');
             let raw = await fs.readFile(__dirname + '/../../spec/examples/questions.yaml');
             return yaml.safeLoad(raw);
         }

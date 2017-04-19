@@ -5,7 +5,7 @@ module.exports = {
         {
             var data = await CacheEngine.getSpec(req,res);
 
-            data.baseUri = req.course.url + '/content/';
+            data.baseUri = req.course.url + '/course/content/';
 
             return res.json(data);
         }

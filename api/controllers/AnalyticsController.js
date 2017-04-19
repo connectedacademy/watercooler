@@ -6,7 +6,7 @@ module.exports = {
         let content_type_in_class = req.param('content_type');
 
         let questions = await CacheEngine.getQuestions(req,res);
-        let question = _.sample(questions.during)
+        let question = _.sample(questions.during);
         //randomly pick a question:
         return res.json(question);
     },
