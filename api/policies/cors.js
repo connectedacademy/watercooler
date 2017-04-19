@@ -16,8 +16,12 @@ module.exports = async function(req,res,next)
             // console.log(url);
             sails.log.verbose('CORS Allowed',req.url, url.hostname);                    
             res.header("Access-Control-Allow-Origin", url.protocol + '//' + url.host);
+            res.header("Access-Control-Allow-Headers","Content-Type");
             res.header("Access-Control-Allow-Credentials", "true");
-            return next();
+            if (req.method == 'OPTIONS')
+                return res.end();
+            else
+                return next();
         }
         else
         {
@@ -25,8 +29,12 @@ module.exports = async function(req,res,next)
             {
                 sails.log.verbose('CORS in DEBUG allowed for blank origin');
                 res.header("Access-Control-Allow-Origin", '*');
+                res.header("Access-Control-Allow-Headers","Content-Type");                
                 res.header("Access-Control-Allow-Credentials", "true");
-                return res.next();
+                 if (req.method == 'OPTIONS')
+                    return res.end();
+                else
+                    return next();
             }
             else
             {

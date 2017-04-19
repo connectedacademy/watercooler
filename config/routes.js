@@ -72,8 +72,7 @@ module.exports.routes = {
   'GET /discussion/messages/:media':'DiscussionController.messages',
   'GET /discussion/submission/:media':'DiscussionController.submission',
   'GET /discussion/list/:class/:schedule':'DiscussionController.list',
-  'POST /discussion/read/:message':'DiscussionController.read'
-  
+  'POST /discussion/read/:message':'DiscussionController.read',
 
-
+  'OPTIONS /*':{policy:'cors'}
 };
