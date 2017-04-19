@@ -12,7 +12,7 @@ module.exports = {
             let testuser = require('../../spec/examples/adminuser.json');
 
             User.create(testuser).exec((err,user)=>{
-                
+
                 req.login(user, (err)=>
                 {
                     // console.log(err);
@@ -38,7 +38,7 @@ module.exports = {
                 req.login(user, (err)=>
                 {
                     // console.log(err);
-                    
+
                     return res.redirect('/auth/dashboard');
                 });
             });
@@ -77,7 +77,7 @@ module.exports = {
 
     admin: (req,res,next)=>{
         //verify referer / origin, if valid, then allow and save into session
-        req.session.redirecturi = req.get('origin') || req.get('referer');        
+        req.session.redirecturi = req.get('origin') || req.get('referer');
         sails.passport.authenticate('github')(req,res,next);
     },
 
@@ -91,15 +91,15 @@ module.exports = {
     },
 
     dashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + '#/dashboard');
+        return res.redirect(req.session.redirecturi + 'registration');
     },
 
     admindashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + '#/admin');
+        return res.redirect(req.session.redirecturi + 'admin');
     },
 
     fail: async (req,res)=>{
-       return res.redirect(req.session.redirecturi + '#/loginfail');
+       return res.redirect(req.session.redirecturi + 'loginfail');
     },
 
     me: async (req,res)=>{
@@ -170,7 +170,7 @@ module.exports = {
         //check there is not an existing registration for this course
         req.body.course = req.course.domain;
         user.registrations.add(req.body);
-        
+
         user.save(function(err){
             if (err)
                 return res.serverError(err);
@@ -179,4 +179,3 @@ module.exports = {
         });
     }
 };
-
