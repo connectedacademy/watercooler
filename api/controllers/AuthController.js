@@ -1,5 +1,6 @@
 let pjson = require('../../package.json');
 let os = require('os');
+let URL = require('url').URL;
 
 module.exports = {
 
@@ -71,13 +72,17 @@ module.exports = {
     login: (req,res,next) =>{
         //verify referer / origin, if valid, then allow and save into session
         // console.log(req.get('origin') || req.get('referer'));
-        req.session.redirecturi = req.get('origin') || req.get('referer');
+        let url = new URL(req.get('origin') || req.get('referer'))
+        // console.log(url.origin);
+        req.session.redirecturi = url.origin;
         sails.passport.authenticate('twitter')(req,res,next);
     },
 
     admin: (req,res,next)=>{
         //verify referer / origin, if valid, then allow and save into session
-        req.session.redirecturi = req.get('origin') || req.get('referer');
+        let url = new URL(req.get('origin') || req.get('referer'))
+        req.session.redirecturi = url.origin;
+        // req.session.redirecturi = req.get('origin') || req.get('referer');
         sails.passport.authenticate('github')(req,res,next);
     },
 
@@ -91,15 +96,15 @@ module.exports = {
     },
 
     dashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + 'registration');
+        return res.redirect(req.session.redirecturi + '/registration');
     },
 
     admindashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + 'admin');
+        return res.redirect(req.session.redirecturi + '/admin');
     },
 
     fail: async (req,res)=>{
-       return res.redirect(req.session.redirecturi + 'loginfail');
+       return res.redirect(req.session.redirecturi + '/loginfail');
     },
 
     me: async (req,res)=>{
@@ -170,18 +175,23 @@ module.exports = {
     register: async (req,res) =>{
 
         //TODO: add validation and check for needed fields:
-
-        let user = await User.findOne(req.session.passport.user.id);
+        let user = await User.findOne(req.session.passport.user.id).populate('registrations');
 
         //check there is not an existing registration for this course
-        req.body.course = req.course.domain;
-        user.registrations.add(req.body);
-
-        user.save(function(err){
-            if (err)
-                return res.serverError(err);
-            else
-                return res.ok('Registration Complete');
-        });
+        if (!_.find(user.registrations,{course:req.course.domain}))
+        {
+            req.body.course = req.course.domain;
+            user.registrations.add(req.body);
+            user.save(function(err){
+                if (err)
+                    return res.serverError(err);
+                else
+                    return res.ok('Registration Complete');
+            });
+        }
+        else
+        {
+            return res.badRequest('Already registered for this course');
+        }
     }
 };
