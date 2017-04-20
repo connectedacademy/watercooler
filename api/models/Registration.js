@@ -7,6 +7,7 @@ module.exports = {
     hub_id: "string",
     region: "string",
     age: "string",
+    lang: "string",
     consent:'boolean',
     user:
     {

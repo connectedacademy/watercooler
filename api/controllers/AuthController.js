@@ -112,7 +112,7 @@ module.exports = {
                 });
 
                 user.registration = _.first(user.registrations);
-                user.registrations = null;
+                user = _.omit(user,'registrations');
 
                 return res.json({
                     user: (user.service=='twitter')? user : null,
@@ -135,10 +135,16 @@ module.exports = {
         //TODO: change this to use registrations collection
         try
         {
-            var user = await User.findOne(req.session.passport.user.id);
-            user.hub_id = req.body.hub_id;
-            user.lang = req.body.lang;
-            user.save(function(err){
+            var registration = await Registration.findOne({
+                user:req.session.passport.user.id,
+                course: req.course.domain
+            });
+
+            registration.hub_id = req.body.hub_id;
+            //get registration for this course and change lang
+            registration.lang = req.body.lang;
+
+            registration.save(function(err){
                 if (err)
                     return res.serverError(err);
                 else

@@ -37,7 +37,6 @@ module.exports.bootstrap = function(cb) {
           name: profile.displayName,
           service: profile.provider,
           account: profile.username,
-          lang: profile._json.lang,
           profile: profile._json.profile_image_url_https,
           link: profile._json.url
         }, async function (err, user) {
@@ -51,7 +50,6 @@ module.exports.bootstrap = function(cb) {
               user.name= profile.displayName;
               user.service= profile.provider;
               user.account= profile.username;
-              user.lang= profile._json.lang;
               user.profile= profile._json.profile_image_url_https;
               user.link= profile._json.url;
 

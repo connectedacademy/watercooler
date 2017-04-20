@@ -8,7 +8,6 @@ module.exports = {
     service: 'string',
     _raw: 'json',
     name: 'string',
-    lang: 'string',
     credentials: 'json',
     profile: 'string',
     link: 'string',
