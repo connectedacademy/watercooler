@@ -8,6 +8,7 @@ let rediscache = redis.createClient({
 });
 let Promise = require('bluebird');
 Promise.promisifyAll(redis.RedisClient.prototype);
+let frontmatter = require('front-matter');
 
 requestify.cacheTransporter(requestify.coreCacheTransporters.redis(rediscache));
 let get =  async (uri)=>{
@@ -18,6 +19,22 @@ let get =  async (uri)=>{
 };
 
 module.exports = {
+
+    getFrontmatter : async (url)=>
+    {
+        sails.log.verbose('Getting ' + url);    
+        //get from remote
+        let raw = await get(url);
+        try
+        {
+            let fm = frontmatter(raw);
+            return fm.attributes;
+        }
+        catch (e)
+        {
+            return {};
+        }
+    },
 
     getYaml : async (url) =>
     {
