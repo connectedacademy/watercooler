@@ -3,15 +3,21 @@ module.exports = {
     {
         if (req.session.passport && req.session.passport.user)
         {
-            if (!req.session.passport.user.registration)
+            if (!req.session.passport.user.registration || !req.session.passport.user.registration.lang)
             {
-                let reg = Registration.findOne({
+                let reg = await Registration.findOne({
                     user: req.session.passport.user.id,
                     course: req.course.domain
                 });
+                   
                 req.session.passport.user.registration = reg;
+               
             }
-            return req.session.passport.user.registration.lang;
+
+            if (!req.session.passport.user.registration.lang)
+               return 'en';
+            else
+                return req.session.passport.user.registration.lang;
         }
         else
             return 'en';
