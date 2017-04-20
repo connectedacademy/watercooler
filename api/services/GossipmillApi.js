@@ -1,5 +1,6 @@
 // let io = require('sails.io.js')( require('socket.io-client') );
-let request = require('request');
+let request = require('request-promise-native');
+// let request = require('request');
 
 let baseURI = process.env.GOSSIPMILL_URL;
 
@@ -7,8 +8,9 @@ module.exports = {
 
     visualisation: async (course, klass, user, language)=>{
         let response = await request({
-            url: basedURI + 'messages/visualisation',
+            url: baseURI + 'messages/visualisation',
             method: 'POST',
+            json: true,
             body:{
                 group_by: {
                     name: 'segment'
@@ -41,8 +43,9 @@ module.exports = {
 
     totals: async (pageuri)=>{
         let response = await request({
-            url: basedURI + 'messages/totals',
+            url: baseURI + 'messages/totals',
             method: 'POST',
+            json: true,
             body:{
                filter_by:[
                     {
@@ -58,7 +61,7 @@ module.exports = {
         return response;
     },
 
-    list: async (course, klass, user, language,contentid, startsegment, endsegment)=>{
+    list: async (course, klass, user, language,contentid, startsegment, endsegment, limit)=>{
         let query = [
             {
                 name: 'course',
@@ -82,7 +85,7 @@ module.exports = {
             }
         ];
         
-        for (let i=start-segment;i<end-segment;i++)
+        for (let i=startsegment;i<endsegment;i++) 
         {
             query.push({
                 name:'segment',
@@ -90,15 +93,17 @@ module.exports = {
             })
         }
 
+        sails.log.verbose('Requesting list with',query);
+
         let response = await request({
-            url: basedURI + 'messages/list',
+            url: baseURI + 'messages/list/' + user.service + '/' + user.account,
             method: 'POST',
+            json: true,
             body:{
-                filter_by: query
+                filter_by: query,
+                limit: limit || 10
             },
-            qs: {
-                service: user.service,
-                user: user.account,
+            qs: { 
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
@@ -130,7 +135,7 @@ module.exports = {
             }
         ];
         
-        for (let i=start-segment;i<end-segment;i++)
+        for (let i=startsegment;i<endsegment;i++)
         {
             query.push({
                 name:'segment',
@@ -146,8 +151,9 @@ module.exports = {
 
     create: async (credentials, user, message)=>{
         let response = await request({
-            url: basedURI + 'messages/create',
+            url: baseURI + 'messages/create',
             method: 'POST',
+            json: true,
             body:{
                 text: message.text,
                 replyto: message.replyto,

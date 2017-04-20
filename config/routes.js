@@ -49,10 +49,10 @@ module.exports.routes = {
   'GET /classroom/mycode/:hub/:class':'ClassroomController.mycode',
   'GET /classroom/users/:hub/:class':'ClassroomController.users',
 
-  'GET /messages/list/:class/:startsegment/:endsegment':'MessagesController.list',
   'GET /messages/visualisation/:class/:segment':'MessagesController.visualisation',
   'GET /messages/likes/:uri':'MessagesController.likes',
-  'GET /messages/subscribe/:class/:startsegment/:endsegment':'MessagesController.subscribe',
+  'GET /messages/list/:class/:content/:startsegment/:endsegment':'MessagesController.list',
+  'GET /messages/subscribe/:class/:content/:startsegment/:endsegment':'MessagesController.subscribe',
   'POST /messages/create':'MessagesController.create',
 
   'POST /analytics/answer/response':'AnalyticsController.submit',

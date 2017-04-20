@@ -20,6 +20,9 @@ module.exports = {
                 return req.session.passport.user.registration.lang;
         }
         else
+        {
+            //TODO: use browser / IP language to work out what is possible based on the the available course languages
             return 'en';
+        }
     }
 }
