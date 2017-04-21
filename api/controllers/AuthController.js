@@ -137,7 +137,20 @@ module.exports = {
 
     profile: async (req,res)=>{
 
-        //TODO: change this to use registrations collection
+        req.checkBody('email').isEmail();
+        req.checkBody('lang').notEmpty();
+        req.checkBody('hub_id').notEmpty();
+
+        try
+        {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e)
+        {
+            return res.badRequest(e.mapped());
+        }
+
         try
         {
             var registration = await Registration.findOne({
@@ -149,7 +162,7 @@ module.exports = {
             //get registration for this course and change lang
             registration.lang = req.body.lang;
 
-            user.email = req.body.email;
+            registration.user.email = req.body.email;
 
             registration.save(function(err){
                 if (err)
@@ -165,13 +178,20 @@ module.exports = {
     },
 
     registrationquestions: async (req,res)=>{
-        let questions = await CacheEngine.getQuestions(req,res);
-        //randomly pick a question:
-        let data = {
-            release: questions.release,
-            questions: questions.registration
-        };
-        return res.json(data);
+        try
+        {
+            let questions = await CacheEngine.getQuestions(req,res);
+            //randomly pick a question:
+            let data = {
+                release: questions.release,
+                questions: questions.registration
+            };
+            return res.json(data);
+        }
+        catch (e)
+        {
+            return res.serverError(e);
+        }
     },
 
     register: async (req,res) =>{
