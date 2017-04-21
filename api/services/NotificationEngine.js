@@ -4,7 +4,7 @@ let fs = require('fs-promise');
 
 let sendEmail = async function(user, subject, content){
 
-    var from_email = new helper.Email(process.env.FROM_EMAIL);
+    var from_email = new helper.Email(process.env.FROM_EMAIL,process.env.FROM_NAME);
     var to_email = new helper.Email(user.email);
     var subject = subject;
 
@@ -28,19 +28,42 @@ let sendEmail = async function(user, subject, content){
     });
 };
 
-//TODO: i18n email content
-//TODO: html email content (based on markdown)
+let hasSent = async function(course, ...ident)
+{
+    let result = await Notifications.findOne({
+        course:course,
+        ident:ident
+    });
+    if (result)
+        return true;
+    else
+        return false;
+}
+
+let markSent = async function(course,...ident)
+{
+    return new Promise((resolve, reject) => {
+        Notifications.create({
+            course: course,
+            ident: ident
+        }).exec((err)=>{
+            if (err)
+                reject(err);
+            else
+                resolve();
+        });
+    });
+}
 
 module.exports = {
     
     //welcome to the course
     signup: async (req,user)=>{
-
         try
         {
             sails.log.verbose('Sending signup notification',user.id);
-            
-            let email = await CacheEngine.getEmail(req,'intro');
+            let lang = await LangService.lang(req);
+            let email = await CacheEngine.getEmail(req.course, lang,'intro');
             email.body = email.body.replace('{{user}}',user.name);
             email.body = email.body.replace('{{date}}',new Date().toString());
             await sendEmail(user,email.subject,email.body);
@@ -50,34 +73,126 @@ module.exports = {
         }
     },
 
-    //TODO: notifications
-
     // course starting (1 week before)
+    weekBefore: async (course)=>{
+         if (!await hasSent(course.domain, 'weekbefore'))
+         {
+            sails.log.verbose('Sending weekbefore notification', course.domain);
+
+            let registrations = await Registration.find({
+                course: course.domain
+            }).populate('user');
+            
+            for (let reg of registrations)
+            {
+                let email = await CacheEngine.getEmail(course, reg.lang,'coursestarting_week');
+                email.body = email.body.replace('{{user}}',reg.user.name);
+                email.body = email.body.replace('{{date}}',new Date().toString());
+                sendEmail(reg.user,email.subject,email.body);
+            }
+            await markSent(course.domain,'weekbefore');
+        }
+    },
     
     // course starting (day before)
+    dayBefore: async (course)=>{
+        if (!await hasSent(course, 'daybefore'))
+        {
 
-    // EACH WEEK
-
-        // read pre-content
-
-        // post your submission e.g. 4c
-
-        // join a discussion
-            // - you have new messages
-            // - you should submit more feedback
-
-        // join the live class
-
-        // read the deep-dive
-
-        // the webinar is soon
-
-        // get ready for next week
+            await markSent(course,'daybefore');            
+        }
+    },
 
     // Final questionaire push
+    courseClose: async (course)=>{
+        if (!await hasSent(course, 'courseclose'))
+        {
+
+            await markSent(course,'courseclose');            
+        }
+    },
+
+    // read pre-content
+    readPreContent: async (course,klass)=>{
+        //
+        if (!await hasSent(course, 'courseclose',klass))
+        {
+
+            await markSent(course,'courseclose',klass);            
+        }
+    },
+
+    // post your submission e.g. 4c
+    submitWork: async (course, currentClass, user) =>{
+        if (!await hasSent(course, 'submitwork',currentClass,user.id))
+        {
+
+            await markSent(course,'submitwork',currentClass,user.id);         
+        }
+    },
+
+    // you should submit feedback
+    submitFeedback: async (course, currentClass, user) =>{
+        if (!await hasSent(course, 'submitfeedback',currentClass,user.id))
+        {
+
+            await markSent(course,'submitfeedback',currentClass,user.id);         
+        }
+    },
+
+    // join the live class
+    liveClassWarning: async (course, klass, hub)=>
+    {
+        if (!await hasSent(course, 'liveclasswarning',klass,hub))
+        {
+
+            await markSent(course,'liveclasswarning',klass,hub);            
+        }
+    },
+
+    // join the live class
+    afterLiveClass: async (course, klass, hub)=>
+    {
+        if (!await hasSent(course, 'afterliveclass',klass,hub))
+        {
+
+            await markSent(course,'afterliveclass',klass,hub);            
+        }
+    },
+
+    // the webinar is soon
+    webinarSoon: async (course, klass)=>
+    {
+        if (!await hasSent(course, 'webinarsoon',klass))
+        {
+
+            await markSent(course,'webinarsoon',klass);            
+        }
+    },
+
+    // get ready for next week
+    nextWeek: async (course, klass)=>
+    {
+        if (!await hasSent(course, 'nextweek',klass))
+        {
+
+            await markSent(course,'nextweek',klass);            
+        }
+    },
 
     // notification of a new peer discussion message
-    newPeerMessage: (message)=>{
-        sails.log.verbose('Sending offline notification about new peer message',message);
+    newPeerMessage: async (message)=>{
+        try
+        {
+            sails.log.verbose('Sending offline notification about new peer message',message);
+            let lang = await LangService.lang(req);
+            let email = await CacheEngine.getEmail(req.course, lang,'newfeedback');
+            email.body = email.body.replace('{{user}}',user.name);
+            email.body = email.body.replace('{{date}}',new Date().toString());
+            await sendEmail(user,email.subject,email.body);
+        }
+        catch (e){
+            sails.log.error(e);
+        }
     }
 }
