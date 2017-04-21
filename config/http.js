@@ -28,16 +28,20 @@ module.exports.http = {
 
   middleware: {
 
+    validator: require('express-validator')({
+      customValidators: {}
+    }),
 
 
-  passportInit    : require('passport').initialize(),
-  passportSession : require('passport').session(),
+    passportInit    : require('passport').initialize(),
+    passportSession : require('passport').session(),
 
     order: [
       'startRequestTimer',
       'cookieParser',
       'session',
       'bodyParser',
+      'validator',
       'passportInit',
       'passportSession',
       'myRequestLogger',
