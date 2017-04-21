@@ -215,7 +215,7 @@ module.exports = {
                 return res.badRequest(e.mapped());
             }
 
-            if (req.body.consent)
+            if (!req.body.consent)
                 return res.badRequest('Consent not given');
 
             let user = await User.findOne(req.session.passport.user.id).populate('registrations');
