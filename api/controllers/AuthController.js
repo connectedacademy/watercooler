@@ -201,11 +201,9 @@ module.exports = {
             req.checkBody('email').isEmail();
             req.checkBody('lang').notEmpty();
             req.checkBody('hub_id').notEmpty();
-            req.checkBody('region').notEmpty();
-            req.checkBody('age').notEmpty();
+            req.checkBody('age').optional().notEmpty();
             req.checkBody('registration_info').notEmpty();
-            req.checkBody('data_consent').isBoolean();
-            req.checkBody('research_consent').isBoolean();
+            req.checkBody('consent').isBoolean();
 
             try
             {
@@ -217,7 +215,7 @@ module.exports = {
                 return res.badRequest(e.mapped());
             }
 
-            if (!req.body.data_consent || !req.body.research_consent)
+            if (req.body.consent)
                 return res.badRequest('Consent not given');
 
             let user = await User.findOne(req.session.passport.user.id).populate('registrations');
