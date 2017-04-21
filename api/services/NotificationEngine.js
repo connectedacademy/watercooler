@@ -29,10 +29,21 @@ let sendEmail = function(user, subject, content){
 module.exports = {
     
     //welcome to the course
-    signup: (req,user)=>{
-        sails.log.verbose('Sending signup notification',user);
-        let course = req.course.domain;
-        sendEmail(user,'Welcome to '+course,'Welcome to the ' + course + ' course');
+    signup: async (req,user)=>{
+
+        try
+        {
+            sails.log.verbose('Sending signup notification',user);
+            
+            let email = await CacheEngine.getEmail(req,'intro');
+            email.body.replace('{{user}}',user.name);
+            email.body.replace('{{date}}',new Date().toString());
+
+            sendEmail(user,email.titlesubject,email.body);
+        }
+        catch (e){
+            sails.log.error(e);
+        }
     },
 
     //TODO: notifications

@@ -234,7 +234,10 @@ module.exports = {
                     if (err)
                         return res.serverError(err);
                     else
+                    {
+                        NotificationEngine.signup(req,user);
                         return res.ok('Registration Complete');
+                    }
                 });
             }
             else

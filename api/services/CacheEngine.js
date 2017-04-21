@@ -20,7 +20,7 @@ let get =  async (uri)=>{
 
 module.exports = {
 
-    getFrontmatter : async (url)=>
+    getFrontmatter : async (url, content=false)=>
     {
         sails.log.verbose('Getting ' + url);    
         //get from remote
@@ -28,12 +28,28 @@ module.exports = {
         try
         {
             let fm = frontmatter(raw);
-            return fm.attributes;
+            if (content)
+                return fm;
+            else
+                return fm.attributes;
         }
         catch (e)
         {
             return {};
         }
+    },
+
+    getEmail : async (req, email_type) =>
+    {
+        let url = req.course.url + '/course/content/' + LangService.lang(req) + '/emails/' + email_type + '.md';
+        sails.log.verbose('Getting Email ' + email_type, url);
+        //get file
+        let email = CacheEngine.getFrontMatter(url,true);
+        //parse markdown, title etc
+        return {
+            subject: email.attributes.title,
+            body: email
+        };
     },
 
     getYaml : async (url) =>
