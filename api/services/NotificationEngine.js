@@ -1,12 +1,17 @@
 let helper = require('sendgrid').mail;
-var sg = require('sendgrid')(process.env.SENDGRID_KEY);
+let sg = require('sendgrid')(process.env.SENDGRID_KEY);
+let fs = require('fs-promise');
 
-let sendEmail = function(user, subject, content){
+let sendEmail = async function(user, subject, content){
 
     var from_email = new helper.Email(process.env.FROM_EMAIL);
     var to_email = new helper.Email(user.email);
     var subject = subject;
-    var content = new helper.Content('text/plain', content);
+
+    let template = await fs.readFile(__dirname + '/../../views/email.html');
+    let realcontent = template.toString().replace('{{body}}',content)
+
+    var content = new helper.Content('text/html', realcontent);
     var mail = new helper.Mail(from_email, subject, to_email, content);
 
     var request = sg.emptyRequest({
@@ -33,13 +38,12 @@ module.exports = {
 
         try
         {
-            sails.log.verbose('Sending signup notification',user);
+            sails.log.verbose('Sending signup notification',user.id);
             
             let email = await CacheEngine.getEmail(req,'intro');
-            email.body.replace('{{user}}',user.name);
-            email.body.replace('{{date}}',new Date().toString());
-
-            sendEmail(user,email.titlesubject,email.body);
+            email.body = email.body.replace('{{user}}',user.name);
+            email.body = email.body.replace('{{date}}',new Date().toString());
+            await sendEmail(user,email.subject,email.body);
         }
         catch (e){
             sails.log.error(e);

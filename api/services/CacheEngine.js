@@ -9,6 +9,8 @@ let rediscache = redis.createClient({
 let Promise = require('bluebird');
 Promise.promisifyAll(redis.RedisClient.prototype);
 let frontmatter = require('front-matter');
+let showdown  = require('showdown');
+let markdownconverter = new showdown.Converter();
 
 requestify.cacheTransporter(requestify.coreCacheTransporters.redis(rediscache));
 let get =  async (uri)=>{
@@ -17,6 +19,8 @@ let get =  async (uri)=>{
     });
     return response.body;
 };
+
+
 
 module.exports = {
 
@@ -49,7 +53,7 @@ module.exports = {
         //parse markdown, title etc
         return {
             subject: email.attributes.title,
-            body: email.body
+            body: markdownconverter.makeHtml(email.body)
         };
     },
 
