@@ -41,14 +41,15 @@ module.exports = {
 
     getEmail : async (req, email_type) =>
     {
-        let url = req.course.url + '/course/content/' + LangService.lang(req) + '/emails/' + email_type + '.md';
+        let lang = await LangService.lang(req);
+        let url = req.course.url + '/course/content/' + lang + '/emails/' + email_type + '.md';
         sails.log.verbose('Getting Email ' + email_type, url);
         //get file
-        let email = CacheEngine.getFrontMatter(url,true);
+        let email = await CacheEngine.getFrontmatter(url,true);
         //parse markdown, title etc
         return {
             subject: email.attributes.title,
-            body: email
+            body: email.body
         };
     },
 
