@@ -91,10 +91,10 @@ module.exports = {
     },
 
     getQuestions: async (req,res) => {
+        let lang = await LangService.lang(req);
         if (process.env.LIVE_DATA=='true')
         {
-            //TODO: Service function to check valid language
-            return CacheEngine.getYaml(req.course.url + '/course/config/questions/' + req.session.passport.user.lang + '.yaml');
+            return CacheEngine.getYaml(req.course.url + '/course/config/questions/' + lang + '.yaml');
         }
         else
         {
