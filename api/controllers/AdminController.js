@@ -17,6 +17,21 @@ module.exports = {
         //given these credentials, allow them to edit the twitter credentials of the user linked to the course (as determined by the spec doc):
         try
         {
+            req.checkBody('account').notEmpty();
+            req.checkBody('service').notEmpty();            
+            req.checkBody('credentials.key').notEmpty();
+            req.checkBody('credentials.secret').notEmpty();
+
+            try
+            {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e)
+            {
+                return res.badRequest(e.mapped());
+            }
+
             let spec = await CacheEngine.getSpec(req,res);
             let valid_accounts = spec.accounts;
           
@@ -26,11 +41,13 @@ module.exports = {
             let git = req.course.repo.split('/');
             let url = 'https://api.github.com/repos/' + git[3] + '/' + git[4];
 
+            let me_user = await User.findOne({id:req.session.passport.user.id});
+
             let perms = await request({
                 uri: url,
                 json: true,
                 qs:{
-                    access_token: req.session.passport.user.credentials.accessToken
+                    access_token: me_user.credentials.accessToken
                 },
                 headers: {
                     'User-Agent': 'Connected-Academy-Watercooler'
@@ -39,10 +56,17 @@ module.exports = {
 
             if (perms.permissions.push)
             {
-                await User.update({account: req.body.account},{
-                    credentials: req.body.credentials
+                let cred_user = await User.findOne({
+                    account: req.body.account,
+                    service: req.body.service
                 });
-                return res.ok('Updated Credentials');
+                cred_user.account_credentials = req.body.credentials;
+                cred_user.save(function(err){
+                    if (err)
+                        return res.serverError(err);
+                    else
+                        return res.ok('Updated Credentials');
+                });
             }
             else
             {

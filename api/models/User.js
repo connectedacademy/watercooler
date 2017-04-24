@@ -9,6 +9,7 @@ module.exports = {
     _raw: 'json',
     name: 'string',
     credentials: 'json',
+    account_credentials:'json',
     profile: 'string',
     link: 'string',
     email: 'string',

@@ -11,6 +11,7 @@ let run = async function(){
         running = true;
         sails.log.verbose('Running Schedule');
 
+
         let NOW = moment();
         let whitelist = await DomainControl.getWhitelist();
         // console.log(whitelist);
@@ -200,7 +201,7 @@ let run = async function(){
        {
            //EACH HOUR
            sails.on('lifted',function(){
-                this.schedule = setTimeout(run, process.env.SCHEDULER_RATE + (Math.random() * 5000));
+                this.schedule = setInterval(run, process.env.SCHEDULER_RATE + (Math.random() * 5000));
                 // run();
            });
        }

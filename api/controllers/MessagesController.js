@@ -16,15 +16,44 @@ module.exports = {
 
     create: async (req,res) => {
         // create: async (credentials, user, message)=>{
+        req.checkBody('text').notEmpty();
+        req.checkBody('replyto').optional().notEmpty();
+        req.checkBody('remessageof').optional().notEmpty();
+        
+        try
+        {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e)
+        {
+            return res.badRequest(e.mapped());
+        }
+
         try
         {
             let lang = await LangService.lang(req);
-            let account = await _.first(CacheEngine.getSpec(req,res).account);
-            let credentials = await User.findOne({
+            let spec = await CacheEngine.getSpec(req,res);
+            let account = _.first(spec.accounts);
+            let service = req.session.passport.user.service;
+            let account_user = await User.findOne({
+                service: service,
                 account: account
             });
-            let data = await GossipmillApi.create(credentials, req.session.passport.user, req.param('message'));
-            return res.json(data);
+
+            let me_user = await User.findOne({
+                id: req.session.passport.user.id
+            });
+
+            if (account_user.account_credentials.key && account_user.account_credentials.secret)
+            {
+                let data = await GossipmillApi.create(account_user.account_credentials, me_user, req.body);
+                return res.json(data);
+            }
+            else
+            {
+                return res.serverError('No Application credentials supplied for ' + service + ", "+ account);
+            }
         }
         catch (e)
         {
@@ -33,21 +62,53 @@ module.exports = {
     },
 
     visualisation: async (req,res) => {
+
+        req.checkQuery('whitelist').optional().isBoolean();
+        req.checkParams('class').notEmpty();        
+
+        try
+        {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e)
+        {
+            return res.badRequest(e.mapped());
+        }
+
         let whitelist = req.param('whitelist');
         let lang = await LangService.lang(req);
         try
         {
             let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.session.passport.user, lang);
-            return res.json(data);
+            return res.json({
+                scope:{
+                    class: req.param('class')
+                },
+                data: data
+            });
         }
         catch (e)
         {
-            return res.serverError(e);   
+            return res.serverError(e);
         }
     },
 
     likes: async (req,res) =>{
-        let uri = req.params('uri');
+        req.checkParams('uri').isURL();
+
+        try
+        {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e)
+        {
+            return res.badRequest(e.mapped());
+        }
+
+        
+        let uri = decodeURI(req.param('uri'));
         try
         {
             let data = await GossipmillApi.totals(uri);
