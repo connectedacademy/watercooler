@@ -32,7 +32,7 @@ let bodyCheck = function(body, comparefile)
   if (_.isString(comparefile))
     example = require('../spec/examples/' + comparefile + '.json');
   if (!_.deepTypeMatch(body,example))
-    throw new Error("Result does not match the required fields" + JSON.stringify(body));
+    throw new Error("Result does not match the required fields " + JSON.stringify(body));
 }
 
 let bodyCheckYaml = function(body, comparefile)
@@ -40,7 +40,7 @@ let bodyCheckYaml = function(body, comparefile)
   fs.readFile('../spec/examples/' + comparefile + '.yaml', (data)=>{
     let yaml = yaml.safeLoad(data);
     if (!_.deepTypeMatch(body,yaml))
-      throw new Error("Result does not match the required yaml fields" + JSON.stringify(body));
+      throw new Error("Result does not match the required yaml fields " + JSON.stringify(body));
   });
 }
 
@@ -51,7 +51,7 @@ global.bodyCheckYaml = bodyCheckYaml;
 before(function(done) {
 
   // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(10000);
+  this.timeout(20000);
 
   sails.lift({
     // configuration for testing purposes

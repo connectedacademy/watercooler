@@ -11,6 +11,7 @@ module.exports = {
     credentials: 'json',
     profile: 'string',
     link: 'string',
+    email: 'string',
     registrations:
     {
       collection: 'Registration',

@@ -9,6 +9,8 @@ let rediscache = redis.createClient({
 let Promise = require('bluebird');
 Promise.promisifyAll(redis.RedisClient.prototype);
 let frontmatter = require('front-matter');
+let showdown  = require('showdown');
+let markdownconverter = new showdown.Converter();
 
 requestify.cacheTransporter(requestify.coreCacheTransporters.redis(rediscache));
 let get =  async (uri)=>{
@@ -18,9 +20,11 @@ let get =  async (uri)=>{
     return response.body;
 };
 
+
+
 module.exports = {
 
-    getFrontmatter : async (url)=>
+    getFrontmatter : async (url, content=false)=>
     {
         sails.log.verbose('Getting ' + url);    
         //get from remote
@@ -28,12 +32,29 @@ module.exports = {
         try
         {
             let fm = frontmatter(raw);
-            return fm.attributes;
+            if (content)
+                return fm;
+            else
+                return fm.attributes;
         }
         catch (e)
         {
             return {};
         }
+    },
+
+    getEmail : async (course, lang, email_type) =>
+    {
+        // let lang = await LangService.lang(req);
+        let url = course.url + '/course/content/' + lang + '/emails/' + email_type + '.md';
+        sails.log.verbose('Getting Email ' + email_type, url);
+        //get file
+        let email = await CacheEngine.getFrontmatter(url,true);
+        //parse markdown, title etc
+        return {
+            subject: email.attributes.title,
+            body: markdownconverter.makeHtml(email.body)
+        };
     },
 
     getYaml : async (url) =>
@@ -91,10 +112,10 @@ module.exports = {
     },
 
     getQuestions: async (req,res) => {
+        let lang = await LangService.lang(req);
         if (process.env.LIVE_DATA=='true')
         {
-            //TODO: Service function to check valid language
-            return CacheEngine.getYaml(req.course.url + '/course/config/questions/' + req.session.passport.user.lang + '.yaml');
+            return CacheEngine.getYaml(req.course.url + '/course/config/questions/' + lang + '.yaml');
         }
         else
         {

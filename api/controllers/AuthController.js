@@ -100,7 +100,8 @@ module.exports = {
     },
 
     admindashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + '/admin');
+        return res.redirect('/admin/dash');
+        // return res.redirect(req.session.redirecturi + '/admin');
     },
 
     fail: async (req,res)=>{
@@ -137,17 +138,32 @@ module.exports = {
 
     profile: async (req,res)=>{
 
-        //TODO: change this to use registrations collection
+        req.checkBody('email').isEmail();
+        req.checkBody('lang').notEmpty();
+        req.checkBody('hub_id').notEmpty();
+
+        try
+        {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e)
+        {
+            return res.badRequest(e.mapped());
+        }
+
         try
         {
             var registration = await Registration.findOne({
                 user:req.session.passport.user.id,
                 course: req.course.domain
-            });
+            }).populate('user');
 
             registration.hub_id = req.body.hub_id;
             //get registration for this course and change lang
             registration.lang = req.body.lang;
+
+            registration.user.email = req.body.email;
 
             registration.save(function(err){
                 if (err)
@@ -163,35 +179,74 @@ module.exports = {
     },
 
     registrationquestions: async (req,res)=>{
-        let questions = await CacheEngine.getQuestions(req,res);
-        //randomly pick a question:
-        let data = {
-            release: questions.release,
-            questions: questions.registration
-        };
-        return res.json(data);
+        try
+        {
+            let questions = await CacheEngine.getQuestions(req,res);
+            //randomly pick a question:
+            let data = {
+                release: questions.release,
+                questions: questions.registration
+            };
+            return res.json(data);
+        }
+        catch (e)
+        {
+            return res.serverError(e);
+        }
     },
 
     register: async (req,res) =>{
-
-        //TODO: add validation and check for needed fields:
-        let user = await User.findOne(req.session.passport.user.id).populate('registrations');
-
-        //check there is not an existing registration for this course
-        if (!_.find(user.registrations,{course:req.course.domain}))
+        try
         {
-            req.body.course = req.course.domain;
-            user.registrations.add(req.body);
-            user.save(function(err){
-                if (err)
-                    return res.serverError(err);
-                else
-                    return res.ok('Registration Complete');
-            });
+
+            req.checkBody('email').isEmail();
+            req.checkBody('lang').notEmpty();
+            req.checkBody('hub_id').notEmpty();
+            req.checkBody('age').optional().notEmpty();
+            req.checkBody('registration_info').notEmpty();
+            req.checkBody('consent').isBoolean();
+
+            try
+            {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e)
+            {
+                return res.badRequest(e.mapped());
+            }
+
+            if (!req.body.consent)
+                return res.badRequest('Consent not given');
+
+            let user = await User.findOne(req.session.passport.user.id).populate('registrations');
+
+            //check there is not an existing registration for this course
+            if (!_.find(user.registrations,{course:req.course.domain}))
+            {
+                req.body.course = req.course.domain;
+                let email = req.body.email;
+                delete req.body.email;
+                user.registrations.add(req.body);
+                user.email = email;
+                user.save(function(err){
+                    if (err)
+                        return res.serverError(err);
+                    else
+                    {
+                        NotificationEngine.signup(req,user);
+                        return res.ok('Registration Complete');
+                    }
+                });
+            }
+            else
+            {
+                return res.badRequest('Already registered for this course');
+            }
         }
-        else
+        catch(e)
         {
-            return res.badRequest('Already registered for this course');
+            return res.serverError(e);
         }
     }
 };
