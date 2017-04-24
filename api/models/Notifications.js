@@ -4,6 +4,6 @@ module.exports = {
 
     attributes:{
         course: 'string',
-        ident: 'array' //i.e. week1, week2
+        ident: 'string' //i.e. week1, week2
     }
 }

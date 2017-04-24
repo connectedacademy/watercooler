@@ -30,9 +30,10 @@ let sendEmail = async function(user, subject, content){
 
 let hasSent = async function(course, ...ident)
 {
+    // console.log(course + "::" + ident.join('-'));
     let result = await Notifications.findOne({
         course:course,
-        ident:ident
+        ident:ident.join('-')
     });
     if (result)
         return true;
@@ -45,7 +46,7 @@ let markSent = async function(course,...ident)
     return new Promise((resolve, reject) => {
         Notifications.create({
             course: course,
-            ident: ident
+            ident: ident.join('-')
         }).exec((err)=>{
             if (err)
                 reject(err);
@@ -139,68 +140,68 @@ module.exports = {
     // read pre-content
     readPreContent: async (course,klass)=>{
         //
-        if (!await hasSent(course, 'courseclose',klass))
+        if (!await hasSent(course.domain, 'courseclose',klass))
         {
 
-            await markSent(course,'courseclose',klass);            
+            await markSent(course.domain,'courseclose',klass);            
         }
     },
 
     // post your submission e.g. 4c
     submitWork: async (course, currentClass, user) =>{
-        if (!await hasSent(course, 'submitwork',currentClass,user.id))
+        if (!await hasSent(course.domain, 'submitwork',currentClass,user.id))
         {
 
-            await markSent(course,'submitwork',currentClass,user.id);         
+            await markSent(course.domain,'submitwork',currentClass,user.id);         
         }
     },
 
     // you should submit feedback
     submitFeedback: async (course, currentClass, user) =>{
-        if (!await hasSent(course, 'submitfeedback',currentClass,user.id))
+        if (!await hasSent(course.domain, 'submitfeedback',currentClass,user.id))
         {
 
-            await markSent(course,'submitfeedback',currentClass,user.id);         
+            await markSent(course.domain,'submitfeedback',currentClass,user.id);         
         }
     },
 
     // join the live class
     liveClassWarning: async (course, klass, hub)=>
     {
-        if (!await hasSent(course, 'liveclasswarning',klass,hub))
+        if (!await hasSent(course.domain, 'liveclasswarning',klass,hub))
         {
 
-            await markSent(course,'liveclasswarning',klass,hub);            
+            await markSent(course.domain,'liveclasswarning',klass,hub);            
         }
     },
 
     // join the live class
     afterLiveClass: async (course, klass, hub)=>
     {
-        if (!await hasSent(course, 'afterliveclass',klass,hub))
+        if (!await hasSent(course.domain, 'afterliveclass',klass,hub))
         {
 
-            await markSent(course,'afterliveclass',klass,hub);            
+            await markSent(course.domain,'afterliveclass',klass,hub);            
         }
     },
 
     // the webinar is soon
     webinarSoon: async (course, klass)=>
     {
-        if (!await hasSent(course, 'webinarsoon',klass))
+        if (!await hasSent(course.domain, 'webinarsoon',klass))
         {
 
-            await markSent(course,'webinarsoon',klass);            
+            await markSent(course.domain,'webinarsoon',klass);            
         }
     },
 
     // get ready for next week
     nextWeek: async (course, klass)=>
     {
-        if (!await hasSent(course, 'nextweek',klass))
+        if (!await hasSent(course.domain, 'nextweek',klass))
         {
 
-            await markSent(course,'nextweek',klass);            
+            await markSent(course.domain,'nextweek',klass);            
         }
     },
 
