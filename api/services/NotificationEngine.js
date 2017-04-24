@@ -140,10 +140,23 @@ module.exports = {
     // read pre-content
     readPreContent: async (course,klass)=>{
         //
-        if (!await hasSent(course.domain, 'courseclose',klass))
+        if (!await hasSent(course.domain, 'precontent',klass))
         {
+            sails.log.verbose('Sending precontent notification', course.domain, klass);
 
-            await markSent(course.domain,'courseclose',klass);            
+            let registrations = await Registration.find({
+                course: course.domain
+            }).populate('user');
+            
+            for (let reg of registrations)
+            {
+                let email = await CacheEngine.getEmail(course, reg.lang,'readprecontent');
+                email.body = email.body.replace('{{user}}',reg.user.name);
+                email.body = email.body.replace('{{date}}',new Date().toString());
+                sendEmail(reg.user,email.subject,email.body);
+            }
+
+            await markSent(course.domain,'precontent',klass);            
         }
     },
 
@@ -151,6 +164,17 @@ module.exports = {
     submitWork: async (course, currentClass, user) =>{
         if (!await hasSent(course.domain, 'submitwork',currentClass,user.id))
         {
+            sails.log.verbose('Sending submitwork notification', course.domain, klass);
+            
+            let registration = await Registration.findOne({
+                course: course.domain,
+                user: user.id
+            }).populate('user');
+
+            let email = await CacheEngine.getEmail(course, reg.lang,'postsubmission');
+            email.body = email.body.replace('{{user}}',reg.user.name);
+            email.body = email.body.replace('{{date}}',new Date().toString());
+            sendEmail(reg.user,email.subject,email.body);
 
             await markSent(course.domain,'submitwork',currentClass,user.id);         
         }
@@ -160,7 +184,16 @@ module.exports = {
     submitFeedback: async (course, currentClass, user) =>{
         if (!await hasSent(course.domain, 'submitfeedback',currentClass,user.id))
         {
+            let registration = await Registration.findOne({
+                course: course.domain,
+                user: user.id
+            }).populate('user');
 
+            let email = await CacheEngine.getEmail(course, reg.lang,'joindiscussion');
+            email.body = email.body.replace('{{user}}',reg.user.name);
+            email.body = email.body.replace('{{date}}',new Date().toString());
+            sendEmail(reg.user,email.subject,email.body);
+            
             await markSent(course.domain,'submitfeedback',currentClass,user.id);         
         }
     },
@@ -170,6 +203,18 @@ module.exports = {
     {
         if (!await hasSent(course.domain, 'liveclasswarning',klass,hub))
         {
+            let registrations = await Registration.find({
+                course: course.domain,
+                hub_id: hub
+            }).populate('user');
+            
+            for (let reg of registrations)
+            {
+                let email = await CacheEngine.getEmail(course, reg.lang,'joinliveclass');
+                email.body = email.body.replace('{{user}}',reg.user.name);
+                email.body = email.body.replace('{{date}}',new Date().toString());
+                sendEmail(reg.user,email.subject,email.body);
+            }
 
             await markSent(course.domain,'liveclasswarning',klass,hub);            
         }
@@ -180,6 +225,18 @@ module.exports = {
     {
         if (!await hasSent(course.domain, 'afterliveclass',klass,hub))
         {
+            let registrations = await Registration.find({
+                course: course.domain,
+                hub_id: hub
+            }).populate('user');
+            
+            for (let reg of registrations)
+            {
+                let email = await CacheEngine.getEmail(course, reg.lang,'readdeepdive');
+                email.body = email.body.replace('{{user}}',reg.user.name);
+                email.body = email.body.replace('{{date}}',new Date().toString());
+                sendEmail(reg.user,email.subject,email.body);
+            }
 
             await markSent(course.domain,'afterliveclass',klass,hub);            
         }
@@ -190,6 +247,17 @@ module.exports = {
     {
         if (!await hasSent(course.domain, 'webinarsoon',klass))
         {
+            let registrations = await Registration.find({
+                course: course.domain
+            }).populate('user');
+            
+            for (let reg of registrations)
+            {
+                let email = await CacheEngine.getEmail(course, reg.lang,'webinarsoon');
+                email.body = email.body.replace('{{user}}',reg.user.name);
+                email.body = email.body.replace('{{date}}',new Date().toString());
+                sendEmail(reg.user,email.subject,email.body);
+            }
 
             await markSent(course.domain,'webinarsoon',klass);            
         }
@@ -200,6 +268,18 @@ module.exports = {
     {
         if (!await hasSent(course.domain, 'nextweek',klass))
         {
+            let registrations = await Registration.find({
+                course: course.domain,
+                class: klass
+            }).populate('user');
+            
+            for (let reg of registrations)
+            {
+                let email = await CacheEngine.getEmail(course, reg.lang,'nextweek');
+                email.body = email.body.replace('{{user}}',reg.user.name);
+                email.body = email.body.replace('{{date}}',new Date().toString());
+                sendEmail(reg.user,email.subject,email.body);
+            }
 
             await markSent(course.domain,'nextweek',klass);            
         }

@@ -124,7 +124,7 @@ let run = async function(){
             // read pre-content
             if (NOW.isAfter(class_week_start) && NOW.isBefore(live_segment_start))
             {
-                NotificationEngine.readPreContent(course, currentClass);
+               NotificationEngine.readPreContent(course, currentClass);
             }
 
             // post your submission e.g. 4c
