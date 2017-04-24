@@ -201,8 +201,9 @@ let run = async function(){
        {
            //EACH HOUR
            sails.on('lifted',function(){
-                this.schedule = setInterval(run, process.env.SCHEDULER_RATE + (Math.random() * 5000));
-                // run();
+               let interval = Math.min(2147483647,Math.round(parseInt(process.env.SCHEDULER_RATE) + (Math.random() * 5000)));
+               this.schedule = setInterval(run, interval);
+               run();
            });
        }
    };
