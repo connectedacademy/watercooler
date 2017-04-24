@@ -118,24 +118,6 @@ describe('Auth', function() {
 
   });
 
-  describe('update profile', function() {
-
-        it('should update profile', function (done) {
-            global.useragent
-            .post('/auth/profile')
-            .set('Referer',process.env.TEST_DOMAIN)
-            .send({
-                lang:"ar",
-                hub_id:"ncl"
-            })
-            .expect(200)
-            .expect((res)=>{
-                expect(res.body).to.have.property('msg');
-            })
-            .end(done);
-        });
-
-  });
 
   describe('registration', function() {
 
@@ -144,12 +126,11 @@ describe('Auth', function() {
             .post('/auth/register')
             .set('Referer',process.env.TEST_DOMAIN)
             .send({
-                research_consent: true,
-                data_consent: true,
+                consent: true,
                 lang: "en",
                 hub_id: "ncl",
-                region: "UK",
                 age: "30-40",
+                email: "tom@bartindale.com",
                 registration_info:{
                     "are you yellow":"no",
                     "do you have cheese feet":"yes"
@@ -164,6 +145,25 @@ describe('Auth', function() {
         
   });
   
+  describe('update profile', function() {
+
+        it('should update profile', function (done) {
+            global.useragent
+            .post('/auth/profile')
+            .set('Referer',process.env.TEST_DOMAIN)
+            .send({
+                lang:"ar",
+                hub_id:"ncl",
+                email:"tom@bartindale.com"
+            })
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body).to.have.property('msg');
+            })
+            .end(done);
+        });
+
+  });
   
 
 });

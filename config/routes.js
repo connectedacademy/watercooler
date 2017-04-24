@@ -45,6 +45,7 @@ module.exports.routes = {
   'POST /admin/credentials':'AdminController.credentials',
   'GET /admin/content':'AdminController.content',
   'GET /admin/users':'AdminController.users',
+  'GET /admin/dash':'AdminController.root',
   
   'GET /classroom/mycode/:hub/:class':'ClassroomController.mycode',
   'GET /classroom/users/:hub/:class':'ClassroomController.users',

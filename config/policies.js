@@ -23,7 +23,8 @@ module.exports.policies = {
     'admin':
     {
         '*':['verifyDomain','isAdmin','jsononly','cors'],
-        'editor':['verifyDomain']
+        'editor':['verifyDomain'],
+        'root':['verifyDomain','isAdmin','cors']
     },
     'messages':
     {
