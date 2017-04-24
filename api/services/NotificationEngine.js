@@ -96,19 +96,43 @@ module.exports = {
     
     // course starting (day before)
     dayBefore: async (course)=>{
-        if (!await hasSent(course, 'daybefore'))
+        if (!await hasSent(course.domain, 'daybefore'))
         {
+            sails.log.verbose('Sending daybefore notification', course.domain);
 
-            await markSent(course,'daybefore');            
+            let registrations = await Registration.find({
+                course: course.domain
+            }).populate('user');
+            
+            for (let reg of registrations)
+            {
+                let email = await CacheEngine.getEmail(course, reg.lang,'coursestarting_day');
+                email.body = email.body.replace('{{user}}',reg.user.name);
+                email.body = email.body.replace('{{date}}',new Date().toString());
+                sendEmail(reg.user,email.subject,email.body);
+            }
+            await markSent(course.domain,'daybefore');
         }
     },
 
     // Final questionaire push
     courseClose: async (course)=>{
-        if (!await hasSent(course, 'courseclose'))
+        if (!await hasSent(course.domain, 'courseclose'))
         {
+            sails.log.verbose('Sending courseclose notification', course.domain);
 
-            await markSent(course,'courseclose');            
+            let registrations = await Registration.find({
+                course: course.domain
+            }).populate('user');
+            
+            for (let reg of registrations)
+            {
+                let email = await CacheEngine.getEmail(course, reg.lang,'courseclose');
+                email.body = email.body.replace('{{user}}',reg.user.name);
+                email.body = email.body.replace('{{date}}',new Date().toString());
+                sendEmail(reg.user,email.subject,email.body);
+            }
+            await markSent(course.domain,'courseclose');            
         }
     },
 

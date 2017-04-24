@@ -27,24 +27,23 @@ let run = async function(){
             // course starting (1 week before)
             if (startdate.diff(NOW) < moment.duration(7, 'days').asMilliseconds())
             {
-                sails.log.verbose('Triggering week before ' + course.domain);                
+                sails.log.verbose('Triggering week before ' + course.domain);
+                NotificationEngine.weekBefore(course);
             }
-
-            NotificationEngine.weekBefore(course);
 
             // course starting (day before)
             if (startdate.diff(NOW) < moment.duration(1, 'day').asMilliseconds())
             {
                 sails.log.verbose('Triggering day before ' + course.domain);                                
-                NotificationEngine.dayBefore(course);
             }
+            NotificationEngine.dayBefore(course);
             
             // Final questionaire push (1 day after)
             if (NOW.diff(startdate) > moment.duration(2, 'day').asMilliseconds())
             {
                 sails.log.verbose('Triggering 2 days after ' + course.domain);                                
-                NotificationEngine.courseClose(course);
             }
+            NotificationEngine.courseClose(course);
 
             //work out current week in schedule:
 
@@ -132,7 +131,7 @@ let run = async function(){
            //EACH HOUR
            sails.on('lifted',function(){
                 this.schedule = setTimeout(run, process.env.SCHEDULER_RATE + (Math.random() * 5000));
-                run();
+                // run();
            });
        }
    };

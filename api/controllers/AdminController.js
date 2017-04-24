@@ -1,6 +1,11 @@
 const request = require('request-promise-native');
 
 module.exports = {
+
+    root: (req,res) => {
+        return res.view();
+    },
+
     editor: (req,res)=>{
         // console.log(req.course);
         let splits = req.course.repo.split('/');
@@ -11,7 +16,7 @@ module.exports = {
     credentials: async (req,res)=>{
         //given these credentials, allow them to edit the twitter credentials of the user linked to the course (as determined by the spec doc):
         try
-        {            
+        {
             let spec = await CacheEngine.getSpec(req,res);
             let valid_accounts = spec.accounts;
           

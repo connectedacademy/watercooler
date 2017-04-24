@@ -100,7 +100,8 @@ module.exports = {
     },
 
     admindashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + '/admin');
+        return res.redirect('/admin/dash');
+        // return res.redirect(req.session.redirecturi + '/admin');
     },
 
     fail: async (req,res)=>{
