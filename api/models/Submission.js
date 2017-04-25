@@ -14,6 +14,7 @@ module.exports = {
         course: 'string',
         class: 'string',
         schedule: 'string',
+        content:'text',
         discussion:{
             collection:'DiscussionMessage',
             via: 'relates_to'
@@ -21,11 +22,11 @@ module.exports = {
 
         toJSON :function()
         {
-        let obj = this.toObject();
-        delete obj['@type'];
-        delete obj['@class'];
-        delete obj['@version'];
-        return obj;
+            let obj = this.toObject();
+            delete obj['@type'];
+            delete obj['@class'];
+            delete obj['@version'];
+            return obj;
         }
     }
 }
