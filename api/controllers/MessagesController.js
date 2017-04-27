@@ -124,11 +124,11 @@ module.exports = {
         try
         {
             let whitelist = req.param('whitelist');
-            let limit = req.param('limit');        
+            let depth = req.param('depth');        
             let lang = await LangService.lang(req);
             let course = req.course.domain;
-            //course, klass, user, language,contentid, startsegment, endsegment, limit
-            let data = await GossipmillApi.list(course, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'),limit);
+            //course, klass, user, language,contentid, startsegment, endsegment, depth
+            let data = await GossipmillApi.list(course, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'),depth);
             return res.json(data);
         }
         catch (e)

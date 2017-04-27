@@ -61,7 +61,7 @@ module.exports = {
         return response;
     },
 
-    list: async (course, klass, user, language,contentid, startsegment, endsegment, limit)=>{
+    list: async (course, klass, user, language,contentid, startsegment, endsegment, depth)=>{
         let query = [
             {
                 name: 'course',
@@ -101,7 +101,7 @@ module.exports = {
             json: true,
             body:{
                 filter_by: query,
-                limit: limit || 10
+                depth: depth || 10
             },
             qs: { 
                 psk: process.env.GOSSIPMILL_PSK
