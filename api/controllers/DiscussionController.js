@@ -47,7 +47,7 @@ module.exports = {
                     //publish to anyone listening
                     Submission.publishCreate(message, req);
                     //send offline notification (TODO: detect if they are not online)
-                    NotificationEngine.newPeerMessage(message);
+                    NotificationEngine.newPeerMessage(req, message);
                     return res.json(message);
                 }
             })
@@ -62,7 +62,7 @@ module.exports = {
         //TODO: validation
         try
         {
-            let ok = await DiscussionMessage.update({id:req.param('message')},{
+            await DiscussionMessage.update({id:req.param('message')},{
                 readAt: new Date()
             });
             return res.ok('Updated');
@@ -74,7 +74,11 @@ module.exports = {
     },
 
     messages: async (req,res)=>{
-        let data = await DiscussionMessage.find({relates_to:req.param('media')}).populate('fromuser').sort('createdAt DESC');
+        let data = await DiscussionMessage.find({
+            relates_to:req.param('media')
+        })
+        .populate('fromuser')
+        .sort('createdAt DESC');
         return res.json({
             scope:{
                 media: req.param('media')
@@ -131,7 +135,7 @@ module.exports = {
 
             let merge = own.concat(participated);
 
-            result = _.uniq(merge, function(r){
+            let result = _.uniq(merge, function(r){
                 return r.id
             });
 

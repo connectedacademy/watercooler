@@ -319,14 +319,14 @@ module.exports = {
     },
 
     // notification of a new peer discussion message
-    newPeerMessage: async (message) => {
+    newPeerMessage: async (req, message) => {
         try {
             sails.log.verbose('Sending offline notification about new peer message', message);
             let lang = await LangService.lang(req);
             let email = await CacheEngine.getEmail(req.course, lang || process.env.DEFAULT_LANG, 'newfeedback');
             email.body = email.body.replace('{{user}}', user.name);
             email.body = email.body.replace('{{date}}', new Date().toString());
-            await sendEmail(user, email.subject, email.body);
+            await sendEmail(message.fromuser, email.subject, email.body);
         }
         catch (e) {
             sails.log.error(e);

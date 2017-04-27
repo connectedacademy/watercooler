@@ -31,7 +31,7 @@ module.exports = {
                 }
             }
 
-            let results = await Promise.all(promises);
+            await Promise.all(promises);
 
             data.baseUri = req.course.url + '/course/content/' + lang + '/';
             data.currentLang = lang;

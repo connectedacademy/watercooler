@@ -1,5 +1,4 @@
 let master_config = process.env.MASTER_REPO + 'config/courses.yml';
-let yaml = require('js-yaml');
 let URL = require('url');
 
 module.exports = {

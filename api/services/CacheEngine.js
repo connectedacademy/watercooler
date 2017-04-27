@@ -85,7 +85,7 @@ module.exports = {
         }
     },
 
-    getHubs: async (req,res)=>{
+    getHubs: async (req)=>{
         if (process.env.LIVE_DATA=='true')
         {
             return CacheEngine.getYaml(req.course.url + '/course/config/hubs.yaml');
@@ -98,7 +98,7 @@ module.exports = {
         }
     },
 
-    getSpec: async (req,res) => {
+    getSpec: async (req) => {
         if (process.env.LIVE_DATA=='true')
         {
             return CacheEngine.getYaml(req.course.url + '/course/config/spec.yaml');            
@@ -111,7 +111,7 @@ module.exports = {
         }
     },
 
-    getQuestions: async (req,res) => {
+    getQuestions: async (req) => {
         let lang = await LangService.lang(req);
         if (process.env.LIVE_DATA=='true')
         {

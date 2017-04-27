@@ -6,7 +6,7 @@ module.exports = {
         try
         {
             let success = await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('start-segment'), req.param('end-segment'));
-            return res.ok('Subscribed');
+            return res.json(success);
         }
         catch (e)
         {
@@ -15,7 +15,7 @@ module.exports = {
     },
 
     create: async (req,res) => {
-        // create: async (credentials, user, message)=>{
+
         req.checkBody('text').notEmpty();
         req.checkBody('replyto').optional().notEmpty();
         req.checkBody('remessageof').optional().notEmpty();
