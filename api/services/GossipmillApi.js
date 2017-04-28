@@ -61,7 +61,7 @@ module.exports = {
         return response;
     },
 
-    list: async (course, klass, user, language,contentid, startsegment, endsegment, depth)=>{
+    list: async (course, klass, user, language, contentid, startsegment, endsegment, depth)=>{
         let query = [
             {
                 name: 'course',
@@ -72,25 +72,17 @@ module.exports = {
                 query: klass
             },
             {
-                name: 'contentid',
+                name: 'content',
                 query: contentid
-            },
-            {
-                name: 'user',
-                query: user.id
-            },
-            {
-                name:'lang',
-                query: language
             }
         ];
         
-        for (let i=startsegment;i<endsegment;i++) 
+        for (let i=startsegment;i<=endsegment;i++) 
         {
             query.push({
                 name:'segment',
                 query: i
-            })
+            });
         }
 
         sails.log.verbose('Requesting list with',query);
@@ -101,7 +93,8 @@ module.exports = {
             json: true,
             body:{
                 filter_by: query,
-                depth: depth || 10
+                depth: depth || 10,
+                lang: language
             },
             qs: { 
                 psk: process.env.GOSSIPMILL_PSK
