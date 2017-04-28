@@ -107,6 +107,15 @@ module.exports = {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
+
+        response.data = _.map(response.data,(d)=>{
+            _.each(d.tokens,(t)=>{
+                d[t.type] = t.name;
+            });
+            delete d.tokens;
+            return d;
+        });
+
         return response;
     },
 
