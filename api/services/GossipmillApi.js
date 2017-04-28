@@ -85,7 +85,7 @@ module.exports = {
             });
         }
 
-        sails.log.verbose('Requesting list with',query);
+        sails.log.verbose('Requesting list');
 
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
