@@ -86,7 +86,7 @@ module.exports = {
         sails.passport.authenticate('github')(req,res,next);
     },
 
-    admin_logout: (req,res,next)=>{
+    admin_logout: (req,res)=>{
         req.logout();
         return res.ok('Logged out successfully.');
     },
@@ -152,12 +152,29 @@ module.exports = {
             return res.badRequest(e.mapped());
         }
 
+
+        //check that lang is in the available list for this course:
+        let course = await CacheEngine.getSpec(req);
+        if (!_.contains(course.langs, req.body.lang))
+        {
+            return res.badRequest('Selected language not supported by this course. Available are ' + course.langs);
+        }
+
+        let hubs = await CacheEngine.getHubs(req);        
+        if (!_.contains(_.pluck(hubs,'id'), req.body.hub_id))
+        {
+            return res.badRequest('Selected hub not avaialable for this course. Available are ' + _.pluck(hubs,'id'));
+        }
+
         try
         {
             var registration = await Registration.findOne({
                 user:req.session.passport.user.id,
                 course: req.course.domain
             }).populate('user');
+
+            if (!registration)
+                return res.notFound("Registration not found, have you registered?");
 
             registration.hub_id = req.body.hub_id;
             //get registration for this course and change lang
@@ -218,6 +235,18 @@ module.exports = {
 
             if (!req.body.consent)
                 return res.badRequest('Consent not given');
+
+             let course = await CacheEngine.getSpec(req);
+            if (!_.contains(course.langs, req.body.lang))
+            {
+                return res.badRequest('Selected language not supported by this course. Available are ' + course.langs);
+            }
+
+            let hubs = await CacheEngine.getHubs(req);        
+            if (!_.contains(_.pluck(hubs,'id'), req.body.hub_id))
+            {
+                return res.badRequest('Selected hub not avaialable for this course. Available are ' + _.pluck(hubs,'id'));
+            }
 
             let user = await User.findOne(req.session.passport.user.id).populate('registrations');
 
