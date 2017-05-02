@@ -17,7 +17,7 @@ module.exports = {
                 req.login(user, (err)=>
                 {
                     // console.log(err);
-                    return res.redirect('/v1/auth/admindashboard');
+                    return res.redirect('/auth/admindashboard');
                 });
 
             });
@@ -40,7 +40,7 @@ module.exports = {
                 {
                     // console.log(err);
 
-                    return res.redirect('/v1/auth/dashboard');
+                    return res.redirect('/auth/dashboard');
                 });
             });
         }
@@ -66,7 +66,7 @@ module.exports = {
     },
 
     twitter_callback: (req,res,next)=>{
-        sails.passport.authenticate('twitter',{successRedirect: '/v1/auth/dashboard', failureRedirect: '/v1/auth/fail' })(req,res,next);
+        sails.passport.authenticate('twitter',{successRedirect: '/auth/dashboard', failureRedirect: '/auth/fail' })(req,res,next);
     },
 
     login: (req,res,next) =>{
@@ -92,15 +92,15 @@ module.exports = {
     },
 
     github_callback: (req,res,next)=>{
-        sails.passport.authenticate('github',{successRedirect: '/v1/auth/admindashboard', failureRedirect: '/v1/auth/fail' })(req,res,next);
+        sails.passport.authenticate('github',{successRedirect: '/auth/admindashboard', failureRedirect: '/auth/fail' })(req,res,next);
     },
 
     dashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + '/v1/registration');
+        return res.redirect(req.session.redirecturi + '/registration');
     },
 
     admindashboard: (req,res)=>{
-        return res.redirect('/v1/admin/dash');
+        return res.redirect('/admin/dash');
         // return res.redirect(req.session.redirecturi + '/admin');
     },
 
@@ -160,7 +160,7 @@ module.exports = {
             return res.badRequest('Selected language not supported by this course. Available are ' + course.langs);
         }
 
-        let hubs = await CacheEngine.getHubs(req);        
+        let hubs = await CacheEngine.getHubs(req);
         if (!_.contains(_.pluck(hubs,'id'), req.body.hub_id))
         {
             return res.badRequest('Selected hub not avaialable for this course. Available are ' + _.pluck(hubs,'id'));
@@ -242,7 +242,7 @@ module.exports = {
                 return res.badRequest('Selected language not supported by this course. Available are ' + course.langs);
             }
 
-            let hubs = await CacheEngine.getHubs(req);        
+            let hubs = await CacheEngine.getHubs(req);
             if (!_.contains(_.pluck(hubs,'id'), req.body.hub_id))
             {
                 return res.badRequest('Selected hub not avaialable for this course. Available are ' + _.pluck(hubs,'id'));
