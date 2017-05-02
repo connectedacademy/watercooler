@@ -53,12 +53,8 @@ module.exports = {
                         query: course
                     },
                     {
-                        name: 'class',
-                        query: klass
-                    },
-                    {
-                        name: 'content',
-                        query: content
+                        name: 'like',
+                        query: klass+'/'+content
                     }
                 ]
             },
