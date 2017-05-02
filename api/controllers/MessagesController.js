@@ -5,7 +5,7 @@ module.exports = {
         let lang = await LangService.lang(req);
         try
         {
-            let success = await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('start-segment'), req.param('end-segment'));
+            let success = await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'));
             return res.json(success);
         }
         catch (e)

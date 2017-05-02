@@ -17,6 +17,8 @@
         <button onclick="coursespec()">Course Spec</button>
         <button onclick="profile()">Profile</button>
         <button onclick="register()">Register</button>
+        <button onclick="subscribe()">Subscribe</button>
+        
         
         <a href="http://localhost:4000/v1/auth/login">User Login</a>
         <a href="http://localhost:4000/v1/admin/login">Admin Login</a>
@@ -27,10 +29,16 @@
         </pre>        
 
         <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sails.io.js/1.1.12/sails.io.min.js"></script>        
         <script>
+        io.sails.url = 'http://localhost:4000';
+        io.socket.on('message',function(msg){
+            console.log(msg);
+        });
+
         function register()
             {
-               $.ajax('http://localhost:4000//v1/auth/register',{
+               $.ajax('http://localhost:4000/v1/auth/register',{
                    method:'POST',
                    contentType: "application/json; charset=UTF-8",
                     dataType: "json",
@@ -63,6 +71,13 @@
                 }).then(function(response){
                     $('#content').html(JSON.stringify(response,null,'  '));
                     console.log(response);
+                });
+            }
+
+            function subscribe()
+            {
+                io.socket.get('/v1/messages/subscribe/learn-photo/liveclass/0/10',function(data,res){
+                    console.log(data);
                 });
             }
         </script>

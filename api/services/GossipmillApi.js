@@ -1,5 +1,11 @@
-let io = require('socket.io-client')(process.env.GOSSIPMILL_URL);
-io.on('connect',function(msg){
+// let sailsio = require('socket.io-client')(process.env.GOSSIPMILL_URL);
+var socketIOClient = require('socket.io-client');
+var sailsIOClient = require('sails.io.js');
+var io = sailsIOClient(socketIOClient);
+io.sails.url = process.env.GOSSIPMILL_URL;
+io.sails.initialConnectionHeaders = {nosession: true};
+
+io.socket.on('connect',function(){
     sails.log.info('Gossipmill API Socket Connected');
 });
 
@@ -133,7 +139,7 @@ module.exports = {
     },
 
     subscribe: async (req, course, klass, user, language,contentid, startsegment, endsegment) =>{
-        //TODO: subscribe to gossipmill feed
+
         let query = [
             {
                 name: 'course',
@@ -156,17 +162,29 @@ module.exports = {
                 query: i
             })
         }
-        
-        //lang: language
 
-        //TODO: socket subscribe
-        // io.
+        io.socket.post('/messages/subscribe/'+user.service + '/' + user.account+'?psk=' + process.env.GOSSIPMILL_PSK,{
+                lang: language,
+                depth: 5,
+                filter_by:query
+            },function(data){
+            //subscribe to this roomname
+            sails.sockets.join(req.socket,data.room);
+            io.socket.on(data.room,function(msg){
+                sails.log.info(msg);
+                sails.sockets.broadcast(data.room, msg);
+            });
+        });
 
-        
-
-        //TODO: map socket response messages to ours:
-
-
+        return {
+            scope:{
+                class:klass,
+                content: contentid,
+                startsegment: startsegment,
+                endsegment: endsegment
+            },
+            msg:'Subscribed'
+        };
     },
 
     create: async (credentials, user, message)=>{

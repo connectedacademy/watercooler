@@ -5,7 +5,7 @@ module.exports = {
 
     verifyDomain: async (req,res)=>{
         //parse domain
-        let url = URL.parse(req.get('referer'));
+        let url = URL.parse(req.get('referer') || req.get('origin'));
         let domain = url.hostname;
         
         let whitelist = await DomainControl.getWhitelist(req,res);

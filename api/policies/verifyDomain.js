@@ -4,7 +4,7 @@ module.exports = async (req,res,next) =>{
 
     try
     {
-        sails.log.verbose('Verifying domain',req.url, URL.parse(req.get('referer')).hostname);
+        sails.log.verbose('Verifying domain',req.url, URL.parse(req.get('referer') || req.get('origin')).hostname);
         var verified = await DomainControl.verifyDomain(req,res);
         if (verified)
         {
