@@ -41,7 +41,7 @@ module.exports = {
         return response;
     },
 
-    totals: async (pageuri)=>{
+    totals: async (course, klass, content)=>{
         let response = await request({
             url: baseURI + 'messages/totals',
             method: 'POST',
@@ -49,8 +49,16 @@ module.exports = {
             body:{
                filter_by:[
                     {
-                        name: 'uri',
-                        query: pageuri
+                        name: 'course',
+                        query: course
+                    },
+                    {
+                        name: 'class',
+                        query: klass
+                    },
+                    {
+                        name: 'content',
+                        query: content
                     }
                 ]
             },

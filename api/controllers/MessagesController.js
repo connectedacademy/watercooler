@@ -95,7 +95,9 @@ module.exports = {
     },
 
     likes: async (req,res) =>{
-        req.checkParams('uri').isURL();
+        req.checkParams('class').notEmpty();
+        req.checkParams('content').notEmpty();
+        
 
         try
         {
@@ -108,10 +110,10 @@ module.exports = {
         }
 
         
-        let uri = decodeURI(req.param('uri'));
+        // let uri = decodeURI(req.param('class'));
         try
         {
-            let data = await GossipmillApi.totals(uri);
+            let data = await GossipmillApi.totals(req.course.domain, req.param('class') ,req.param('content'));
             return res.json(data);
         }
         catch (e)

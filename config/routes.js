@@ -53,7 +53,7 @@ module.exports.routes = {
   
 
   'GET /v1/messages/visualisation/:class/:segment':'MessagesController.visualisation',
-  'GET /v1/messages/likes/:uri':'MessagesController.likes',
+  'GET /v1/messages/likes/:class/:content':'MessagesController.likes',
   'GET /v1/messages/list/:class/:content/:startsegment/:endsegment':'MessagesController.list',
   'GET /v1/messages/subscribe/:class/:content/:startsegment/:endsegment':'MessagesController.subscribe',
   'POST /v1/messages/create':'MessagesController.create',
