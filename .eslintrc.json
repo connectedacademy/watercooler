@@ -16,7 +16,8 @@
         "DiscussionMessage":true,
         "Submission":true,
         "DomainControl":true,
-        "Notifications":true
+        "Notifications":true,
+        "Classroom":true
         
         
     },

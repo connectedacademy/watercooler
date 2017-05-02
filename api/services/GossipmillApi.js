@@ -1,6 +1,9 @@
-// let io = require('sails.io.js')( require('socket.io-client') );
+let io = require('socket.io-client')(process.env.GOSSIPMILL_URL);
+io.on('connect',function(msg){
+    sails.log.info('Gossipmill API Socket Connected');
+});
+
 let request = require('request-promise-native');
-// let request = require('request');
 
 let baseURI = process.env.GOSSIPMILL_URL;
 
@@ -12,6 +15,7 @@ module.exports = {
             method: 'POST',
             json: true,
             body:{
+                lang: language,
                 group_by: {
                     name: 'segment'
                 },
@@ -27,10 +31,6 @@ module.exports = {
                     {
                         name: 'user',
                         query: user.id
-                    },
-                    {
-                        name:'lang',
-                        query: language
                     }
                 ]
             },
@@ -124,30 +124,28 @@ module.exports = {
                 query: klass
             },
             {
-                name: 'contentid',
+                name: 'content',
                 query: contentid
-            },
-            {
-                name: 'user',
-                query: user.id
-            },
-            {
-                name:'lang',
-                query: language
             }
         ];
         
-        for (let i=startsegment;i<endsegment;i++)
+        for (let i=startsegment;i<=endsegment;i++)
         {
             query.push({
                 name:'segment',
                 query: i
             })
         }
+        
+        //lang: language
 
         //TODO: socket subscribe
+        // io.
+
+        
 
         //TODO: map socket response messages to ours:
+
 
     },
 

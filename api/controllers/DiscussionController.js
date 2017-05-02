@@ -1,7 +1,7 @@
 module.exports = {
 
     available: async (req,res)=>{
-        //TODO: algorithm to pick the media from this filter that needs discussion
+        //TODO: algorithm to pick the submission from this filter that needs discussion
         try
         {
             //SELECT relates_to.url as url, relates_to.@rid as id, relates_to.createdAt as createdAt, COUNT(relates_to) AS messages FROM discussionmessage WHERE relates_to.course = "testclass.connectedacademy.io" AND relates_to.class = 1 AND relates_to.schedule = 2 GROUP BY relates_to ORDER BY messages ASC limit 3
@@ -23,15 +23,15 @@ module.exports = {
     },
 
     subscribe: async (req,res)=>{
-        Submission.watch(req,req.param('media'));
-        return res.ok('Subscribed to new discussion messages for ' + req.param('media'));
+        Submission.watch(req,req.param('submission'));
+        return res.ok('Subscribed to new discussion messages for ' + req.param('submission'));
     },
 
     create: async (req,res)=>{
         //TODO: validation
         let msg = {
             message: req.param('text'),
-            relates_to: req.param('media'),
+            relates_to: req.param('submission'),
             fromuser: req.session.passport.user.id
         };
 
@@ -60,6 +60,7 @@ module.exports = {
 
     read: async (req,res)=>{
         //TODO: validation
+        //TODO: mark as read for my as a user:
         try
         {
             await DiscussionMessage.update({id:req.param('message')},{
@@ -74,24 +75,29 @@ module.exports = {
     },
 
     messages: async (req,res)=>{
+        //list all messages for this submission
         let data = await DiscussionMessage.find({
-            relates_to:req.param('media')
+            relates_to:req.param('submission')
         })
         .populate('fromuser')
         .sort('createdAt DESC');
         return res.json({
             scope:{
-                media: req.param('media')
+                submission: req.param('submission')
             },
             data:data
         })               
     },
 
     submission: async (req,res)=>{
-        //TODO: validation        
+
+        //redirect to the original submission:
+        
+
+        //TODO: validation   
         try
         {
-            let data = await Submission.findOne({id:req.param('media')});
+            let data = await Submission.findOne({id:req.param('submission')});
             if (data)
                 return res.redirect(data.url);
             else
@@ -108,7 +114,6 @@ module.exports = {
         {
          
             //get discussion for submissions I participate in:
-
             let participated = await Submission.find({
                 course: req.course.domain,
                 class: req.param('class'),

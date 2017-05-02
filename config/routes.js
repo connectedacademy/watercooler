@@ -22,14 +22,14 @@
 
 module.exports.routes = {
   '/': 'AuthController.root',
+  'GET /auth/twitter_callback':'AuthController.twitter_callback',
+  'GET /auth/github_callback':'AuthController.github_callback',
 
   'GET /v1/course/hubs':'CourseController.hubs',
   'GET /v1/course/spec':'CourseController.spec',
 
   'GET /v1/auth/login':'AuthController.login',
   'GET /v1/auth/logout':'AuthController.logout',
-  'GET /v1/auth/twitter_callback':'AuthController.twitter_callback',
-  'GET /v1/auth/github_callback':'AuthController.github_callback',
   'GET /v1/auth/dashboard':'AuthController.dashboard',
   'GET /v1/auth/admindashboard':'AuthController.admindashboard',  
   'GET /v1/auth/fail':'AuthController.fail',
@@ -47,8 +47,10 @@ module.exports.routes = {
   'GET /v1/admin/users':'AdminController.users',
   'GET /v1/admin/dash':'AdminController.root',
   
-  'GET /v1/classroom/mycode/:hub/:class':'ClassroomController.mycode',
-  'GET /v1/classroom/users/:hub/:class':'ClassroomController.users',
+  'GET /v1/classroom/mycode/:class/:content':'ClassroomController.mycode',
+  'GET /v1/classroom/users/:class/:content':'ClassroomController.users',
+  'POST /v1/classroom/inclass':'ClassroomController.inclass',
+  
 
   'GET /v1/messages/visualisation/:class/:segment':'MessagesController.visualisation',
   'GET /v1/messages/likes/:uri':'MessagesController.likes',
