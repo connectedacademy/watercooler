@@ -52,7 +52,7 @@ module.exports.routes = {
   'POST /v1/classroom/inclass':'ClassroomController.inclass',
   
 
-  'GET /v1/messages/visualisation/:class/:segment':'MessagesController.visualisation',
+  'GET /v1/messages/visualisation/:class/:content':'MessagesController.visualisation',
   'GET /v1/messages/likes/:class/:content':'MessagesController.likes',
   'GET /v1/messages/list/:class/:content/:startsegment/:endsegment':'MessagesController.list',
   'GET /v1/messages/subscribe/:class/:content/:startsegment/:endsegment':'MessagesController.subscribe',

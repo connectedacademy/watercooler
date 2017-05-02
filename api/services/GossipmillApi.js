@@ -9,7 +9,7 @@ let baseURI = process.env.GOSSIPMILL_URL;
 
 module.exports = {
 
-    visualisation: async (course, klass, user, language)=>{
+    visualisation: async (course, klass,content, language)=>{
         let response = await request({
             url: baseURI + 'messages/visualisation',
             method: 'POST',
@@ -29,8 +29,8 @@ module.exports = {
                         query: klass
                     },
                     {
-                        name: 'user',
-                        query: user.id
+                        name: 'content',
+                        query: content
                     }
                 ]
             },

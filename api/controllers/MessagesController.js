@@ -64,8 +64,9 @@ module.exports = {
     visualisation: async (req,res) => {
 
         req.checkQuery('whitelist').optional().isBoolean();
-        req.checkParams('class').notEmpty();        
-
+        req.checkParams('class').notEmpty();
+        req.checkParams('content').notEmpty();        
+            
         try
         {
             let result = await req.getValidationResult();
@@ -80,12 +81,29 @@ module.exports = {
         let lang = await LangService.lang(req);
         try
         {
-            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.session.passport.user, lang);
+            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'),req.param('content'), lang);
+            // data = _.sortBy(data,(s)=>{
+            //     return parseInt(s.segment);
+            // });
+            let min = 0;
+            let max = parseInt(_.max(data,'segment').segment);
+            let ordered = {};
+
+            for(let i=min;i<=max;i++)
+            {
+                let seg = _.find(data,{segment:i+''});
+                if (seg)
+                    ordered[i] = seg.count;
+                else
+                    ordered[i] = 0;
+            }
+
             return res.json({
                 scope:{
-                    class: req.param('class')
+                    class: req.param('class'),
+                    content: req.param('content')
                 },
-                data: data
+                data: ordered
             });
         }
         catch (e)
