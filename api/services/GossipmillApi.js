@@ -38,7 +38,21 @@ module.exports = {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
-        return response;
+
+        let min = 0;
+        let max = parseInt(_.max(response,'segment').segment);
+        let max_val = _.max(response,'count').count;
+        let ordered = {};
+
+        for(let i=min;i<=max;i++)
+        {
+            let seg = _.find(response,{segment:i+''});
+            if (seg)
+                ordered[i] = seg.count / max_val;
+            else
+                ordered[i] = 0;
+        }
+        return ordered;
     },
 
     totals: async (course, klass, content)=>{
