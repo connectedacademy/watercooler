@@ -117,6 +117,8 @@ module.exports = {
             return d;
         });
 
+        response.data = _.groupBy(response.data, 'segment');
+
         return response;
     },
 
