@@ -133,7 +133,19 @@ module.exports = {
             let lang = await LangService.lang(req);
             let course = req.course.domain;
             //course, klass, user, language,contentid, startsegment, endsegment, depth
-            let data = await GossipmillApi.list(course, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'),depth);
+            let user = {};
+            if (req.session.passport)
+                user = req.session.passport.user;
+            else
+            {
+                let spec = await CacheEngine.getSpec(req);
+                user = {
+                    service:'twitter',
+                    account:_.first(spec.accounts)
+                };
+            }
+
+            let data = await GossipmillApi.list(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'),depth);
              return res.json({
                 scope:{
                     class: req.param('class'),
@@ -143,7 +155,6 @@ module.exports = {
                 },
                 data: data.data
             });
-            // return res.json(data);
         }
         catch (e)
         {

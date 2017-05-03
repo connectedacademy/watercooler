@@ -28,7 +28,10 @@ module.exports.policies = {
     },
     'messages':
     {
-        '*':['cors','isUser','verifyDomain','jsononly']
+        '*':['cors','isUser','verifyDomain','jsononly'],
+        'list':['cors','verifyDomain','jsononly'],
+        'likes':['cors','verifyDomain','jsononly'],
+        'visualisation':['cors','verifyDomain','jsononly']        
     },
     'classroom':
     {
