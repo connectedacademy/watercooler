@@ -134,7 +134,16 @@ module.exports = {
             let course = req.course.domain;
             //course, klass, user, language,contentid, startsegment, endsegment, depth
             let data = await GossipmillApi.list(course, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'),depth);
-            return res.json(data);
+             return res.json({
+                scope:{
+                    class: req.param('class'),
+                    content: req.param('content'),
+                    startsegment: req.param('startsegment'),
+                    endsegment: req.param('endsegment')
+                },
+                data: data.data
+            });
+            // return res.json(data);
         }
         catch (e)
         {
