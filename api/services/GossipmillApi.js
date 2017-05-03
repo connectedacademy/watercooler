@@ -118,7 +118,7 @@ module.exports = {
             }
         ];
         
-        for (let i=startsegment;i<=endsegment;i++) 
+        for (let i=parseInt(startsegment);i<=parseInt(endsegment);i++) 
         {
             query.push({
                 name:'segment',
