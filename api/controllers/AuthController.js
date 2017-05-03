@@ -66,7 +66,7 @@ module.exports = {
     },
 
     twitter_callback: (req,res,next)=>{
-        sails.passport.authenticate('twitter',{successRedirect: '/auth/dashboard', failureRedirect: '/auth/fail' })(req,res,next);
+        sails.passport.authenticate('twitter',{successRedirect: '/v1/auth/dashboard', failureRedirect: '/auth/fail' })(req,res,next);
     },
 
     login: (req,res,next) =>{
@@ -96,7 +96,7 @@ module.exports = {
     },
 
     dashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + '/registration');
+        return res.redirect(req.session.redirecturi + '/#/registration');
     },
 
     admindashboard: (req,res)=>{
