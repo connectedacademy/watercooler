@@ -3,10 +3,27 @@ var socketIOClient = require('socket.io-client');
 var sailsIOClient = require('sails.io.js');
 var io = sailsIOClient(socketIOClient);
 io.sails.url = process.env.GOSSIPMILL_URL;
+io.sails.reconnection = true;
 io.sails.initialConnectionHeaders = {nosession: true};
 
 io.socket.on('connect',function(){
     sails.log.info('Gossipmill API Socket Connected');
+});
+
+io.socket.on('disconnect',function(){
+    sails.log.info('Gossipmill API Socket disconnect');    
+});
+
+io.socket.on('reconnect',function(){
+    sails.log.info('Gossipmill API Socket reconnect');    
+});
+
+io.socket.on('reconnect_attempt',function(){
+    sails.log.info('Gossipmill API Socket reconnect_attempt');    
+});
+
+io.socket.on('reconnecting',function(num){
+    sails.log.info('Gossipmill API Socket reconnecting', num);    
 });
 
 let request = require('request-promise-native');
@@ -165,13 +182,14 @@ module.exports = {
 
         io.socket.post('/messages/subscribe/'+user.service + '/' + user.account+'?psk=' + process.env.GOSSIPMILL_PSK,{
                 lang: language,
+                socketid: sails.sockets.getId(req),
                 depth: 5,
                 filter_by:query
             },function(data){
             //subscribe to this roomname
             sails.sockets.join(req.socket,data.room);
             io.socket.on(data.room,function(msg){
-                sails.log.info(msg);
+                sails.log.info(msg.message_id);
                 sails.sockets.broadcast(data.room, msg);
             });
         });

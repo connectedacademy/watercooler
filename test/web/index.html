@@ -32,6 +32,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sails.io.js/1.1.12/sails.io.min.js"></script>        
         <script>
         io.sails.url = 'http://localhost:4000';
+        io.sails.environment = 'development';
+        io.sails.reconnection = true;
         io.socket.on('message',function(msg){
             console.log(msg);
         });
