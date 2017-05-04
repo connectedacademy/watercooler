@@ -143,13 +143,13 @@ module.exports = {
             }
         });
 
-        response.data = _.map(response.data,(d)=>{
-            _.each(d.tokens,(t)=>{
-                d[t.type] = t.name;
-            });
-            delete d.tokens;
-            return d;
-        });
+        // response.data = _.map(response.data,(d)=>{
+        //     _.each(d.tokens,(t)=>{
+        //         d[t.type] = t.name;
+        //     });
+        //     delete d.tokens;
+        //     return d;
+        // });
 
         response.data = _.groupBy(response.data, 'segment');
 
