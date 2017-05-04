@@ -91,7 +91,7 @@ module.exports = {
                         query: course
                     },
                     {
-                        name: 'like',
+                        name: 'tag',
                         query: klass+'/'+content
                     }
                 ]
