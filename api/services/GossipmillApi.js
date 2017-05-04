@@ -2,6 +2,7 @@
 var socketIOClient = require('socket.io-client');
 var sailsIOClient = require('sails.io.js');
 var io = sailsIOClient(socketIOClient);
+io.sails.environment = 'production';
 io.sails.url = process.env.GOSSIPMILL_URL;
 io.sails.reconnection = true;
 io.sails.initialConnectionHeaders = {nosession: true};
@@ -188,9 +189,11 @@ module.exports = {
             },function(data){
             //subscribe to this roomname
             sails.sockets.join(req.socket,data.room);
-            io.socket.on(data.room,function(msg){
-                sails.log.info(msg.message_id);
-                sails.sockets.broadcast(data.room, msg);
+            io.socket.off(data.room, function(){
+                io.socket.on(data.room,function(msg){
+                    sails.log.info(msg.message_id);
+                    sails.sockets.broadcast(data.room, msg);
+                })
             });
         });
 
@@ -226,6 +229,6 @@ module.exports = {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
-        return response;
+        return response.id;
     }
 }
