@@ -65,7 +65,7 @@ module.exports = {
 
         req.checkQuery('whitelist').optional().isBoolean();
         req.checkParams('class').notEmpty();
-        req.checkParams('content').notEmpty();        
+        req.checkParams('content').notEmpty();
             
         try
         {
@@ -81,7 +81,7 @@ module.exports = {
         let lang = await LangService.lang(req);
         try
         {
-            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'),req.param('content'), lang);       
+            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'),req.param('content'), lang, req.param('whitelist'));       
 
             return res.json({
                 scope:{
@@ -145,7 +145,7 @@ module.exports = {
                 };
             }
 
-            let data = await GossipmillApi.list(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'),depth);
+            let data = await GossipmillApi.list(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'),depth, whitelist);
              return res.json({
                 scope:{
                     class: req.param('class'),

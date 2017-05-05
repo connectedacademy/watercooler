@@ -6,6 +6,14 @@ let applyFrontMatter = async (data,uri)=>{
         delete data.url;
 }
 
+// let applyTotals = async (data, course, klass, content)=>
+// {
+//     let total = await GossipmillApi.totals(course, klass, content);
+//     _.extend(data, {
+//         likes: total.total
+//     });
+// }
+
 module.exports = {
 
     spec: async (req,res)=> {
@@ -19,6 +27,8 @@ module.exports = {
 
             //course info:
             promises.push(applyFrontMatter(data, req.course.url + '/course/content/' + lang + '/info.md'));
+            let totals = await GossipmillApi.allTotals(req.course.domain);
+            console.log(totals);
 
             //for each file in the spec, get the markdown and parse it:
             for (let klass of data.classes)
@@ -26,6 +36,8 @@ module.exports = {
                 promises.push(applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
                 for (let content of klass.content)
                 {
+                    //apply likes:
+
                     if (content.url)
                         promises.push(applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url));
                 }

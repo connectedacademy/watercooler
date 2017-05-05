@@ -33,13 +33,14 @@ let baseURI = process.env.GOSSIPMILL_URL;
 
 module.exports = {
 
-    visualisation: async (course, klass,content, language)=>{
+    visualisation: async (course, klass,content, language, whitelist)=>{
         let response = await request({
             url: baseURI + 'messages/visualisation',
             method: 'POST',
             json: true,
             body:{
                 lang: language,
+                whitelist: whitelist,
                 group_by: {
                     name: 'segment'
                 },
@@ -103,7 +104,31 @@ module.exports = {
         return response;
     },
 
-    list: async (course, klass, user, language, contentid, startsegment, endsegment, depth)=>{
+    allTotals: async (course)=>{
+        let response = await request({
+            url: baseURI + 'messages/totals',
+            method: 'POST',
+            json: true,
+            body:{
+               filter_by:[
+                    {
+                        name: 'course',
+                        query: course
+                    },
+                    {
+                        name: 'tag',
+                        query: '*'
+                    }
+                ]
+            },
+            qs: {
+                psk: process.env.GOSSIPMILL_PSK
+            }
+        });
+        return response;
+    },
+
+    list: async (course, klass, user, language, contentid, startsegment, endsegment, depth, whitelist)=>{
         let query = [
             {
                 name: 'course',
@@ -135,6 +160,7 @@ module.exports = {
             json: true,
             body:{
                 filter_by: query,
+                whitelist: whitelist,
                 depth: depth || 10,
                 lang: language
             },
@@ -142,14 +168,6 @@ module.exports = {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
-
-        // response.data = _.map(response.data,(d)=>{
-        //     _.each(d.tokens,(t)=>{
-        //         d[t.type] = t.name;
-        //     });
-        //     delete d.tokens;
-        //     return d;
-        // });
 
         response.data = _.groupBy(response.data, 'segment');
 
