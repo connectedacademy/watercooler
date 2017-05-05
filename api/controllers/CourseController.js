@@ -6,14 +6,6 @@ let applyFrontMatter = async (data,uri)=>{
         delete data.url;
 }
 
-// let applyTotals = async (data, course, klass, content)=>
-// {
-//     let total = await GossipmillApi.totals(course, klass, content);
-//     _.extend(data, {
-//         likes: total.total
-//     });
-// }
-
 module.exports = {
 
     spec: async (req,res)=> {

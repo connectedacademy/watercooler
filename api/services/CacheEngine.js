@@ -13,14 +13,16 @@ let showdown  = require('showdown');
 let markdownconverter = new showdown.Converter();
 
 requestify.cacheTransporter(requestify.coreCacheTransporters.redis(rediscache));
+
 let get =  async (uri)=>{
     let response = await requestify.get(uri,{
-        cache: true
+        cache:
+        {
+            cache: true
+        }
     });
     return response.body;
 };
-
-
 
 module.exports = {
 
