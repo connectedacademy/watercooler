@@ -27,8 +27,9 @@ module.exports = {
 
             //course info:
             promises.push(applyFrontMatter(data, req.course.url + '/course/content/' + lang + '/info.md'));
+            
             let totals = await GossipmillApi.allTotals(req.course.domain);
-            console.log(totals);
+            // console.log(totals);
 
             //for each file in the spec, get the markdown and parse it:
             for (let klass of data.classes)
@@ -39,7 +40,10 @@ module.exports = {
                     //apply likes:
 
                     if (content.url)
+                    {
+                        content.likes = totals[klass.slug + '/' + content.slug];
                         promises.push(applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url));
+                    }
                 }
             }
 

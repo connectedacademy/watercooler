@@ -86,6 +86,9 @@ module.exports = {
             method: 'POST',
             json: true,
             body:{
+               group_by:{
+                name:'tag'
+               },
                filter_by:[
                     {
                         name: 'course',
@@ -105,19 +108,18 @@ module.exports = {
     },
 
     allTotals: async (course)=>{
-        let response = await request({
+       let response = await request({
             url: baseURI + 'messages/totals',
             method: 'POST',
             json: true,
             body:{
+               group_by:{
+                name:'tag'
+               },
                filter_by:[
                     {
                         name: 'course',
                         query: course
-                    },
-                    {
-                        name: 'tag',
-                        query: '*'
                     }
                 ]
             },
