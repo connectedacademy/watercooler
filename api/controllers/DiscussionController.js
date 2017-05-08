@@ -94,7 +94,7 @@ module.exports = {
                 if (!message.readAt)
                     message.readAt = [];
                 message.readAt.push({
-                    user: req.session.passport.user.id,
+                    user: req.session.passport.user.id+'',
                     date: (new Date()).toISOString()});
                 message.save(function(err){
                     if (err)
@@ -118,8 +118,6 @@ module.exports = {
      * get messages for submission
      */
     messages: async (req,res)=>{
-
-        //TODO: blank out message if I have not submitted a message to that user's submission which matches the same criteria
 
         //list all messages for this submission
         let query = "SELECT *, list((SELECT FROM discussionmessage WHERE relates_to = $id)) as discussion FROM "+req.param('submission')+" LET $id = @rid \
@@ -161,8 +159,9 @@ module.exports = {
         try
         {
          
-            //get discussion for submissions I participate in:
-            let participated = await Submission.find({
+            // get discussion for submissions I participate in:
+            let p = Submission.find({
+                cached:true,
                 course: req.course.domain,
                 class: req.param('class'),
                 content: req.param('content')
@@ -171,7 +170,8 @@ module.exports = {
             });
 
             //get discussions for submissions I own:
-            let own = await Submission.find({
+            let o = Submission.find({
+                cached:true,
                 user: req.session.passport.user.id,
                 course: req.course.domain,
                 class: req.param('class'),
@@ -179,17 +179,23 @@ module.exports = {
             })
             .populate('discussion').populate('user');
 
-            _.each(own,(dat)=>{
+            let [participated,own] = await Promise.all([p,o]);
+            
+            let merge = own.concat(participated);
+            let result = _.uniq(merge, function(r){
+                return r.id
+            });
+            
+            //TODO: readAt changes
+            _.each(result,(dat)=>{
                 dat.unread = _.size(_.filter(dat.discussion,(d)=>{
                     return !d.readAt;
                 }));
                 dat.messages = _.size(dat.discussion);
             });
 
-            let merge = own.concat(participated);
-
-            let result = _.uniq(merge, function(r){
-                return r.id
+            result = _.map(result,(dat)=>{
+                return _.omit(dat,'discussion','course','class','content');
             });
 
             return res.json({
