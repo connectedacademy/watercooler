@@ -3,7 +3,7 @@ module.exports = {
 
   attributes: {
     message: 'text',
-    readAt: 'json',
+    readAt: 'array',
     relates_to: 
     {
       model: 'Submission' //content it relates to
