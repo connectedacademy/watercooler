@@ -3,13 +3,10 @@ module.exports = {
 
   attributes: {
     message: 'text',
-    readAt: 'datetime',
+    readAt: 'json',
     relates_to: 
     {
       model: 'Submission' //content it relates to
-    }, 
-    touser:{
-      model: 'User'
     },
     fromuser:
     {

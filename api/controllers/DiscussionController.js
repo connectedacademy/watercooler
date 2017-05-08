@@ -1,19 +1,18 @@
 module.exports = {
 
     available: async (req,res)=>{
-        //TODO: algorithm to pick the submission from this filter that needs discussion
+
+        //TODO: exclude submissions that I am already involved in.
+
+        //filter submission by current course / class, and not your own, and has cached data. Sort by number of discussion messages ASC
+
         try
         {
-            //SELECT relates_to.url as url, relates_to.@rid as id, relates_to.createdAt as createdAt, COUNT(relates_to) AS messages FROM discussionmessage WHERE relates_to.course = "testclass.connectedacademy.io" AND relates_to.class = 1 AND relates_to.schedule = 2 GROUP BY relates_to ORDER BY messages ASC limit 3
-            // let data = await DiscussionMessage.query('SELECT relates_to.user.profile as profile, relates_to.user.account as account, relates_to.url as url, relates_to.@rid as id, relates_to.createdAt as createdAt, COUNT(relates_to) AS messages FROM discussionmessage WHERE relates_to.course = "'+req.course.domain+'" AND relates_to.class = "'+req.param('class')+'" AND relates_to.content = '+req.param('content')+' GROUP BY relates_to ORDER BY messages LIMIT 3'); 
-
-            let data = await Submission.find({
-                course: req.course.domain,
-                class:req.param('class'),
-                content:req.param('content'),
-                user: req.session.passport.user.id,
-                cached: true
-            }).limit(3).populate('user');
+            let query = "SELECT *, list((SELECT FROM discussionmessage WHERE relates_to = $id)).size() as discussion FROM submission LET $id = @rid \
+            WHERE cached=true AND course='"+req.course.domain+"' AND class='" + req.param('class') + "' AND content='" + req.param('content')+"' AND user <> '" + req.session.passport.user.id + "'\
+            ORDER BY discussion ASC LIMIT 3 FETCHPLAN user:1";
+            let data = await Submission.query(query);
+            console.log(query);
 
             return res.json({
                 scope:{
@@ -35,8 +34,25 @@ module.exports = {
         return res.ok('Subscribed to new discussion messages for ' + req.param('submission'));
     },
 
+    /**
+     * Write new message for a submission
+     */
     create: async (req,res)=>{
-        //TODO: validation
+        
+        req.checkBody('text').notEmpty();
+
+        try
+        {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e)
+        {
+            return res.badRequest(e.mapped());
+        }
+
+
+
         let msg = {
             message: req.param('text'),
             relates_to: req.param('submission'),
@@ -128,7 +144,7 @@ module.exports = {
                 course: req.course.domain,
                 class: req.param('class'),
                 content: req.param('content')
-            }).populate('discussion',{
+            }).populate('user').populate('discussion',{
                 fromuser: req.session.passport.user.id
             });
 
@@ -139,7 +155,7 @@ module.exports = {
                 class: req.param('class'),
                 content: req.param('content')
             })
-            .populate('discussion');
+            .populate('discussion').populate('user');
 
             _.each(own,(dat)=>{
                 dat.unread = _.size(_.filter(dat.discussion,(d)=>{

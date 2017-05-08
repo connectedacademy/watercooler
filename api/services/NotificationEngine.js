@@ -324,9 +324,19 @@ module.exports = {
             sails.log.verbose('Sending offline notification about new peer message', message);
             let lang = await LangService.lang(req);
             let email = await CacheEngine.getEmail(req.course, lang || process.env.DEFAULT_LANG, 'newfeedback');
-            email.body = email.body.replace('{{user}}', user.name);
-            email.body = email.body.replace('{{date}}', new Date().toString());
-            await sendEmail(message.fromuser, email.subject, email.body);
+
+            //find all other people in discussion for this submission:
+            let users = await DiscussionMessage.find({
+                relates_to: message.relates_to
+            }).populate('fromuser');
+
+            users = _.uniq(users,'fromuser.id');
+
+            for (let user of users) {
+                email.body = email.body.replace('{{user}}', user.name);
+                email.body = email.body.replace('{{date}}', new Date().toString());
+                sendEmail(user, email.subject, email.body);
+            }
         }
         catch (e) {
             sails.log.error(e);
