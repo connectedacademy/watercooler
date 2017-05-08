@@ -130,6 +130,49 @@ module.exports = {
         return response;
     },
 
+    summary: async (course, klass, user, language, contentid, startsegment, endsegment, whitelist)=>{
+        let query = [
+            {
+                name: 'course',
+                query: course
+            },
+            {
+                name: 'class',
+                query: klass
+            },
+            {
+                name: 'content',
+                query: contentid
+            }
+        ];
+        
+        for (let i=parseInt(startsegment);i<=parseInt(endsegment);i++) 
+        {
+            query.push({
+                name:'segment',
+                query: i
+            });
+        }
+
+        sails.log.verbose('Requesting summary');
+
+        let response = await request({
+            url: baseURI + 'messages/summary/' + user.service + '/' + user.account,
+            method: 'POST',
+            json: true,
+            body:{
+                whitelist:whitelist,
+                filter_by: query,
+                lang: language
+            },
+            qs: { 
+                psk: process.env.GOSSIPMILL_PSK
+            }
+        });
+
+        return response.data;
+    },
+
     list: async (course, klass, user, language, contentid, startsegment, endsegment, depth, whitelist)=>{
         let query = [
             {
