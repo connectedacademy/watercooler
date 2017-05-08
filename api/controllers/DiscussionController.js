@@ -5,13 +5,19 @@ module.exports = {
         try
         {
             //SELECT relates_to.url as url, relates_to.@rid as id, relates_to.createdAt as createdAt, COUNT(relates_to) AS messages FROM discussionmessage WHERE relates_to.course = "testclass.connectedacademy.io" AND relates_to.class = 1 AND relates_to.schedule = 2 GROUP BY relates_to ORDER BY messages ASC limit 3
-            let data = await DiscussionMessage.query('SELECT relates_to.user.profile as profile, relates_to.user.account as account, relates_to.url as url, relates_to.@rid as id, relates_to.createdAt as createdAt, COUNT(relates_to) AS messages FROM discussionmessage WHERE relates_to.course = "'+req.course.domain+'" AND relates_to.class = "'+req.param('class')+'" AND relates_to.schedule = '+req.param('schedule')+' GROUP BY relates_to ORDER BY messages LIMIT 3'); 
+            // let data = await DiscussionMessage.query('SELECT relates_to.user.profile as profile, relates_to.user.account as account, relates_to.url as url, relates_to.@rid as id, relates_to.createdAt as createdAt, COUNT(relates_to) AS messages FROM discussionmessage WHERE relates_to.course = "'+req.course.domain+'" AND relates_to.class = "'+req.param('class')+'" AND relates_to.content = '+req.param('content')+' GROUP BY relates_to ORDER BY messages LIMIT 3'); 
+
+            let data = await Submission.find({
+                course: req.course.domain,
+                class:req.param('class'),
+                content:req.param('content')
+            }).limit(3).populate('user');
 
             return res.json({
                 scope:{
                     course: req.course.domain,
                     class: req.param('class'),
-                    schedule: req.param('schedule')                    
+                    content: req.param('content')                    
                 },
                 data: data
             });
@@ -89,10 +95,12 @@ module.exports = {
         })               
     },
 
+    /**
+     * Redirect to the submission url (either my cache or original)
+     */
     submission: async (req,res)=>{
 
         //redirect to the original submission:
-        
 
         //TODO: validation   
         try
@@ -117,7 +125,7 @@ module.exports = {
             let participated = await Submission.find({
                 course: req.course.domain,
                 class: req.param('class'),
-                schedule: req.param('schedule')
+                content: req.param('content')
             }).populate('discussion',{
                 fromuser: req.session.passport.user.id
             });
@@ -127,7 +135,7 @@ module.exports = {
                 user: req.session.passport.user.id,
                 course: req.course.domain,
                 class: req.param('class'),
-                schedule: req.param('schedule')
+                content: req.param('content')
             })
             .populate('discussion');
 
@@ -148,7 +156,7 @@ module.exports = {
                 scope:{
                     course: req.course.domain,
                     class: req.param('class'),
-                    schedule: req.param('schedule')                    
+                    content: req.param('content')                    
                 },
                 data: result
             });

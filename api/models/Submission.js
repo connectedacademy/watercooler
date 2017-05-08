@@ -13,8 +13,8 @@ module.exports = {
         cachedat:'datetime',
         course: 'string',
         class: 'string',
-        schedule: 'string',
-        content:'text',
+        content: 'string',
+        html:'text',
         discussion:{
             collection:'DiscussionMessage',
             via: 'relates_to'

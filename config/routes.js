@@ -70,12 +70,12 @@ module.exports.routes = {
 
   // DISCUSSION MODULE
 
-  'GET /v1/discussion/available/:class/:schedule':'DiscussionController.available',
+  'GET /v1/discussion/available/:class/:content':'DiscussionController.available',
   'GET /v1/discussion/subscribe/:media':'DiscussionController.subscribe',
   'POST /v1/discussion/create/:media':'DiscussionController.create',
   'GET /v1/discussion/messages/:media':'DiscussionController.messages',
   'GET /v1/discussion/submission/:media':'DiscussionController.submission',
-  'GET /v1/discussion/list/:class/:schedule':'DiscussionController.list',
+  'GET /v1/discussion/list/:class/:content':'DiscussionController.list',
   'POST /v1/discussion/read/:message':'DiscussionController.read',
 
   'OPTIONS /*':{policy:'cors'}
