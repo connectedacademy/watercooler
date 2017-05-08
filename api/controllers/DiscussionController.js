@@ -10,7 +10,9 @@ module.exports = {
             let data = await Submission.find({
                 course: req.course.domain,
                 class:req.param('class'),
-                content:req.param('content')
+                content:req.param('content'),
+                user: req.session.passport.user.id,
+                cached: true
             }).limit(3).populate('user');
 
             return res.json({
