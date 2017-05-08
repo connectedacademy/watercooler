@@ -186,11 +186,16 @@ module.exports = {
                 return r.id
             });
             
-            //TODO: readAt changes
             _.each(result,(dat)=>{
-                dat.unread = _.size(_.filter(dat.discussion,(d)=>{
-                    return !d.readAt;
-                }));
+                // console.log(dat.discussion);
+
+                dat.unread = _.size(
+                    _.filter(dat.discussion,(d)=>{
+                        // console.log(d.readAt);
+                        return !_.find(d.readAt,{user:req.session.passport.user.id+''});
+
+                    })
+                );
                 dat.messages = _.size(dat.discussion);
             });
 
