@@ -136,7 +136,10 @@ module.exports = {
 
         // let query = "SELECT FROM discussionmessage WHERE relates_to = "+req.param('submission')+" \
             // ORDER BY discussion.createdAt ASC FETCHPLAN fromuser:1";
+        // let data = await DiscussionMessage.find({relates_to:req.param('submission')}).populate('fromuser');
+        let submission = await Submission.findOne(req.param('submission'));
         let data = await DiscussionMessage.find({relates_to:req.param('submission')}).populate('fromuser');
+        
         let msg = data;
         let authors = _.uniq(_.map(msg,(m)=>{return m.fromuser.id}));
         // console.log(authors);
@@ -147,11 +150,11 @@ module.exports = {
             //SELECT FROM discussionmessage WHERE relates_to.user IN [#34:234] AND relates_to.course='testclass.connectedacademy.io' AND relates_to.class='evidence' AND relates_to.content='intro';
 
         //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
-        let query = "SELECT set(fromuser) as messagesfrom, relates_to.user as author FROM discussionmessage \
+        let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
         WHERE relates_to.user IN ["+authors.join(',')+"] \
         AND relates_to.course='"+req.course.domain+"' \
-        AND relates_to.class='"+msg.class+"' \
-        AND relates_to.content='"+msg.content+"' \
+        AND relates_to.class='"+submission.class+"' \
+        AND relates_to.content='"+submission.content+"' \
         GROUP BY relates_to.user";
         // console.log(query);
         let author_messages = await Submission.query(query);
@@ -175,7 +178,7 @@ module.exports = {
                 let forthisauthor = _.find(author_messages,{author:m.fromuser.id});
                 if (forthisauthor)
                 {
-                    m.canview = _.includes(forthisauthor,req.session.passport.user.id);
+                    m.canview = _.includes(forthisauthor.messagesfrom,req.session.passport.user.id);
                 }
                 else
                 {
