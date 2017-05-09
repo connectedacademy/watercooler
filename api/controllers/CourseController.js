@@ -1,9 +1,19 @@
-let applyFrontMatter = async (data,uri)=>{
+let applyFrontMatter = async (data, uri, course, user, klass, content)=>{
     let courseinfo = await CacheEngine.getFrontmatter(uri);
     _.extend(data, courseinfo);
     delete data.published;
     if (data.video)
         delete data.url;
+    if (data.expectsubmission && user)
+    {
+        let submissions = await Submission.find({
+            course: course,
+            class: klass,
+            content: content,
+            user: user
+        });
+        data.submissions = submissions;
+    }
 }
 
 module.exports = {
@@ -30,11 +40,10 @@ module.exports = {
                 for (let content of klass.content)
                 {
                     //apply likes:
-
                     if (content.url)
                     {
                         content.likes = totals[klass.slug + '/' + content.slug];
-                        promises.push(applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url));
+                        promises.push(applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url, req.course.domain, (req.session.passport.user)?req.session.passport.user.id:null, klass.slug, content.slug));
                     }
                 }
             }

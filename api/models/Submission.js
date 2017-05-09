@@ -15,6 +15,7 @@ module.exports = {
         class: 'string',
         content: 'string',
         html:'text',
+        thumbnail:'string',
         discussion:{
             collection:'DiscussionMessage',
             via: 'relates_to'
