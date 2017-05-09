@@ -7,7 +7,6 @@ module.exports = {
             model:'User'
         },
         url: 'string',
-        parsedfrom: 'string',
         cached: 'boolean',
         original:'string',
         cachedat:'datetime',
