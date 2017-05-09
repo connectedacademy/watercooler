@@ -8,6 +8,7 @@ module.exports = {
         {
             let query = "SELECT *, list((SELECT FROM discussionmessage WHERE relates_to = $id)).size() as discussion FROM submission LET $id = @rid \
             WHERE cached=true AND course='"+req.course.domain+"' AND class='" + req.param('class') + "' AND content='" + req.param('content')+"' AND user <> '" + req.session.passport.user.id + "'\
+            AND list((SELECT FROM discussionmessage WHERE relates_to = $id)) CONTAINSALL (fromuser NOT IN ["+req.session.passport.user.id+"])\
             ORDER BY discussion ASC LIMIT 3 FETCHPLAN user:1";
             let data = await Submission.query(query);
             // console.log(query);
@@ -217,6 +218,7 @@ module.exports = {
                 AND relates_to.content='"+req.param('content')+"' \
                 GROUP BY relates_to FETCHPLAN submission:2 discussion:1";
             
+
             let all = await Submission.query(query);
             // let p = Submission.find({
             //     cached:true,
@@ -257,7 +259,10 @@ module.exports = {
             });
 
             all = _.map(all,(dat)=>{
-                return _.omit(dat,'discussion','course','class','content');
+                let tmp = dat.submission;
+                tmp.unread = dat.unread;
+                tmp.message = dat.messages;
+                return dat.submission
             });
 
             return res.json({
