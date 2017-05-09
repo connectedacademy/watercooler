@@ -74,7 +74,7 @@ module.exports.routes = {
   'GET /v1/discussion/subscribe/:submission':'DiscussionController.subscribe',
   'POST /v1/discussion/create/:submission':'DiscussionController.create',
   'GET /v1/discussion/messages/:submission':'DiscussionController.messages',
-  // 'GET /v1/discussion/submission/:submission':'DiscussionController.submission',
+  'GET /v1/discussion/submission/:submission':'DiscussionController.submission',  
   'GET /v1/discussion/list/:class/:content':'DiscussionController.list',
   'POST /v1/discussion/read/:message':'DiscussionController.read',
 

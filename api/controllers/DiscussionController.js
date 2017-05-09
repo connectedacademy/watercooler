@@ -116,16 +116,29 @@ module.exports = {
     },
 
     /**
+     * Get submission
+     */
+    submission: async (req,res) =>{
+        let submission = await Submission.findOne(req.param('submission')).populate('user');
+        if (submission)
+            return res.json(submission);
+        else
+            return res.notFound();
+    },
+
+    /**
      * get messages for submission
      */
     messages: async (req,res)=>{
 
         //list all messages for this submission
-        let query = "SELECT *, list((SELECT FROM discussionmessage WHERE relates_to = $id)) as discussion FROM "+req.param('submission')+" LET $id = @rid \
-            ORDER BY discussion ASC FETCHPLAN user:1 discussion:1 discussion.fromuser:1";
-        let data = await Submission.query(query);
-        let msg = _.first(data);
-        let authors = _.uniq(_.map(msg.discussion,(m)=>{return m.fromuser.id}));
+        
+
+        // let query = "SELECT FROM discussionmessage WHERE relates_to = "+req.param('submission')+" \
+            // ORDER BY discussion.createdAt ASC FETCHPLAN fromuser:1";
+        let data = await DiscussionMessage.find({relates_to:req.param('submission')}).populate('fromuser');
+        let msg = data;
+        let authors = _.uniq(_.map(msg,(m)=>{return m.fromuser.id}));
         // console.log(authors);
         //list of authors: for each author, work out if I have submitted a message to one of their submissions:
         // let messages = "SELECT FROM discussionmessage WHERE relatesto.course = 'testclass.connectedacademy.io";
@@ -145,7 +158,7 @@ module.exports = {
         // console.log(messages);
         //if my id is in the list for each author, then allow the message
 
-        for (let m of msg.discussion)
+        for (let m of msg)
         {
             let forthisauthor = _.find(messages,{relates_to:m.fromuser.id});
             m.canview = _.includes(forthisauthor,req.session.passport.user.id);
