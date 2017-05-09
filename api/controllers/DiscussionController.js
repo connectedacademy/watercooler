@@ -236,10 +236,10 @@ module.exports = {
                 };
             });
 
-            let merge = own.concat(participated);
-            let result = _.uniq(merge, function(r){
-                return r.id
-            });
+            let result = own.concat(participated);
+            // let result = _.uniq(merge, function(r){
+            //     return r.id
+            // });
             
             _.each(result,(dat)=>{
                 // console.log(dat.discussion);
