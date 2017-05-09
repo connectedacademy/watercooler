@@ -147,7 +147,7 @@ module.exports = {
             //SELECT FROM discussionmessage WHERE relates_to.user IN [#34:234] AND relates_to.course='testclass.connectedacademy.io' AND relates_to.class='evidence' AND relates_to.content='intro';
 
         //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
-        query = "SELECT set(fromuser), relates_to.user FROM discussionmessage \
+        let query = "SELECT set(fromuser), relates_to.user FROM discussionmessage \
         WHERE relates_to.user IN ["+authors.join(',')+"] \
         AND relates_to.course='"+req.course.domain+"' \
         AND relates_to.class='"+msg.class+"' \
@@ -160,8 +160,22 @@ module.exports = {
 
         for (let m of msg)
         {
-            let forthisauthor = _.find(messages,{relates_to:m.fromuser.id});
-            m.canview = _.includes(forthisauthor,req.session.passport.user.id);
+            if (m.fromuser.id == req.session.passport.user.id)
+                m.canview = true;
+            else
+            {
+                let forthisauthor = _.find(messages,{relates_to:m.fromuser.id});
+                m.canview = _.includes(forthisauthor,req.session.passport.user.id);
+            }
+
+            if (_.find(m.readAt,{user:req.session.passport.user.id+''}))
+            {
+                m.unread = false;
+            }
+            else
+            {
+                m.unread = true;
+            }
         }
 
         Submission.removeCircularReferences(msg);
