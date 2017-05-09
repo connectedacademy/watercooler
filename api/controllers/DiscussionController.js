@@ -158,6 +158,27 @@ module.exports = {
         // console.log(messages);
         //if my id is in the list for each author, then allow the message
 
+        // do the read messages:
+        
+        // var promises = [];
+        // for (let message of messages)
+        // {
+        let read = {
+            user: req.session.passport.user.id+'',
+            date: (new Date()).toISOString()
+        };
+
+        let q = "UPDATE discussionmessage ADD readAt = "+JSON.stringify(read) + " WHERE @rid IN ["+_.pluck(data,'id').join(',') + ']';
+        // console.log(q);
+        await DiscussionMessage.query(q);
+        
+
+            // message.save(function(err){
+
+            // });
+        // }
+
+
         for (let m of msg)
         {
             if (m.fromuser.id == req.session.passport.user.id)
@@ -188,35 +209,43 @@ module.exports = {
         {
          
             // get discussion for submissions I participate in:
-            let p = Submission.find({
-                cached:true,
-                course: req.course.domain,
-                class: req.param('class'),
-                content: req.param('content')
-            }).populate('user').populate('discussion',{
-                fromuser: req.session.passport.user.id
-            });
+            
+            let query = "SELECT relates_to as submission, list(@this).include('readAt','@rid') as discussion FROM discussionmessage WHERE \
+                (fromuser="+req.session.passport.user.id+" or relates_to.user="+req.session.passport.user.id+") \
+                AND relates_to.course='"+req.course.domain+"' \
+                AND relates_to.class='"+req.param('class')+"' \
+                AND relates_to.content='"+req.param('content')+"' \
+                GROUP BY relates_to FETCHPLAN submission:2 discussion:1";
+            
+            let all = await Submission.query(query);
+            // let p = Submission.find({
+            //     cached:true,
+            //     course: req.course.domain,
+            //     class: req.param('class'),
+            //     content: req.param('content')
+            // }).populate('user').populate('discussion',{
+            //     fromuser: req.session.passport.user.id
+            // });
 
             //get discussions for submissions I own:
-            let o = Submission.find({
-                cached:true,
-                user: req.session.passport.user.id,
-                course: req.course.domain,
-                class: req.param('class'),
-                content: req.param('content')
-            })
-            .populate('discussion').populate('user');
+            // let o = Submission.find({
+            //     cached:true,
+            //     user: req.session.passport.user.id,
+            //     course: req.course.domain,
+            //     class: req.param('class'),
+            //     content: req.param('content')
+            // })
+            // .populate('discussion').populate('user');
 
-            let [participated,own] = await Promise.all([p,o]);
+            // let [participated,own] = await Promise.all([p,o]);
             
-            let merge = own.concat(participated);
-            let result = _.uniq(merge, function(r){
-                return r.id
-            });
+            // let merge = own.concat(participated);
+            // let result = _.uniq(all, function(r){
+            //     return r.id
+            // });
             
-            _.each(result,(dat)=>{
+            _.each(all,(dat)=>{
                 // console.log(dat.discussion);
-
                 dat.unread = _.size(
                     _.filter(dat.discussion,(d)=>{
                         // console.log(d.readAt);
@@ -227,7 +256,7 @@ module.exports = {
                 dat.messages = _.size(dat.discussion);
             });
 
-            result = _.map(result,(dat)=>{
+            all = _.map(all,(dat)=>{
                 return _.omit(dat,'discussion','course','class','content');
             });
 
@@ -237,7 +266,7 @@ module.exports = {
                     class: req.param('class'),
                     content: req.param('content')                    
                 },
-                data: result
+                data: all
             });
         }
         catch (e)
