@@ -1,7 +1,6 @@
 module.exports = {
 
     available: async (req,res)=>{
-        //TODO: exclude submissions that I am already involved in.
         //TODO: match with submissions in same language (user registration)
 
         try
@@ -148,37 +147,24 @@ module.exports = {
             //SELECT FROM discussionmessage WHERE relates_to.user IN [#34:234] AND relates_to.course='testclass.connectedacademy.io' AND relates_to.class='evidence' AND relates_to.content='intro';
 
         //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
-        let query = "SELECT set(fromuser), relates_to.user FROM discussionmessage \
+        let query = "SELECT set(fromuser) as messagesfrom, relates_to.user as author FROM discussionmessage \
         WHERE relates_to.user IN ["+authors.join(',')+"] \
         AND relates_to.course='"+req.course.domain+"' \
         AND relates_to.class='"+msg.class+"' \
         AND relates_to.content='"+msg.content+"' \
         GROUP BY relates_to.user";
         // console.log(query);
-        let messages = await Submission.query(query);
-        // console.log(messages);
-        //if my id is in the list for each author, then allow the message
+        let author_messages = await Submission.query(query);
 
-        // do the read messages:
-        
-        // var promises = [];
-        // for (let message of messages)
-        // {
         let read = {
             user: req.session.passport.user.id+'',
             date: (new Date()).toISOString()
         };
 
+        //TODO: READ AT - NEEDS FIXING
         let q = "UPDATE discussionmessage ADD readAt = "+JSON.stringify(read) + " WHERE @rid IN ["+_.pluck(data,'id').join(',') + ']';
         // console.log(q);
         await DiscussionMessage.query(q);
-        
-
-            // message.save(function(err){
-
-            // });
-        // }
-
 
         for (let m of msg)
         {
@@ -186,8 +172,15 @@ module.exports = {
                 m.canview = true;
             else
             {
-                let forthisauthor = _.find(messages,{relates_to:m.fromuser.id});
-                m.canview = _.includes(forthisauthor,req.session.passport.user.id);
+                let forthisauthor = _.find(author_messages,{author:m.fromuser.id});
+                if (forthisauthor)
+                {
+                    m.canview = _.includes(forthisauthor,req.session.passport.user.id);
+                }
+                else
+                {
+                    m.canview = false;
+                }
             }
 
             if (_.find(m.readAt,{user:req.session.passport.user.id+''}))
