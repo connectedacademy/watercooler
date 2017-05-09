@@ -215,35 +215,33 @@ module.exports = {
                 AND relates_to.content='"+req.param('content')+"' \
                 GROUP BY relates_to FETCHPLAN submission:2 discussion:1";
             
-
-            let all = await Submission.query(query);
-            // let p = Submission.find({
-            //     cached:true,
-            //     course: req.course.domain,
-            //     class: req.param('class'),
-            //     content: req.param('content')
-            // }).populate('user').populate('discussion',{
-            //     fromuser: req.session.passport.user.id
-            // });
+            let p = Submission.query(query);
 
             //get discussions for submissions I own:
-            // let o = Submission.find({
-            //     cached:true,
-            //     user: req.session.passport.user.id,
-            //     course: req.course.domain,
-            //     class: req.param('class'),
-            //     content: req.param('content')
-            // })
-            // .populate('discussion').populate('user');
+            let o = Submission.find({
+                cached:true,
+                user: req.session.passport.user.id,
+                course: req.course.domain,
+                class: req.param('class'),
+                content: req.param('content')
+            })
+            .populate('discussion').populate('user');
 
-            // let [participated,own] = await Promise.all([p,o]);
+            let [participated,own] = await Promise.all([p,o]);
             
-            // let merge = own.concat(participated);
-            // let result = _.uniq(all, function(r){
-            //     return r.id
-            // });
+            own = _.map(own,function(ow){
+                return {
+                    submission: ow,
+                    discussion: ow.discussion
+                };
+            });
+
+            let merge = own.concat(participated);
+            let result = _.uniq(merge, function(r){
+                return r.id
+            });
             
-            _.each(all,(dat)=>{
+            _.each(result,(dat)=>{
                 // console.log(dat.discussion);
                 dat.unread = _.size(
                     _.filter(dat.discussion,(d)=>{
@@ -255,7 +253,7 @@ module.exports = {
                 dat.messages = _.size(dat.discussion);
             });
 
-            all = _.map(all,(dat)=>{
+            result = _.map(result,(dat)=>{
                 let tmp = dat.submission;
                 tmp.unread = dat.unread;
                 tmp.message = dat.messages;
@@ -268,7 +266,7 @@ module.exports = {
                     class: req.param('class'),
                     content: req.param('content')                    
                 },
-                data: all
+                data: result
             });
         }
         catch (e)
