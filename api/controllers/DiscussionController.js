@@ -5,10 +5,11 @@ module.exports = {
 
         try
         {
-            let query = "SELECT *, list((SELECT FROM discussionmessage WHERE relates_to = $id)).size() as discussion FROM submission LET $id = @rid \
+            //SELECT *, list($discussion).size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = @this.@rid)             WHERE cached=true AND course='testclass.connectedacademy.io' AND class='evidence' AND content='intro' AND user <> '#33:0'            AND $discussion CONTAINSALL (fromsssuser NOT IN [#33:0])            ORDER BY discussion ASC LIMIT 3 FETCHPLAN user:1
+            let query = "SELECT *, list($discussion).size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = @this.@rid) \
             WHERE cached=true AND course='"+req.course.domain+"' AND class='" + req.param('class') + "' AND content='" + req.param('content')+"' AND user <> '" + req.session.passport.user.id + "'\
-            AND list((SELECT FROM discussionmessage WHERE relates_to = $id)) CONTAINSALL (fromuser NOT IN ["+req.session.passport.user.id+"])\
-            ORDER BY discussion ASC LIMIT 3 FETCHPLAN user:1";
+            AND $discussion CONTAINSALL (fromsssuser NOT IN ["+req.session.passport.user.id+"])\
+            ORDER BY discussion ASC LIMIT 9 FETCHPLAN user:1";
             let data = await Submission.query(query);
             // console.log(query);
 
