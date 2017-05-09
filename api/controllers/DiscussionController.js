@@ -237,9 +237,7 @@ module.exports = {
             });
 
             let result = own.concat(participated);
-            // let result = _.uniq(merge, function(r){
-            //     return r.id
-            // });
+            
             
             _.each(result,(dat)=>{
                 // console.log(dat.discussion);
@@ -258,6 +256,10 @@ module.exports = {
                 tmp.unread = dat.unread;
                 tmp.message = dat.messages;
                 return dat.submission
+            });
+
+            result = _.uniq(result, function(r){
+                return r.id
             });
 
             return res.json({
