@@ -1,9 +1,9 @@
 # This file is a template, and might need editing before it works on your project.
 # Official framework image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/node/tags/
-image: node:latest
-
+image: docker:git
 services:
+  - docker:dind
   - redis:latest
 
 variables:
@@ -28,12 +28,52 @@ cache:
   paths:
   - node_modules/
 
-stages:
-  - test
-
 test:
   stage: test
   script:
    - npm install
    - git clone https://gitlab-ci-token:$CI_BUILD_TOKEN@openlab.ncl.ac.uk/gitlab/connected-academy/spec.git
    - npm test
+
+stages:
+- build
+- test
+- release
+- deploy
+
+variables:
+  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+
+before_script:
+  - docker login -u gitlab-ci-token -p "$CI_BUILD_TOKEN" $CI_REGISTRY
+
+build:
+  stage: build
+  tags:
+    - local
+  script:
+    - docker build -t $CONTAINER_TEST_IMAGE .
+    - docker push $CONTAINER_TEST_IMAGE
+
+release-image:
+  stage: release
+  tags:
+    - local
+  script:
+    - docker pull $CONTAINER_TEST_IMAGE
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
+    - docker push $CONTAINER_RELEASE_IMAGE
+  only:
+    - master
+
+deploy-aws:
+  stage: deploy
+  environment: amazonlive
+  image: ruby:latest
+  when: manual
+  script:
+    - gem install dpl
+    - dpl --provider=elasticbeanstalk --access-key-id=<access-key-id> --secret-access-key="<secret-access-key>" --app="example-app-name" --env="example-app-environment" --region="us-west-2"
+  only:
+    - master
