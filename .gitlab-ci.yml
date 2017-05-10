@@ -32,8 +32,6 @@ test:
   image: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
   stage: test
   script:
-   - npm install
-   - git clone https://gitlab-ci-token:$CI_BUILD_TOKEN@openlab.ncl.ac.uk/gitlab/connected-academy/spec.git
    - npm test
 
 stages:
