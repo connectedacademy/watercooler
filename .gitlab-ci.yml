@@ -36,8 +36,8 @@ test:
    - npm test
 
 stages:
-- build
 - test
+- build
 - release
 - deploy
 
