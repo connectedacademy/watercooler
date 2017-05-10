@@ -3,6 +3,7 @@ module.exports = {
     available: async (req,res)=>{
         //TODO: match with submissions in same language (user registration)
 
+        //TODO: still returning submissions when I have submitted a message to them.
         try
         {
             //SELECT *, list($discussion).size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = @this.@rid)             WHERE cached=true AND course='testclass.connectedacademy.io' AND class='evidence' AND content='intro' AND user <> '#33:0'            AND $discussion CONTAINSALL (fromsssuser NOT IN [#33:0])            ORDER BY discussion ASC LIMIT 3 FETCHPLAN user:1
@@ -165,8 +166,7 @@ module.exports = {
             date: (new Date()).toISOString()
         };
 
-        //TODO: READ AT - NEEDS FIXING
-        let q = "UPDATE discussionmessage ADD readAt = "+JSON.stringify(read) + " WHERE @rid IN ["+_.pluck(data,'id').join(',') + ']';
+        let q = "UPDATE discussionmessage ADD readAt = "+JSON.stringify(read) + " WHERE @rid IN ["+_.pluck(data,'id').join(',') + '] AND readAt CONTAINSALL (user <> "'+req.session.passport.user.id+'")';
         // console.log(q);
         await DiscussionMessage.query(q);
 
@@ -187,14 +187,15 @@ module.exports = {
                 }
             }
 
-            if (_.find(m.readAt,{user:req.session.passport.user.id+''}))
-            {
-                m.unread = false;
-            }
-            else
-            {
-                m.unread = true;
-            }
+            // if (_.find(m.readAt,{user:req.session.passport.user.id+''}))
+            // {
+            //     m.unread = false;
+            // }
+            // else
+            // {
+            //     m.unread = true;
+            // }
+            delete m.readAt;
         }
 
         Submission.removeCircularReferences(msg);
@@ -207,7 +208,6 @@ module.exports = {
         {
          
             // get discussion for submissions I participate in:
-            
             let query = "SELECT relates_to as submission, list(@this).include('readAt','@rid') as discussion FROM discussionmessage WHERE \
                 (fromuser="+req.session.passport.user.id+" or relates_to.user="+req.session.passport.user.id+") \
                 AND relates_to.course='"+req.course.domain+"' \
