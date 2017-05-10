@@ -26,7 +26,8 @@ module.exports.routes = {
   'GET /auth/github_callback':'AuthController.github_callback',
 
   'GET /v1/course/hubs':'CourseController.hubs',
-  'GET /v1/course/spec':'CourseController.spec',
+  'GET /v1/course/schedule':'CourseController.schedule',  
+  'GET /v1/course/spec/:class':'CourseController.spec',
 
   'GET /v1/auth/login':'AuthController.login',
   'GET /v1/auth/logout':'AuthController.logout',
