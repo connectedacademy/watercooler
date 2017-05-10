@@ -54,8 +54,6 @@ module.exports = {
             return res.badRequest(e.mapped());
         }
 
-
-
         let msg = {
             message: req.param('text'),
             relates_to: req.param('submission'),
@@ -134,22 +132,11 @@ module.exports = {
     messages: async (req,res)=>{
 
         //list all messages for this submission
-        
-
-        // let query = "SELECT FROM discussionmessage WHERE relates_to = "+req.param('submission')+" \
-            // ORDER BY discussion.createdAt ASC FETCHPLAN fromuser:1";
-        // let data = await DiscussionMessage.find({relates_to:req.param('submission')}).populate('fromuser');
         let submission = await Submission.findOne(req.param('submission'));
         let data = await DiscussionMessage.find({relates_to:req.param('submission')}).populate('fromuser');
         
         let msg = data;
         let authors = _.uniq(_.map(msg,(m)=>{return m.fromuser.id}));
-        // console.log(authors);
-        //list of authors: for each author, work out if I have submitted a message to one of their submissions:
-        // let messages = "SELECT FROM discussionmessage WHERE relatesto.course = 'testclass.connectedacademy.io";
-        
-        // ALL MESSAGES FROM THESE AUTHORS FOR THIS CRITERIA
-            //SELECT FROM discussionmessage WHERE relates_to.user IN [#34:234] AND relates_to.course='testclass.connectedacademy.io' AND relates_to.class='evidence' AND relates_to.content='intro';
 
         //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
         let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
@@ -187,14 +174,6 @@ module.exports = {
                 }
             }
 
-            // if (_.find(m.readAt,{user:req.session.passport.user.id+''}))
-            // {
-            //     m.unread = false;
-            // }
-            // else
-            // {
-            //     m.unread = true;
-            // }
             delete m.readAt;
         }
 
