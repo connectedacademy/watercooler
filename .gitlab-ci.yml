@@ -29,6 +29,7 @@ cache:
   - node_modules/
 
 test:
+  image: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
   stage: test
   script:
    - npm install
@@ -36,8 +37,8 @@ test:
    - npm test
 
 stages:
-- test
 - build
+- test
 - release
 - deploy
 
