@@ -8,7 +8,7 @@ describe('Analytics', function() {
     it ('should return single valid question',function(done){
 
       global.useragent
-      .get('/analytics/question/1/pre')
+      .get('/v1/analytics/question/1/pre')
       .set('Referer',process.env.TEST_DOMAIN)
       .expect(200)
       .expect((res)=>{
@@ -23,7 +23,7 @@ describe('Analytics', function() {
     it ('should allow posting answer',function(done){
 
       global.useragent
-      .post('/analytics/answer/response')
+      .post('/v1/analytics/answer/response')
       .set('Referer',process.env.TEST_DOMAIN)
       .expect((res)=>{
           expect(res.body).to.have.property('msg')
@@ -39,7 +39,7 @@ describe('Analytics', function() {
     it ('should return list of users',function(done){
 
         global.adminagent
-        .get('/analytics/answers')
+        .get('/v1/analytics/answers')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect(200)
         .expect((res)=>{

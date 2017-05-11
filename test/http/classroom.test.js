@@ -8,7 +8,7 @@ describe('In-Situ Classroom', function() {
       it ('should return valid code',function(done){
 
         global.useragent
-        .get('/classroom/mycode/1/1')
+        .get('/v1/classroom/mycode/1/1')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect(200)
         .expect((res)=>{
@@ -25,7 +25,7 @@ describe('In-Situ Classroom', function() {
       it ('should return list of users',function(done){
 
         global.useragent
-        .get('/classroom/users/1/1')
+        .get('/v1/classroom/users/1/1')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect((res)=>{
             expect(res.body).to.be.an.array;

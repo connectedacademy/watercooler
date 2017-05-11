@@ -39,7 +39,7 @@ test:
 
 stages:
 - build
-- test
+# - test
 - release
 - deploy
 

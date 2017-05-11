@@ -7,7 +7,7 @@ describe('Messaging', function() {
     it ('should create message',function(done){
 
       global.useragent
-      .post('/messages/create')
+      .post('/v1/messages/create')
       .set('Referer',process.env.TEST_DOMAIN)
       .expect((res)=>{
           expect(res.body).to.have.property('id')
@@ -23,7 +23,7 @@ describe('Messaging', function() {
     it ('should return correct list',function(done){
 
         global.useragent
-        .get('/messages/visualisation/1/1')
+        .get('/v1/messages/visualisation/1/1')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect((res)=>{
             bodyCheck(res.body,'visulisationpoints');
@@ -39,7 +39,7 @@ describe('Messaging', function() {
     it ('should return correct list',function(done){
 
         global.useragent
-        .get('/messages/list/1/1/2')
+        .get('/v1/messages/list/1/1/2')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect((res)=>{
             bodyCheck(res.body,'messages');
@@ -55,7 +55,7 @@ describe('Messaging', function() {
      it ('should succeed',function(done){
 
        global.useragent
-        .get('/messages/subscribe/1/1/2')
+        .get('/v1/messages/subscribe/1/1/2')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect((res)=>{
             expect(res.body).to.have.property('msg');
@@ -72,7 +72,7 @@ describe('Messaging', function() {
     it ('should return total',function(done){
 
         global.useragent
-        .get('/messages/likes/testuri')
+        .get('/v1/messages/likes/testuri')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect((res)=>{
             expect(res.body).to.be.a.number
