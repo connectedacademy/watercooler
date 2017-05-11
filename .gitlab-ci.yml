@@ -43,6 +43,7 @@ stages:
 variables:
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+  CONTAINER_DOCKERHUB_RELEASE: connectedacademy/watercooler:latest
 
 before_script:
   - docker login -u gitlab-ci-token -p "$CI_BUILD_TOKEN" $CI_REGISTRY
@@ -54,6 +55,8 @@ build:
   script:
     - docker build -t $CONTAINER_TEST_IMAGE .
     - docker push $CONTAINER_TEST_IMAGE
+  only:
+    -master
 
 gitlab-repository:
   stage: release
@@ -72,8 +75,9 @@ dockerhub:
     - local
   script:
     - docker pull $CONTAINER_TEST_IMAGE
-    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
-    - docker push $CONTAINER_RELEASE_IMAGE
+    - docker login -u $DOCKER_USERNAME -p "$DOCKER_PASSWORD"
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_DOCKERHUB_RELEASE
+    - docker push $CONTAINER_DOCKERHUB_RELEASE
   only:
     - master
 
