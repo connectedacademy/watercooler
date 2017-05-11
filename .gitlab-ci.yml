@@ -27,15 +27,15 @@ cache:
   paths:
   - node_modules/
 
-test:
-  tags:
-    - local
-  stage: test
-  services:
-    - redis:latest
-  script:
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker run $CONTAINER_TEST_IMAGE npm test
+# test:
+#   tags:
+#     - local
+#   stage: test
+#   services:
+#     - redis:latest
+#   script:
+#     - docker pull $CONTAINER_TEST_IMAGE
+#     - docker run $CONTAINER_TEST_IMAGE npm test
 
 stages:
 - build
