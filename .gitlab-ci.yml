@@ -56,7 +56,7 @@ build:
     - docker build -t $CONTAINER_TEST_IMAGE .
     - docker push $CONTAINER_TEST_IMAGE
   only:
-    -master
+    - master
 
 gitlab-repository:
   stage: release
