@@ -4,7 +4,6 @@
 image: docker:git
 services:
   - docker:dind
-  - redis:latest
 
 variables:
   ORIENTDB_ROOT_PASSWORD: testpassword
@@ -29,12 +28,14 @@ cache:
   - node_modules/
 
 test:
-  image: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
   tags:
     - local
   stage: test
+  services:
+    - redis:latest
   script:
-   - npm test
+    - docker pull $CONTAINER_TEST_IMAGE
+    - docker run $CONTAINER_TEST_IMAGE npm test
 
 stages:
 - build
