@@ -40,7 +40,7 @@ module.exports = {
                 id: req.session.passport.user.id
             });
 
-            if (account_user.account_credentials.key && account_user.account_credentials.secret) {
+            if (account_user && account_user.account_credentials && account_user.account_credentials.key && account_user.account_credentials.secret) {
                 let data = await GossipmillApi.create(account_user.account_credentials, me_user, req.body);
                 return res.json(data);
             }
