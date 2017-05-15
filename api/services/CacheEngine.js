@@ -26,6 +26,12 @@ let get =  async (uri)=>{
 
 module.exports = {
 
+    getSubs : async (url) => 
+    {
+        let raw = await get(url);
+        return JSON.parse(raw);
+    },
+
     getFrontmatter : async (url, content=false)=>
     {
         sails.log.verbose('Getting ' + url);    
