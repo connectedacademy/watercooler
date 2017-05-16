@@ -102,6 +102,10 @@ module.exports = {
         // let uri = decodeURI(req.param('class'));
         try {
             let data = await GossipmillApi.totals(req.course.domain, req.param('class'), req.param('content'));
+            if (_.isEmpty(data))
+                data = {
+                    total:0
+                };
             return res.json(data);
         }
         catch (e) {

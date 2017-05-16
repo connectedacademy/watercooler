@@ -18,6 +18,7 @@ let applyFrontMatter = async (data, uri, course, user, klass, content)=>{
 
 module.exports = {
 
+    // for whole course
     schedule: async(req,res)=>{
         try
         {
@@ -58,6 +59,7 @@ module.exports = {
         }
     },
 
+    //for one class
     spec: async (req,res)=> {
         try
         {
@@ -82,7 +84,7 @@ module.exports = {
                     //apply likes:
                     if (content.url)
                     {
-                        content.likes = totals[klass.slug + '/' + content.slug];
+                        content.likes = totals[klass.slug + '/' + content.slug] || 0;
                         promises.push(applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url,req.course.domain, (req.session.passport && req.session.passport.user)?req.session.passport.user.id:null, klass.slug, content.slug));
                     }
                 }
