@@ -14,7 +14,7 @@ describe('Auth', function() {
 
     it('should error when no origin or referrer', function (done) {
       request(sails.hooks.http.app)
-        .get('/auth/login')
+        .get('/v1/auth/login')
         .expect(403,done);
     });
 
@@ -31,7 +31,7 @@ describe('Auth', function() {
 
     it('should error when no origin or referrer', function (done) {
       request(sails.hooks.http.app)
-        .get('/admin/login')
+        .get('/v1/admin/login')
         .expect(403,done);
     });
 
@@ -41,7 +41,7 @@ describe('Auth', function() {
 
     it('should return message', function (done) {
       request(sails.hooks.http.app)
-        .get('/auth/logout')
+        .get('/v1/auth/logout')
         .expect(200)
         .expect((res)=>{
           bodyCheck(res.body,{
@@ -57,7 +57,7 @@ describe('Auth', function() {
 
     it('should return message', function (done) {
       request(sails.hooks.http.app)
-        .get('/admin/logout')
+        .get('/v1/admin/logout')
         .expect((res)=>{
           bodyCheck(res.body,{
             msg:'msg'
@@ -72,7 +72,7 @@ describe('Auth', function() {
 
     it('should redirect to correct server', function (done) {
       global.useragent
-        .get('/auth/dashboard')
+        .get('/v1/auth/dashboard')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect(302)
         .end(done);
@@ -84,7 +84,7 @@ describe('Auth', function() {
 
     it('should redirect to correct server', function (done) {
       global.adminagent
-        .get('/auth/admindashboard')
+        .get('/v1/auth/admindashboard')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect(302)
         .end(done);
@@ -96,7 +96,7 @@ describe('Auth', function() {
 
         it('should return user profile', function (done) {
             global.useragent
-            .get('/auth/me')
+            .get('/v1/auth/me')
             .set('Referer',process.env.TEST_DOMAIN)
             .expect(200)
             .expect((res)=>{
@@ -107,7 +107,7 @@ describe('Auth', function() {
 
         it('should return admin profile', function (done) {
             global.adminagent
-            .get('/auth/me')
+            .get('/v1/auth/me')
             .set('Referer',process.env.TEST_DOMAIN)
             .expect(200)
             .expect((res)=>{
@@ -123,7 +123,7 @@ describe('Auth', function() {
 
         it('should return user profile', function (done) {
             global.useragent
-            .post('/auth/register')
+            .post('/v1/auth/register')
             .set('Referer',process.env.TEST_DOMAIN)
             .send({
                 consent: true,
@@ -149,7 +149,7 @@ describe('Auth', function() {
 
         it('should update profile', function (done) {
             global.useragent
-            .post('/auth/profile')
+            .post('/v1/auth/profile')
             .set('Referer',process.env.TEST_DOMAIN)
             .send({
                 lang:"ar",

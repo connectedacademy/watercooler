@@ -22,6 +22,9 @@
 
 module.exports.routes = {
   '/': 'AuthController.root',
+
+  'GET /clearcache':'AdminController.clearcache',
+
   'GET /auth/twitter_callback':'AuthController.twitter_callback',
   'GET /auth/github_callback':'AuthController.github_callback',
 

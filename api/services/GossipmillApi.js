@@ -292,6 +292,6 @@ module.exports = {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
-        return response.id;
+        return response;
     }
 }

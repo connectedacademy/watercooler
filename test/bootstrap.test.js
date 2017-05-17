@@ -83,12 +83,12 @@ before(function(done) {
     {
       //DO LOGIN WITH AUTH
       await global.useragent
-      .get('/auth/testuserlogin')
+      .get('/v1/auth/testuserlogin')
       .set('Referer',process.env.TEST_DOMAIN)
       .expect(302);
 
       await global.adminagent
-        .get('/auth/testadminlogin')
+        .get('/v1/auth/testadminlogin')
         .set('Referer',process.env.TEST_DOMAIN)
         .expect(302);
       

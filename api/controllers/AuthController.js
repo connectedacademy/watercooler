@@ -74,7 +74,7 @@ module.exports = {
         // console.log(req.get('origin') || req.get('referer'));
         let url = new URL(req.get('origin') || req.get('referer'))
         // console.log(url.origin);
-        req.session.redirecturi = url.origin;
+        req.session.redirecturi = url;
         sails.passport.authenticate('twitter')(req,res,next);
     },
 

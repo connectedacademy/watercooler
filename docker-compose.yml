@@ -20,3 +20,18 @@ services:
     networks: 
       - dev_ca-back-network
     env_file: .env
+  # test:
+  #   image: connectedacademy/watercooler
+  #   env_file: .env
+  #   depends_on:
+  #     - orientdb
+  #     - redis
+  #   environment:
+  #     - NODE_ENV=production
+  # orientdb:
+  #   image: orientdb
+  #   environment:
+  #     - ORIENTDB_ROOT_PASSWORD=BlahBlah123
+  #     - ORIENTDB_NODE_NAME=odb1
+  # redis:
+  #   image: redis

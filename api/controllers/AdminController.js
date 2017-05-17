@@ -1,9 +1,24 @@
 const request = require('request-promise-native');
+let redis = require('redis');
+let rediscache = redis.createClient({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT
+});
+
 
 module.exports = {
 
     root: (req,res) => {
         return res.view();
+    },
+
+    clearcache: (req,res)=>
+    {
+        //clear redis cache:
+        rediscache.flushdb(function(msg){
+            sails.log.verbose('Redis cached cleared',msg);
+            return res.ok('Cached cleared');
+        });
     },
 
     editor: (req,res)=>{

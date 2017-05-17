@@ -10,7 +10,7 @@ describe('Administration', function() {
         it ('should return list of users',function(done){
 
             global.adminagent
-            .get('/admin/content')
+            .get('/v1/admin/content')
             .set('Referer',process.env.TEST_DOMAIN)
             .expect(200)
             .expect((res)=>{
@@ -28,7 +28,7 @@ describe('Administration', function() {
         it ('fail to update credentials for invalid account',function(done){
 
             global.adminagent
-            .post('/admin/credentials')
+            .post('/v1/admin/credentials')
             .send({
                 service: "twitter",
                 credentials:{
@@ -54,7 +54,7 @@ describe('Administration', function() {
         it ('should return list of users',function(done){
 
             global.adminagent
-            .get('/admin/users')
+            .get('/v1/admin/users')
             .set('Referer',process.env.TEST_DOMAIN)
             .expect(200)
             .expect((res)=>{
@@ -70,7 +70,7 @@ describe('Administration', function() {
         it ('should redirect to the editor',function(done){
 
             global.adminagent
-            .get('/admin/editor')
+            .get('/v1/admin/editor')
             .set('Referer',process.env.TEST_DOMAIN)
             .expect(302)
             .end(done);

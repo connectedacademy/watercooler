@@ -14,3 +14,5 @@ RUN npm install --silent && npm cache clean
 COPY . /usr/src/app
 
 CMD node app.js
+
+EXPOSE 1337

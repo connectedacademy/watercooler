@@ -21,7 +21,7 @@ describe('Course Info', function() {
     it ('should return valid spec',function(done){
       
       request(sails.hooks.http.app)
-          .get('/course/spec')
+          .get('/v1/course/spec')
           .set('Referer',process.env.TEST_DOMAIN)
           .expect((res)=>{
             bodyCheckYaml(res.body,'spec');
@@ -37,7 +37,7 @@ describe('Course Info', function() {
     it ('should return valid spec',function(done){
 
       request(sails.hooks.http.app)
-          .get('/course/spec')
+          .get('/v1/course/spec')
           .set('Referer',process.env.TEST_DOMAIN)
           .expect((res)=>{
             bodyCheckYaml(res.body,'hubs');
