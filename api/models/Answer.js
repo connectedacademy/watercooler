@@ -8,8 +8,8 @@ module.exports = {
         model: 'User'
     },
     question_id: 'integer',
-    class: 'integer',
-    content_index: 'integer',
+    class: 'string',
+    content: 'string',
     answer: 'string',
 
     toJSON :function()

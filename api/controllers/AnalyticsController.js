@@ -2,16 +2,45 @@ module.exports = {
 
     question: async (req,res)=>{
         //TODO: select questions by other parameters, not just random:
-        let class_in_course = req.param('class');
-        let content_type_in_class = req.param('content_type');
+        let klass = req.param('class');
+        let content = req.param('content');
 
-        let questions = await CacheEngine.getQuestions(req,res);
-        let question = _.sample(questions.during);
-        //randomly pick a question:
-        return res.json(question);
+        let myanswers = await Answer.find({
+            user: req.session.passport.user.id,
+            course: req.course.domain,
+            class: klass,
+            content: content
+        });
+        if (_.size(myanswers)>0)
+        {
+            return res.json({
+                answeredat: _.first(myanswers).createdAt,
+                alreadyanswered:true
+            })
+        }
+        else
+        {
+            let questions = await CacheEngine.getQuestions(req,res);
+            //randomly pick a question:
+            let question = _.sample(questions.during);
+            return res.json(question);
+        }
     },
 
     submit: async (req,res)=>{
+
+        req.checkBody('class').notEmpty();
+        req.checkBody('content').notEmpty();
+        req.checkBody('answer').notEmpty();
+        req.checkBody('question_id').notEmpty();
+
+        try {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e) {
+            return res.badRequest(e.mapped());
+        }
         try
         {
             await Answer.create({
@@ -19,7 +48,7 @@ module.exports = {
                 user: req.session.passport.user.id,
                 question_id: req.body.question_id,
                 class: req.body.class,
-                content_index: req.body.content_index,
+                content: req.body.content,
                 answer: req.body.answer
             });
             return res.ok('Response received');
