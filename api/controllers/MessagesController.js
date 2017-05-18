@@ -132,7 +132,7 @@ module.exports = {
             req.checkParams('endsegment').notEmpty().isInt();
             req.checkQuery('whitelist').isBoolean();
 
-            if (req.param('startsegment') > req.param('endsegment'))
+            if (parseInt(req.param('startsegment')) > parseInt(req.param('endsegment')))
                 return res.badRequest({
                     msg: 'startsegment needs to be less than endsegment'
                 });
@@ -151,39 +151,48 @@ module.exports = {
             
             let course = req.course.domain;
             let user = {};
-            let spec = await CacheEngine.getSpec(req);
+            let spec = null;
+
             if (req.session.passport)
                 user = req.session.passport.user;
             else {
-                
+                spec = await CacheEngine.getSpec(req);
                 user = {
                     service: 'twitter',
                     account: _.first(spec.accounts)
                 };
             }
 
-            let data = await GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), req.param('whitelist'));
+            let dat = await GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), req.param('whitelist'));
+            let data = dat.data;
 
-            //get class spec
-            let klass = _.find(spec.classes,{slug:req.param('class')});
-            let content = _.find(klass.content,{slug:req.param('content')});
-            //get file:
-            let file = await CacheEngine.getFrontmatter(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url);
-            if (file.prompts && _.isEmpty(data.message))
+
+            if (_.isEmpty(data.message))
             {
-                //load prompts file:
-                let srt = await CacheEngine.getSubs(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + file.prompts);
+                if (spec==null)
+                    spec = await CacheEngine.getSpec(req);
 
-                let startseg = parseInt(req.param('startsegment'));
-                let endseg = parseInt(req.param('endsegment'));
-                let sub = _.find(srt,function(s){
-                    return Math.round(s.start) >= startseg && Math.round(s.end) <= endseg;
-                });
-                if (sub)
-                    data.message = {
-                        text: sub.text,
-                        suggestion: true
-                    }
+                //get class spec
+                let klass = _.find(spec.classes,{slug:req.param('class')});
+                let content = _.find(klass.content,{slug:req.param('content')});
+                //get file:
+                let file = await CacheEngine.getFrontmatter(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url);
+                if (file.prompts)
+                {
+                    //load prompts file:
+                    let srt = await CacheEngine.getSubs(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + file.prompts);
+
+                    let startseg = parseInt(req.param('startsegment'));
+                    let endseg = parseInt(req.param('endsegment'));
+                    let sub = _.find(srt,function(s){
+                        return Math.round(s.start) >= startseg && Math.round(s.end) <= endseg;
+                    });
+                    if (sub)
+                        data.message = {
+                            text: sub.text,
+                            suggestion: true
+                        }
+                }
                 // console.log(sub);
             }
 
@@ -195,6 +204,113 @@ module.exports = {
                     endsegment: req.param('endsegment')
                 },
                 data: data
+            });
+        }
+        catch (e) {
+            return res.serverError(e);
+        }
+    },
+
+    summarybatch: async (req, res) => {
+
+        if (!req.isSocket)
+        {
+            req.checkParams('class').notEmpty();
+            req.checkParams('content').notEmpty();
+            req.checkParams('startsegment').notEmpty().isInt();
+            req.checkParams('endsegment').notEmpty().isInt();
+            req.checkParams('groupsize').notEmpty().isInt();            
+            req.checkQuery('whitelist').isBoolean();
+
+            if (parseInt(req.param('startsegment')) > parseInt(req.param('endsegment')))
+                return res.badRequest({
+                    msg: 'startsegment needs to be less than endsegment'
+                });
+
+            try {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e) {
+                return res.badRequest(e.mapped());
+            }
+        }
+
+        try {
+            let lang = await LangService.lang(req);
+            let course = req.course.domain;
+            let user = {};
+            let spec = null;
+            if (req.session.passport)
+                user = req.session.passport.user;
+            else {
+                spec = await CacheEngine.getSpec(req);            
+                user = {
+                    service: 'twitter',
+                    account: _.first(spec.accounts)
+                };
+            }
+
+            let start = parseInt(req.param('startsegment'));
+            let end = parseInt(req.param('endsegment'));
+            let group = parseInt(req.param('groupsize'));
+
+            let promises = [];
+            for (let i=start;i<end;i=i+group)
+            {
+                promises.push(GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), i, (i+group)-1, req.param('whitelist')));
+            }
+
+            let results = await Promise.all(promises);
+
+
+            if (_.any(results,(r)=>_.isEmpty(r.message)))
+            {
+                //get file:
+                //get class spec
+                if (spec==null)
+                    spec = await CacheEngine.getSpec(req);
+
+                let klass = _.find(spec.classes,{slug:req.param('class')});
+                let content = _.find(klass.content,{slug:req.param('content')});
+                let file = await CacheEngine.getFrontmatter(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url);
+                //load prompts file:
+                if (file.prompts)
+                {
+                    let srt = await CacheEngine.getSubs(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + file.prompts);
+
+                    for (let result of results)
+                    {
+                        if (_.isEmpty(result.message))
+                        {
+                            let startseg = parseInt(_.min(result.scope.query.segment));
+                            let endseg = parseInt(_.max(result.scope.query.segment));
+                            let sub = _.find(srt,function(s){
+                                return Math.round(s.start) >= startseg && Math.round(s.end) <= endseg;
+                            });
+                            if (sub)
+                                result.data.message = {
+                                    text: sub.text,
+                                    suggestion: true
+                                }
+                        }
+                    }
+                }
+            }
+
+            let results_all = {};
+            for (let r of results)
+                results_all[_.min(r.scope.query.segment)] = r.data;
+
+            return res.json({
+                scope: {
+                    class: req.param('class'),
+                    content: req.param('content'),
+                    startsegment: req.param('startsegment'),
+                    endsegment: req.param('endsegment'),
+                    groupsize: req.param('groupsize')
+                },
+                data: results_all
             });
         }
         catch (e) {

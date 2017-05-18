@@ -170,7 +170,7 @@ module.exports = {
             }
         });
 
-        return response.data;
+        return response;
     },
 
     list: async (course, klass, user, language, contentid, startsegment, endsegment, depth, whitelist)=>{

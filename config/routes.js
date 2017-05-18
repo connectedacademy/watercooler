@@ -62,6 +62,7 @@ module.exports.routes = {
   'GET /v1/messages/subscribe/:class/:content/:startsegment/:endsegment':'MessagesController.subscribe',
   'POST /v1/messages/create':'MessagesController.create',
   'GET /v1/messages/summary/:class/:content/:startsegment/:endsegment':'MessagesController.summary',
+  'GET /v1/messages/summarybatch/:class/:content/:startsegment/:endsegment/:groupsize':'MessagesController.summarybatch',
 
   'POST /v1/analytics/answer/response':'AnalyticsController.submit',
   'GET /v1/analytics/answers':'AnalyticsController.answers',
