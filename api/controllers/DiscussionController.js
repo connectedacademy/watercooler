@@ -55,7 +55,8 @@ module.exports = {
         let msg = {
             message: req.param('text'),
             relates_to: req.param('submission'),
-            fromuser: req.session.passport.user.id
+            fromuser: req.session.passport.user.id,
+            readAt:[]
         };
 
         try
@@ -152,7 +153,7 @@ module.exports = {
         };
 
         let q = "UPDATE discussionmessage ADD readAt = "+JSON.stringify(read) + " WHERE @rid IN ["+_.pluck(data,'id').join(',') + '] AND readAt CONTAINSALL (user <> "'+req.session.passport.user.id+'")';
-        // console.log(q);
+        console.log(q);
         await DiscussionMessage.query(q);
 
         for (let m of msg)
@@ -232,7 +233,8 @@ module.exports = {
                 let tmp = dat.submission;
                 tmp.unread = dat.unread;
                 tmp.message = dat.messages;
-                return dat.submission
+                dat.submission.user = _.pick(dat.submission.user,'account_number','name','service','profile','link','account');
+                return _.omit(dat.submission,['@type','@version','@class']);
             });
 
             result = _.uniq(result, function(r){
