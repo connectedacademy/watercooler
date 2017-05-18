@@ -153,7 +153,7 @@ module.exports = {
         };
 
         let q = "UPDATE discussionmessage ADD readAt = "+JSON.stringify(read) + " WHERE @rid IN ["+_.pluck(data,'id').join(',') + '] AND readAt CONTAINSALL (user <> "'+req.session.passport.user.id+'")';
-        console.log(q);
+        // console.log(q);
         await DiscussionMessage.query(q);
 
         for (let m of msg)
@@ -181,6 +181,7 @@ module.exports = {
         return res.json(msg);               
     },
 
+    
     list: async (req,res)=>{
         try
         {

@@ -330,12 +330,14 @@ module.exports = {
                 relates_to: message.relates_to
             }).populate('fromuser');
 
-            users = _.uniq(users,'fromuser.id');
+            users = _.uniq(_.pluck(users,'fromuser'),'id');
 
             for (let user of users) {
-                email.body = email.body.replace('{{user}}', user.name);
-                email.body = email.body.replace('{{date}}', new Date().toString());
-                sendEmail(user, email.subject, email.body);
+                if (user.id != req.session.passport.user.id) {
+                    email.body = email.body.replace('{{user}}', user.name);
+                    email.body = email.body.replace('{{date}}', new Date().toString());
+                    sendEmail(user, email.subject, email.body);
+                }
             }
         }
         catch (e) {
