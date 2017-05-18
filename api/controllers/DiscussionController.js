@@ -3,16 +3,14 @@ module.exports = {
     available: async (req,res)=>{
         //TODO: match with submissions in same language (user registration)
 
-        //TODO: still returning submissions when I have submitted a message to them.
         try
         {
-            //SELECT *, list($discussion).size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = @this.@rid)             WHERE cached=true AND course='testclass.connectedacademy.io' AND class='evidence' AND content='intro' AND user <> '#33:0'            AND $discussion CONTAINSALL (fromsssuser NOT IN [#33:0])            ORDER BY discussion ASC LIMIT 3 FETCHPLAN user:1
-            let query = "SELECT *, $discussion.size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = @this.@rid) \
+            let query = "SELECT *, $discussion.size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = $parent.current) \
             WHERE cached=true AND course='"+req.course.domain+"' AND class='" + req.param('class') + "' AND content='" + req.param('content') + "' AND user <> '" + req.session.passport.user.id + "'\
-            AND $discussion CONTAINSALL (fromsssuser NOT IN ["+req.session.passport.user.id+"])\
+            AND $discussion CONTAINSALL (fromuser NOT IN ["+req.session.passport.user.id+"])\
             ORDER BY discussion ASC LIMIT 9";
             let data = await Submission.query(query);
-            console.log(query);
+            // console.log(query);
 
             return res.json({
                 scope:{
