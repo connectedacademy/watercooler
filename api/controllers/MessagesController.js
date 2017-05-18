@@ -1,5 +1,6 @@
 module.exports = {
 
+    
     subscribe: async (req, res) => {
         let whitelist = req.param('whitelist');
         let lang = await LangService.lang(req);
@@ -14,16 +15,19 @@ module.exports = {
 
     create: async (req, res) => {
 
-        req.checkBody('text').notEmpty();
-        req.checkBody('replyto').optional().notEmpty();
-        req.checkBody('remessageof').optional().notEmpty();
+        if (!req.isSocket)
+        {
+            req.checkBody('text').notEmpty();
+            req.checkBody('replyto').optional().notEmpty();
+            req.checkBody('remessageof').optional().notEmpty();
 
-        try {
-            let result = await req.getValidationResult();
-            result.throw();
-        }
-        catch (e) {
-            return res.badRequest(e.mapped());
+            try {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e) {
+                return res.badRequest(e.mapped());
+            }
         }
 
         try {
@@ -55,19 +59,21 @@ module.exports = {
 
     visualisation: async (req, res) => {
 
-        req.checkQuery('whitelist').optional().isBoolean();
-        req.checkParams('class').notEmpty();
-        req.checkParams('content').notEmpty();
+        if (!req.isSocket)
+        {
+            req.checkQuery('whitelist').optional().isBoolean();
+            req.checkParams('class').notEmpty();
+            req.checkParams('content').notEmpty();
 
-        try {
-            let result = await req.getValidationResult();
-            result.throw();
-        }
-        catch (e) {
-            return res.badRequest(e.mapped());
+            try {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e) {
+                return res.badRequest(e.mapped());
+            }
         }
 
-        let whitelist = req.param('whitelist');
         let lang = await LangService.lang(req);
         try {
             let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'));
@@ -86,19 +92,21 @@ module.exports = {
     },
 
     likes: async (req, res) => {
-        req.checkParams('class').notEmpty();
-        req.checkParams('content').notEmpty();
+        if (!req.isSocket)
+        {
+            req.checkParams('class').notEmpty();
+            req.checkParams('content').notEmpty();
 
 
-        try {
-            let result = await req.getValidationResult();
-            result.throw();
+            try {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e) {
+                return res.badRequest(e.mapped());
+            }
+
         }
-        catch (e) {
-            return res.badRequest(e.mapped());
-        }
-
-
         // let uri = decodeURI(req.param('class'));
         try {
             let data = await GossipmillApi.totals(req.course.domain, req.param('class'), req.param('content'));
@@ -116,23 +124,26 @@ module.exports = {
 
     summary: async (req, res) => {
 
-        req.checkParams('class').notEmpty();
-        req.checkParams('content').notEmpty();
-        req.checkParams('startsegment').notEmpty().isInt();
-        req.checkParams('endsegment').notEmpty().isInt();
-        req.checkQuery('whitelist').isBoolean();
+        if (!req.isSocket)
+        {
+            req.checkParams('class').notEmpty();
+            req.checkParams('content').notEmpty();
+            req.checkParams('startsegment').notEmpty().isInt();
+            req.checkParams('endsegment').notEmpty().isInt();
+            req.checkQuery('whitelist').isBoolean();
 
-        if (req.param('startsegment') > req.param('endsegment'))
-            return res.badRequest({
-                msg: 'startsegment needs to be less than endsegment'
-            });
+            if (req.param('startsegment') > req.param('endsegment'))
+                return res.badRequest({
+                    msg: 'startsegment needs to be less than endsegment'
+                });
 
-        try {
-            let result = await req.getValidationResult();
-            result.throw();
-        }
-        catch (e) {
-            return res.badRequest(e.mapped());
+            try {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e) {
+                return res.badRequest(e.mapped());
+            }
         }
 
         try {
@@ -193,19 +204,22 @@ module.exports = {
 
     list: async (req, res) => {
 
-        req.checkParams('class').notEmpty();
-        req.checkParams('content').notEmpty();
-        req.checkParams('startsegment').notEmpty().isInt();
-        req.checkParams('endsegment').notEmpty().isInt();
-        req.checkQuery('whitelist').isBoolean();
-        req.checkQuery('depth').optional().isInt();   
+        if (!req.isSocket)
+        {
+            req.checkParams('class').notEmpty();
+            req.checkParams('content').notEmpty();
+            req.checkParams('startsegment').notEmpty().isInt();
+            req.checkParams('endsegment').notEmpty().isInt();
+            req.checkQuery('whitelist').isBoolean();
+            req.checkQuery('depth').optional().isInt();   
 
-        try {
-            let result = await req.getValidationResult();
-            result.throw();
-        }
-        catch (e) {
-            return res.badRequest(e.mapped());
+            try {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e) {
+                return res.badRequest(e.mapped());
+            }
         }   
 
         try {

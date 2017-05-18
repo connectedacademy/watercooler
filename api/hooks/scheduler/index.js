@@ -67,33 +67,40 @@ let run = async function(){
                         return _.has(k,'schedule');
                     });
                     
-                    //get earliest timestamp:
-                    let times = _.map(livesegment.schedule, (s)=>{
-                        return moment(s.release_at).unix();
-                    });
+                    if (livesegment)
+                    {
+                        //get earliest timestamp:
+                        let times = _.map(livesegment.schedule, (s)=>{
+                            return moment(s.release_at).unix();
+                        });
 
-                    let ordered_times = times.sort();
-                    let start = _.first(ordered_times);
-                    let Wstart = moment(start);
-                    return Wstart;
+                        let ordered_times = times.sort();
+                        let start = _.first(ordered_times);
+                        let Wstart = moment(start);
+                        return Wstart;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 };
 
-                let getWebinarSegment = function(klass)
-                {
-                    let livesegment = _.findLast(klass.content,(k)=>{
-                        return _.has(k,'schedule');
-                    });
+                // let getWebinarSegment = function(klass)
+                // {
+                //     let livesegment = _.findLast(klass.content,(k)=>{
+                //         return _.has(k,'schedule');
+                //     });
                     
-                    //get earliest timestamp:
-                    let times = _.map(livesegment.schedule, (s)=>{
-                        return moment(s.release_at).unix();
-                    });
+                //     //get earliest timestamp:
+                //     let times = _.map(livesegment.schedule, (s)=>{
+                //         return moment(s.release_at).unix();
+                //     });
 
-                    let ordered_times = times.sort();
-                    let start = _.first(ordered_times);
-                    let Wstart = moment(start);
-                    return Wstart;
-                }
+                //     let ordered_times = times.sort();
+                //     let start = _.first(ordered_times);
+                //     let Wstart = moment(start);
+                //     return Wstart;
+                // }
 
                 let currentWeek = null;
 
@@ -101,21 +108,23 @@ let run = async function(){
                 {
                     //find element which is the live class
                     let Wstart = getLiveSegment(klass).subtract(2,'days');
-
-                    if (i < _.size(spec.classes)-1)
+                    if (Wstart)
                     {
-                        let Nstart = getLiveSegment(spec.classes[i+1]).add(2,'days');
-
-                        if (NOW.isAfter(Wstart) && NOW.isBefore(Nstart))
+                        if (i < _.size(spec.classes)-1)
                         {
-                            //should be this one
-                            currentWeek = klass;
+                            let Nstart = getLiveSegment(spec.classes[i+1]).add(2,'days');
+
+                            if (NOW.isAfter(Wstart) && NOW.isBefore(Nstart))
+                            {
+                                //should be this one
+                                currentWeek = klass;
+                            }
                         }
-                    }
-                    else //last on in array
-                    {
-                        if (NOW.isAfter(Wstart))
-                            currentWeek = klass;
+                        else //last on in array
+                        {
+                            if (NOW.isAfter(Wstart))
+                                currentWeek = klass;
+                        }
                     }
                 });
 
