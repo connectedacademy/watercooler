@@ -31,6 +31,8 @@ let request = require('request-promise-native');
 
 let baseURI = process.env.GOSSIPMILL_URL;
 
+let sockethandlers = {};
+
 module.exports = {
 
     visualisation: async (course, klass,content, language, whitelist)=>{
@@ -251,15 +253,20 @@ module.exports = {
                 filter_by:query,
                 whitelist: whitelist
             },function(data){
+                // console.log(data.room);
             //subscribe to this roomname
             sails.sockets.join(req.socket,data.room);
-            io.socket.off(data.room, function(){
-                io.socket.on(data.room,function(msg){
-                    sails.log.info(msg.message_id);
-                    sails.sockets.broadcast(data.room, msg);
-                })
+            // io.socket.off(data.room, function(){
+                if (!sockethandlers[data.room])
+                {
+                    sockethandlers[data.room] = function(msg){
+                        sails.log.info(msg.message_id);
+                        sails.sockets.broadcast(data.room, msg);
+                    };
+                    io.socket.on(data.room,sockethandlers[data.room]);
+                }
             });
-        });
+        // });
 
         return {
             scope:{
@@ -270,6 +277,16 @@ module.exports = {
             },
             msg:'Subscribed'
         };
+    },
+
+    unsubscribe: (socket)=>
+    {
+        delete sockethandlers['query-'+socket.id];
+        io.socket.post('/messages/unsubscribe/?psk=' + process.env.GOSSIPMILL_PSK,{
+            socketid:socket.id
+        },()=>{
+            sails.log.verbose('Unsubscribed',socket.id);
+        });
     },
 
     create: async (credentials, user, message)=>{
