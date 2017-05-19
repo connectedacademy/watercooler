@@ -5,7 +5,7 @@ module.exports = {
         let whitelist = req.param('whitelist');
         let lang = await LangService.lang(req);
         try {
-            let success = await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'));
+            let success = await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), whitelist);
             return res.json(success);
         }
         catch (e) {

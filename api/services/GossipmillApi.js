@@ -219,7 +219,7 @@ module.exports = {
         return response;
     },
 
-    subscribe: async (req, course, klass, user, language,contentid, startsegment, endsegment) =>{
+    subscribe: async (req, course, klass, user, language,contentid, startsegment, endsegment, whitelist) =>{
 
         let query = [
             {
@@ -248,7 +248,8 @@ module.exports = {
                 lang: language,
                 socketid: sails.sockets.getId(req),
                 depth: 5,
-                filter_by:query
+                filter_by:query,
+                whitelist: whitelist
             },function(data){
             //subscribe to this roomname
             sails.sockets.join(req.socket,data.room);
