@@ -48,6 +48,9 @@ module.exports = {
             }
         );
         
+        if (!classroom)
+            return res.notFound('No classroom found');
+        
         let users = await User.find({
             id: classroom.students
         });
@@ -56,6 +59,36 @@ module.exports = {
             return res.json(users);
         else
             return res.badRequest('Invalid class/content');
+    },
+
+    getclass: async (req,res)=>{
+        try
+        {
+            let course = req.course.domain;
+            let klass = req.param('class');
+            let content = req.param('content');
+            let mystudent = await Classroom.findOne(
+                {
+                    students:[req.session.passport.user.id],
+                    course: course,
+                    class: klass,
+                    content: content
+                }
+            ).populate('teacher');
+
+            if (mystudent)
+            {
+                return res.json(_.omit(mystudent,'students'));
+            }
+            else
+            {
+                return res.notFound('Not registered in this classroom');
+            }
+        }
+        catch(e)
+        {
+            return res.serverError(e);
+        }
     },
 
     inclass: async (req,res)=>{
@@ -71,13 +104,20 @@ module.exports = {
 
             if (!classroom.students)
                 classroom.students = [];
-            classroom.students.push(req.session.passport.user.id);
+            if (!_.includes(classroom.students,req.session.passport.user.id))
+            {
+                classroom.students.push(req.session.passport.user.id);
 
-            classroom.save((err)=>{
-                if (err)
-                    return res.serverError(err);
-                return res.ok('Registered');
-            });
+                classroom.save((err)=>{
+                    if (err)
+                        return res.serverError(err);
+                    return res.ok('Registered');
+                });
+            }
+            else
+            {
+                return res.ok('Already registered in this classroom');
+            }
         }
         catch(e)
         {
