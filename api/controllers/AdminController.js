@@ -94,11 +94,20 @@ module.exports = {
         }
     },
 
-    content: (req,res)=>{
-        return res.json([]);
+    content: async (req,res)=>{
+        let submissions = await Submission.find({
+            course: req.course.domain,
+            class:req.param('class'),
+            content: req.param('content'),
+            cached: true
+        });
+        return res.json(submissions);
     },
 
-    users: (req,res)=>{
-        return res.json([]);
+    users: async (req,res)=>{
+         let users = await Registration.find({
+            course: req.course.domain
+        }).populate('user');
+        return res.json(users);
     }
 }

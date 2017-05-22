@@ -47,7 +47,7 @@ module.exports.routes = {
   'GET /v1/admin/logout':'AuthController.admin_logout',  
   'GET /v1/admin/editor':'AdminController.editor',
   'POST /v1/admin/credentials':'AdminController.credentials',
-  'GET /v1/admin/content':'AdminController.content',
+  'GET /v1/admin/content/:class/:content':'AdminController.content',
   'GET /v1/admin/users':'AdminController.users',
   'GET /v1/admin/dash':'AdminController.root',
   
