@@ -6,11 +6,18 @@ module.exports = {
         try
         {
             let query = "SELECT *, $discussion.size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = $parent.current) \
-            WHERE cached=true AND course='"+req.course.domain+"' AND class='" + req.param('class') + "' AND content='" + req.param('content') + "' AND user <> '" + req.session.passport.user.id + "'\
-            AND $discussion CONTAINSALL (fromuser NOT IN ["+req.session.passport.user.id+"])\
+            WHERE cached=true AND course=:course AND class=:class AND content=:content AND user <> :user\
+            AND $discussion CONTAINSALL (fromuser <> :user)\
             ORDER BY discussion ASC LIMIT 9";
-            let data = await Submission.query(query);
-            // console.log(query);
+            let data = await Submission.query(query,{
+                params:
+                {
+                    course:req.course.domain,
+                    class: req.param('class'),
+                    content: req.param('content'),
+                    user: req.session.passport.user.id
+                }
+            });
 
             return res.json({
                 scope:{
