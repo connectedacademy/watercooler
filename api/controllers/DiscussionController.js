@@ -147,12 +147,20 @@ module.exports = {
         //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
         let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
         WHERE relates_to.user IN ["+authors.join(',')+"] \
-        AND relates_to.course='"+req.course.domain+"' \
-        AND relates_to.class='"+submission.class+"' \
-        AND relates_to.content='"+submission.content+"' \
+        AND relates_to.course=:course \
+        AND relates_to.class=:class \
+        AND relates_to.content=:content \
         GROUP BY relates_to.user";
+
         // console.log(query);
-        let author_messages = await Submission.query(query);
+        let author_messages = await Submission.query(query,{
+            params:
+            {
+                course: req.course.domain,
+                class: submission.class,
+                content: submission.content
+            }
+        });
 
         let read = {
             user: req.session.passport.user.id+'',
@@ -195,13 +203,20 @@ module.exports = {
          
             // get discussion for submissions I participate in:
             let query = "SELECT relates_to as submission, list(@this).include('readAt','@rid') as discussion FROM discussionmessage WHERE \
-                (fromuser="+req.session.passport.user.id+" or relates_to.user="+req.session.passport.user.id+") \
-                AND relates_to.course='"+req.course.domain+"' \
-                AND relates_to.class='"+req.param('class')+"' \
-                AND relates_to.content='"+req.param('content')+"' \
+                (fromuser=:user or relates_to.user=:user) \
+                AND relates_to.course=:course \
+                AND relates_to.class=:class \
+                AND relates_to.content=:content \
                 GROUP BY relates_to FETCHPLAN submission:2 discussion:1";
             
-            let p = Submission.query(query);
+            let p = Submission.query(query,{
+                params:{
+                    user: req.session.passport.user.id,
+                    course: req.course.domain,
+                    class:req.parma('class'),
+                    content: req.param('content')
+                }
+            });
 
             //get discussions for submissions I own:
             let o = Submission.find({
