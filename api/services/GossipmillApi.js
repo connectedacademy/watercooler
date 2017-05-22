@@ -216,7 +216,7 @@ module.exports = {
             }
         });
 
-        response.data = _.groupBy(response.data, 'segment');
+        // response.data = _.groupBy(response.data, 'segment');
 
         return response;
     },

@@ -19,7 +19,6 @@ module.exports = {
         {
             req.checkBody('text').notEmpty();
             req.checkBody('replyto').optional().notEmpty();
-            req.checkBody('remessageof').optional().notEmpty();
 
             try {
                 let result = await req.getValidationResult();
@@ -31,7 +30,6 @@ module.exports = {
         }
 
         try {
-            let lang = await LangService.lang(req);
             let spec = await CacheEngine.getSpec(req, res);
             let account = _.first(spec.accounts);
             let service = req.session.passport.user.service;
@@ -49,7 +47,7 @@ module.exports = {
                 return res.json(data);
             }
             else {
-                return res.serverError('No Application credentials supplied for ' + service + ", " + account);
+                return res.serverError('No Application credentials supplied for ' + service + " - " + account);
             }
         }
         catch (e) {
