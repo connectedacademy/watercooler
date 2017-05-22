@@ -279,7 +279,7 @@ module.exports = {
 
                     for (let result of results)
                     {
-                        if (_.isEmpty(result.message))
+                        if (_.isEmpty(result.data.message))
                         {
                             let startseg = parseInt(_.min(result.scope.query.segment));
                             let endseg = parseInt(_.max(result.scope.query.segment));
