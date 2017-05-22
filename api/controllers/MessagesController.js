@@ -185,7 +185,7 @@ module.exports = {
                     let startseg = parseInt(req.param('startsegment'));
                     let endseg = parseInt(req.param('endsegment'));
                     let sub = _.find(srt,function(s){
-                        return Math.round(s.start) >= startseg && Math.round(s.end) <= endseg;
+                        return Math.round(s.start) >= startseg && Math.round(s.start) <= endseg;
                     });
                     if (sub)
                         data.message = {
@@ -286,7 +286,7 @@ module.exports = {
                             let startseg = parseInt(_.min(result.scope.query.segment));
                             let endseg = parseInt(_.max(result.scope.query.segment));
                             let sub = _.find(srt,function(s){
-                                return Math.round(s.start) >= startseg && Math.round(s.end) <= endseg;
+                                return Math.round(s.start) >= startseg && Math.round(s.start) <= endseg;
                             });
                             if (sub)
                                 result.data.message = {
