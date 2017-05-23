@@ -31,10 +31,13 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /admin/editor Content Editor
+     * @api {get} /v1/admin/editor Content Editor
+     * @apiDescription Redirect to prose.io for editing the current course.
      * @apiName editor
      * @apiGroup Admin
-     * @apiVersion  1.0.0 
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission admin 
      * 
      */
     editor: (req,res)=>{
@@ -44,6 +47,17 @@ module.exports = {
         return res.redirect(process.env.EDITOR_URI + '#' + splits[3] + '/' + splits[4]);
     },
 
+    /**
+     * 
+     * @api {post} /v1/admin/credentials Edit Credentials
+     * @apiDescription Enter social media application credentials for a specfic course
+     * @apiName credentials
+     * @apiGroup Admin
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission admin 
+     * 
+     */
     credentials: async (req,res)=>{
         //given these credentials, allow them to edit the twitter credentials of the user linked to the course (as determined by the spec doc):
         try
@@ -110,6 +124,20 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {get} /v1/admin/content/:class/:content Submissions
+     * @apiDescription List all submission content for a specific class and content segment
+     * @apiName content
+     * @apiGroup Admin
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission admin 
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} content Content slug
+     * 
+     */
     content: async (req,res)=>{
         let submissions = await Submission.find({
             course: req.course.domain,
@@ -120,6 +148,17 @@ module.exports = {
         return res.json(submissions);
     },
 
+    /**
+     * 
+     * @api {get} /v1/admin/users Users
+     * @apiDescription List all users registered for this course
+     * @apiName users
+     * @apiGroup Admin
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission admin
+     * 
+     */
     users: async (req,res)=>{
          let users = await Registration.find({
             course: req.course.domain

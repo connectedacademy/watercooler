@@ -55,7 +55,16 @@ let getLiveSegment = function(klass)
 
 module.exports = {
 
-    // for whole course
+    /**
+     * 
+     * @api {get} /v1/course/schedule Schedule
+     * @apiDescription Get the schedule for this course
+     * @apiName schedule
+     * @apiGroup Course
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * 
+     */
     schedule: async(req,res)=>{
         try
         {
@@ -72,15 +81,6 @@ module.exports = {
             for (let klass of data.classes)
             {
                 promises.push(applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
-                // for (let content of klass.content)
-                // {
-                //     //apply likes:
-                //     if (content.url)
-                //     {
-                //         // content.likes = totals[klass.slug + '/' + content.slug];
-                //         promises.push(applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url));
-                //     }
-                // }
             }
 
             await Promise.all(promises);
@@ -156,7 +156,18 @@ module.exports = {
         }
     },
 
-    //for one class
+    /**
+     * 
+     * @api {get} /v1/course/spec/:class Class List
+     * @apiDescription Get the content list for this class
+     * @apiName spec
+     * @apiGroup Course
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * 
+     * @apiParam  {String} class Class slug
+     * 
+     */
     spec: async (req,res)=> {
         try
         {
@@ -287,6 +298,16 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {get} /v1/course/hubs Hubs
+     * @apiDescription Get the list of hubs for this course
+     * @apiName hubs
+     * @apiGroup Course
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * 
+     */
     hubs: async (req,res) =>{
         try
         {
