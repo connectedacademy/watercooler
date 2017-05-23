@@ -117,24 +117,31 @@ module.exports = {
                             }
                         }
                     }
-                    else //last on in array
-                    {
-                        if (NOW.isAfter(Wstart))
-                            currentWeek = klass;
-                    }
                 }
             });
             
             let currentClass = _.indexOf(data.classes, currentWeek);
+
             data.classes.forEach(function(klass,i){
-                if (i<currentClass)
+                if (currentClass==-1 && NOW.isAfter(enddate))
+                {
                     klass.status = 'RELEASED';
-                if (i==currentClass)
-                    klass.status = 'CURRENT';
-                if (i>currentClass)
+                }
+                else if (currentClass==-1 && NOW.isBefore(startdate))
                 {
                     klass.status = 'FUTURE';
-                    klass.release_at = getLiveSegment(klass);
+                }
+                else
+                {
+                    if (i<currentClass)
+                        klass.status = 'RELEASED';
+                    if (i==currentClass)
+                        klass.status = 'CURRENT';
+                    if (i>currentClass)
+                    {
+                        klass.status = 'FUTURE';
+                        klass.release_at = getLiveSegment(klass);
+                    }
                 }
             });            
 

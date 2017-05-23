@@ -85,23 +85,6 @@ let run = async function(){
                     }
                 };
 
-                // let getWebinarSegment = function(klass)
-                // {
-                //     let livesegment = _.findLast(klass.content,(k)=>{
-                //         return _.has(k,'schedule');
-                //     });
-                    
-                //     //get earliest timestamp:
-                //     let times = _.map(livesegment.schedule, (s)=>{
-                //         return moment(s.release_at).unix();
-                //     });
-
-                //     let ordered_times = times.sort();
-                //     let start = _.first(ordered_times);
-                //     let Wstart = moment(start);
-                //     return Wstart;
-                // }
-
                 let currentWeek = null;
 
                 spec.classes.forEach(function(klass,i)
