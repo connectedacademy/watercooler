@@ -12,6 +12,14 @@ module.exports = {
         return res.view();
     },
 
+    /**
+     * 
+     * @api {get} /clearcache Clear Cache
+     * @apiName clearcache
+     * @apiGroup Admin
+     * @apiVersion  1.0.0 
+     * 
+     */
     clearcache: (req,res)=>
     {
         //clear redis cache:
@@ -21,6 +29,14 @@ module.exports = {
         });
     },
 
+    /**
+     * 
+     * @api {get} /admin/editor Content Editor
+     * @apiName editor
+     * @apiGroup Admin
+     * @apiVersion  1.0.0 
+     * 
+     */
     editor: (req,res)=>{
         // console.log(req.course);
         let splits = req.course.repo.split('/');

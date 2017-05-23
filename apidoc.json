@@ -1,0 +1,11 @@
+{
+  "titel": "Connected Academy Watercooler API",
+  "version": "1.0.0",
+  "description": "API documentation for the Watercooler API",
+  "url":"https://api.connectedacademy.io",
+  "sampleUrl":"https://api.connectedacademy.io",
+  "template":{
+      "withGenerator":false,
+      "withCompare":false
+  }
+}
