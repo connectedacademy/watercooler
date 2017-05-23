@@ -18,6 +18,17 @@ let applyFrontMatter = async (data, uri, course, user, klass, content)=>{
     }
 }
 
+let getSegmentWithHub = function(segment,hub)
+{
+    let hubinfo = _.find(segment.schedule,{hub_id:hub});
+    if (!hubinfo && _.size(segment.schedule)>1)
+        hubinfo = _.find(segment.schedule,{leadhub:true});
+    else
+        hubinfo = _.first(segment.schedule);
+
+    return moment(hubinfo.release_at);
+}
+
 let getLiveSegment = function(klass)
 {
     let livesegment = _.find(klass.content,(k)=>{
@@ -112,15 +123,7 @@ module.exports = {
                             currentWeek = klass;
                     }
                 }
-
-                // if logged in:
-
-                //if not logged in:
-
             });
-
-            // if (currentWeek)
-            //     currentWeek.isCurrent = true;
             
             let currentClass = _.indexOf(data.classes, currentWeek);
             data.classes.forEach(function(klass,i){
@@ -131,40 +134,6 @@ module.exports = {
                 if (i>currentClass)
                     klass.status = 'FUTURE';
             });            
-
-            // let live_segment_start = getLiveSegment(currentWeek); 
-            // let class_week_start = live_segment_start.subtract(2,'days');
-            // let webinar_start = getLiveSegment(currentWeek);
-            // let currentClass = _.indexOf(data.classes, currentWeek);
-            
-            // read pre-content
-
-            // if (NOW.isAfter(class_week_start) && NOW.isBefore(live_segment_start))
-            // {
-            //     //in precontent
-            // }
-
-            // let current_schedule = _.find(currentWeek.content,(k)=>{
-            //         return _.has(k,'schedule');
-            // });
-
-            // for (let hub of current_schedule.schedule)
-            // {
-            //     let hub_live_start = moment(hub.release_at);
-                
-            // }
-            
-            // // the webinar is soon
-            // if (webinar_start.diff(NOW) < moment.duration(6, 'hours').asMilliseconds())
-            // {
-                
-            // }
-            
-            // // get ready for next week
-            // if (NOW.isAfter(webinar_start.add(2,'hours')))
-            // {
-            //     NotificationEngine.nextWeek(course, currentClass);
-            // }
 
             data.baseUri = req.course.url + '/course/content/' + lang + '/';
             data.currentLang = lang;
@@ -195,7 +164,6 @@ module.exports = {
             let klass = _.find(data.classes,{slug:k});
             if (klass)
             {
-                // {
                 promises.push(applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
                 for (let content of klass.content)
                 {
@@ -208,6 +176,92 @@ module.exports = {
                 }
 
                 await Promise.all(promises);
+
+                //current time / faketime
+                let NOW = moment(req.param('time')) || moment();
+
+                let myhub = null;
+
+                if (req.session.passport && req.session.passport.user)
+                {
+                    //my hub:
+                    let me = await Registration.find({
+                        user:req.session.passport.user.id,
+                        course: req.course.domain
+                    });
+                    if (me.hub_id)
+                        myhub = me.hub_id;
+                }
+
+                let livesegment = _.find(klass.content,(k)=>{
+                    return _.has(k,'schedule');
+                });
+                let livesegmentindex = _.indexOf(klass.content,livesegment);
+
+                let webinarsegment = _.findLast(klass.content,(k)=>{
+                    return _.has(k,'schedule');
+                });
+                let webinarsegmentindex = _.indexOf(klass.content,webinarsegment);
+
+                let live_segment_start = getSegmentWithHub(livesegment,myhub);
+                let webinar_segment_start = getSegmentWithHub(webinarsegment,myhub);                
+
+                let classreleased = false;
+                let webinareleased = false;
+
+                if (NOW.isAfter(live_segment_start)) classreleased = true;
+                if (NOW.isAfter(webinar_segment_start)) webinareleased = true;
+
+                klass.content.forEach(function(content,i)
+                {
+                    content.status = 'FUTURE';
+
+                    switch (content.content_type)
+                    {
+                        case 'pre':
+                            content.status = 'RELEASED';
+                            break;
+                        
+                        case 'question':
+                            if (i < livesegmentindex)
+                                content.status = 'RELEASED';
+                            else if (i > livesegmentindex && i < webinarsegmentindex && classreleased)
+                                content.status = 'RELEASED';
+                            else if (i > webinarsegmentindex && webinareleased)
+                                content.status = 'RELEASED';
+                            break;
+                            
+
+                        case 'class':
+                            if (classreleased)
+                                content.status = 'RELEASED'
+                            else
+                                content.release_at = live_segment_start;
+                            break;
+                            
+
+                        case 'postclass':
+                            if (classreleased)
+                                content.status = 'RELEASED'
+                            break;
+                            
+
+                        case 'webinar':
+                            if (webinareleased)
+                                content.status = 'RELEASED'
+                            else
+                                content.release_at = webinar_segment_start;
+                            break;
+                            
+
+                        case 'postwebinar':
+                            if (webinareleased)
+                                content.status = 'RELEASED'
+                            break;
+                            
+                    }
+                });
+
 
 
                 return res.json(klass);
