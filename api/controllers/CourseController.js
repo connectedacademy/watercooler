@@ -72,15 +72,15 @@ module.exports = {
             for (let klass of data.classes)
             {
                 promises.push(applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
-                for (let content of klass.content)
-                {
-                    //apply likes:
-                    if (content.url)
-                    {
-                        // content.likes = totals[klass.slug + '/' + content.slug];
-                        promises.push(applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url));
-                    }
-                }
+                // for (let content of klass.content)
+                // {
+                //     //apply likes:
+                //     if (content.url)
+                //     {
+                //         // content.likes = totals[klass.slug + '/' + content.slug];
+                //         promises.push(applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url));
+                //     }
+                // }
             }
 
             await Promise.all(promises);
@@ -132,7 +132,10 @@ module.exports = {
                 if (i==currentClass)
                     klass.status = 'CURRENT';
                 if (i>currentClass)
+                {
                     klass.status = 'FUTURE';
+                    klass.release_at = getLiveSegment(klass);
+                }
             });            
 
             data.baseUri = req.course.url + '/course/content/' + lang + '/';
