@@ -229,7 +229,7 @@ module.exports = {
             let user = {};
             let spec = null;
 
-            if (req.session.passport)
+            if (req.session.passport && req.session.passport.user)
                 user = req.session.passport.user;
             else {
                 spec = await CacheEngine.getSpec(req);
@@ -335,7 +335,7 @@ module.exports = {
             let course = req.course.domain;
             let user = {};
             let spec = null;
-            if (req.session.passport)
+            if (req.session.passport && req.session.passport.user)
                 user = req.session.passport.user;
             else {
                 spec = await CacheEngine.getSpec(req);            
@@ -457,7 +457,7 @@ module.exports = {
             let course = req.course.domain;
             //course, klass, user, language,contentid, startsegment, endsegment, depth
             let user = {};
-            if (req.session.passport)
+            if (req.session.passport && req.session.passport.user)
                 user = req.session.passport.user;
             else {
                 let spec = await CacheEngine.getSpec(req);
