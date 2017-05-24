@@ -1,5 +1,19 @@
 module.exports = {
 
+    /**
+     * 
+     * @api {post} /v1/discussion/available/:class/:content Submissions Needing Feedback
+     * @apiDescription Gets a list of submissions that require feedback
+     * @apiName available
+     * @apiGroup Discussion
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} content Content slug
+     * 
+     */
     available: async (req,res)=>{
         //TODO: match with submissions in same language (user registration)
 
@@ -35,7 +49,17 @@ module.exports = {
     },
 
     /**
-     * Socket only
+     * 
+     * @api {socket.io} /v1/discussion/subscribe/:submission Subscribe to Updates
+     * @apiDescription Subscribe to live message updates for this discussion
+     * @apiName discussionsubscribe
+     * @apiGroup Discussion
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} submission Submission ID
+     * 
      */
     subscribe: async (req,res)=>{
         Submission.watch(req,req.param('submission'));
@@ -43,7 +67,18 @@ module.exports = {
     },
 
     /**
-     * Write new message for a submission
+     * 
+     * @api {post} /v1/discussion/create New Feedback Message
+     * @apiDescription Create a new message in a discussion
+     * @apiName discussioncreate
+     * @apiGroup Discussion
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} submission Submission ID
+     * @apiParam  {String} text Text of the message 
+     * 
      */
     create: async (req,res)=>{
         
@@ -90,7 +125,17 @@ module.exports = {
     },
 
     /**
-     * Read message as embedded list
+     * 
+     * @api {post} /v1/discussion/read Mark Read
+     * @apiDescription Mark a message as read by this user
+     * @apiName discussionread
+     * @apiGroup Discussion
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} message Message ID
+     * 
      */
     read: async (req,res)=>{
         try
@@ -122,7 +167,17 @@ module.exports = {
     },
 
     /**
-     * Get submission
+     * 
+     * @api {get} /v1/discussion/submission/:submission Get Submission
+     * @apiDescription Return a specific submission
+     * @apiName discussionsubmission
+     * @apiGroup Discussion
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} submission Submission ID
+     * 
      */
     submission: async (req,res) =>{
         let submission = await Submission.findOne(req.param('submission')).populate('user');
@@ -133,7 +188,17 @@ module.exports = {
     },
 
     /**
-     * get messages for submission
+     * 
+     * @api {get} /v1/discussion/messages/:submission Get Messages
+     * @apiDescription Return message thread for a submission
+     * @apiName discussionmessages
+     * @apiGroup Discussion
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} submission Submission ID
+     * 
      */
     messages: async (req,res)=>{
 
@@ -196,7 +261,20 @@ module.exports = {
         return res.json(msg);               
     },
 
-    
+    /**
+     * 
+     * @api {get} /v1/discussion/list/:class/:content Get My Submissions
+     * @apiDescription Returns list of discussions I am participating in for this class and content segment
+     * @apiName discussionlist
+     * @apiGroup Discussion
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} content Content slug
+     * 
+     */
     list: async (req,res)=>{
         try
         {

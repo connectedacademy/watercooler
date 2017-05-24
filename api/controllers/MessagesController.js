@@ -1,6 +1,24 @@
 module.exports = {
 
-    
+    /**
+     * 
+     * @api {socket.io} /v1/messages/subscribe/:class/:content/:startsegment/:endsegment Subscribe to Range
+     * @apiDescription Subscribe to a segment range for new messages that this user should be viewing
+     * @apiName message_subscribe
+     * @apiGroup Messages
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Content slug
+     * @apiParam  {String} content Content slug
+     * @apiParam  {Number} startsegment Starting segment number
+     * @apiParam  {Number} endsegment Ending segment number
+     * @apiParam  {Boolean} whitelist Use only registered users messages
+     * 
+     * 
+     * 
+     */
     subscribe: async (req, res) => {
         let whitelist = req.param('whitelist');
         let lang = await LangService.lang(req);
@@ -13,6 +31,20 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {post} /v1/messages/create New Message
+     * @apiDescription Create a new message
+     * @apiName message_create
+     * @apiGroup Messages
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} text Contents of message
+     * @apiParam  {String} replyto Message to reply to
+     * 
+     */
     create: async (req, res) => {
 
         if (!req.isSocket)
@@ -55,6 +87,21 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {get} /v1/messages/visualisation/:class/:content Visualisation
+     * @apiDescription Visualisation of message activity for each segment
+     * @apiName message_visualisation
+     * @apiGroup Messages
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Content slug
+     * @apiParam  {String} content Content slug
+     * @apiParam  {Boolean} whitelist Limit to messages from registered users 
+     * 
+     */
     visualisation: async (req, res) => {
 
         if (!req.isSocket)
@@ -89,6 +136,20 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {get} /v1/messages/list/:class/:content Likes
+     * @apiDescription Return number of likes for a specific item of content
+     * @apiName message_likes
+     * @apiGroup Messages
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Content slug
+     * @apiParam  {String} content Content slug
+     * 
+     */
     likes: async (req, res) => {
         if (!req.isSocket)
         {
@@ -120,6 +181,23 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {get} /v1/messages/summary/:class/:content/:startsegment/:endsegment Summary
+     * @apiDescription Return single message and totals for given segment range
+     * @apiName message_summary
+     * @apiGroup Messages
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Content slug
+     * @apiParam  {String} content Content slug
+     * @apiParam  {Number} startsegment Starting segment number
+     * @apiParam  {Number} endsegment Ending segment number
+     * @apiParam  {Boolean} whitelist Use only registered users messages
+     * 
+     */
     summary: async (req, res) => {
 
         if (!req.isSocket)
@@ -209,6 +287,24 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {get} /v1/messages/summarybatch/:class/:content/:startsegment/:endsegment/:groupsize Batch Summary
+     * @apiDescription Return single message for each grouped segment and totals for given segment range
+     * @apiName message_summarybatch
+     * @apiGroup Messages
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Content slug
+     * @apiParam  {String} content Content slug
+     * @apiParam  {Number} startsegment Starting segment number
+     * @apiParam  {Number} endsegment Ending segment number
+     * @apiParam  {Number} groupsize Size to group segments 
+     * @apiParam  {Boolean} whitelist Use only registered users messages
+     * 
+     */
     summarybatch: async (req, res) => {
 
         if (!req.isSocket)
@@ -316,6 +412,24 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {get} /v1/messages/list/:class/:content/:startsegment/:endsegment List
+     * @apiDescription List messages that this user should be viewing in this segment range
+     * @apiName message_list
+     * @apiGroup Messages
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Content slug
+     * @apiParam  {String} content Content slug
+     * @apiParam  {Number} startsegment Starting segment number
+     * @apiParam  {Number} endsegment Ending segment number
+     * @apiParam  {Boolean} whitelist Use only registered users messages
+     * @apiParam  {Number} depth Number of messages to return
+     * 
+     */
     list: async (req, res) => {
 
         if (!req.isSocket)

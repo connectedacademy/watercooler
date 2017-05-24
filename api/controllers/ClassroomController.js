@@ -2,6 +2,20 @@ const shortid = require('shortid');
 
 module.exports = {
 
+    /**
+     * 
+     * @api {get} /v1/classroom/mycode/:class/:content My Teacher Code
+     * @apiDescription Get the code to give to students if I am a teacher
+     * @apiName mycode
+     * @apiGroup Classroom
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user 
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} content Content slug
+     * 
+     */
     mycode: async (req,res) => {
 
         let course = req.course.domain;
@@ -33,6 +47,19 @@ module.exports = {
 
     },
 
+    /**
+     * 
+     * @api {get} /v1/classroom/users/:class/:content List Students
+     * @apiDescription Get a list of students who have registered in this classroom
+     * @apiName users
+     * @apiGroup Classroom
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} content Content slug
+     */
     users: async (req,res) => {
         //return users who have made messages in this classroom for my code (i.e. I am the teacher)
         let course = req.course.domain;
@@ -61,6 +88,19 @@ module.exports = {
             return res.badRequest('Invalid class/content');
     },
 
+    /**
+     * 
+     * @api {get} /v1/classroom/getclass/:class/:content My Classroom
+     * @apiDescription Get status on ths current user in a classroom
+     * @apiName getclass
+     * @apiGroup Classroom
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} content Content slug
+     */
     getclass: async (req,res)=>{
         try
         {
@@ -91,6 +131,18 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {post} /v1/classroom/inclass Register Attendance
+     * @apiDescription Register attendance in this classroom
+     * @apiName inclass
+     * @apiGroup Classroom
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} code Classroom code provided by the teacher
+     */
     inclass: async (req,res)=>{
         try
         {

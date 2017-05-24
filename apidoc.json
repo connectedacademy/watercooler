@@ -1,5 +1,6 @@
 {
-  "titel": "Connected Academy Watercooler API",
+  "name":"Watercooler",
+  "title": "Connected Academy Watercooler API",
   "version": "1.0.0",
   "description": "API documentation for the Watercooler API",
   "url":"https://api.connectedacademy.io",

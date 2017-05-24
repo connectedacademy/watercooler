@@ -1,5 +1,18 @@
 module.exports = {
 
+    /**
+     * 
+     * @api {get} /v1/analytics/question/:class/:content Get Question
+     * @apiDescription Get a single question relevant to this section of content
+     * @apiName question
+     * @apiGroup Analytics
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} content Content slug
+     */
     question: async (req,res)=>{
         //TODO: select questions by other parameters, not just random:
         let klass = req.param('class');
@@ -27,6 +40,23 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {post} /v1/analytics/submit Submit Answer
+     * @apiDescription Submit an answer to a question
+     * @apiName submitanswer
+     * @apiGroup Analytics
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} content Content slug
+     * @apiParam  {String} question_id ID of the question being answered
+     * @apiParam  {String} answer The answer to the question
+     * 
+     * 
+     */
     submit: async (req,res)=>{
 
         req.checkBody('class').notEmpty();
@@ -59,6 +89,18 @@ module.exports = {
         }
     },
  
+    /**
+     * 
+     * @api {post} /v1/analytics/answers List Answers
+     * @apiDescription List all answers to all questions
+     * @apiName answers
+     * @apiGroup Analytics
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission admin
+     * 
+     * 
+     */
     answers: async (req,res)=>{
         //get the questions:
         let questions = await CacheEngine.getQuestions(req,res);

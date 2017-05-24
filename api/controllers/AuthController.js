@@ -60,6 +60,15 @@ module.exports = {
         })
     },
 
+    /**
+     * 
+     * @api {get} /v1/auth/logout Logout
+     * @apiDescription Logout
+     * @apiName logout
+     * @apiGroup Authentication
+     * @apiVersion  1.0.0
+     * 
+     */
     logout: (req, res) => {
         req.logout();
         return res.ok('Logged out successfully.');
@@ -69,6 +78,15 @@ module.exports = {
         sails.passport.authenticate('twitter',{successRedirect: '/v1/auth/dashboard', failureRedirect: '/auth/fail' })(req,res,next);
     },
 
+    /**
+     * 
+     * @api {get} /v1/auth/login Login
+     * @apiDescription Login
+     * @apiName login
+     * @apiGroup Authentication
+     * @apiVersion  1.0.0
+     * 
+     */
     login: (req,res,next) =>{
         //verify referer / origin, if valid, then allow and save into session
         // console.log(req.get('origin') || req.get('referer'));
@@ -78,6 +96,15 @@ module.exports = {
         sails.passport.authenticate('twitter')(req,res,next);
     },
 
+    /**
+     * 
+     * @api {get} /v1/admin/login Login
+     * @apiDescription Login
+     * @apiName adminlogin
+     * @apiGroup Admin
+     * @apiVersion  1.0.0
+     * 
+     */
     admin: (req,res,next)=>{
         //verify referer / origin, if valid, then allow and save into session
         let url = new URL(req.get('origin') || req.get('referer'))
@@ -86,6 +113,15 @@ module.exports = {
         sails.passport.authenticate('github')(req,res,next);
     },
 
+    /**
+     * 
+     * @api {get} /v1/admin/logout Logout
+     * @apiDescription Login
+     * @apiName adminlogout
+     * @apiGroup Admin
+     * @apiVersion  1.0.0
+     * 
+     */
     admin_logout: (req,res)=>{
         req.logout();
         return res.ok('Logged out successfully.');
@@ -108,6 +144,16 @@ module.exports = {
        return res.redirect(req.session.redirecturi + '/loginfail');
     },
 
+    /**
+     * 
+     * @api {get} /v1/auth/me My Profile
+     * @apiDescription Returns my profile and course registration
+     * @apiName me
+     * @apiGroup Authentication
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * 
+     */
     me: async (req,res)=>{
         if (req.session.passport)
         {
@@ -136,6 +182,21 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {post} /v1/auth/profile Update Profile
+     * @apiDescription Updates current course profile
+     * @apiName profile
+     * @apiGroup Authentication
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} email Email address
+     * @apiParam  {String} lang Language code
+     * @apiParam  {String} hub_id ID of the chosen hub
+     * 
+     */
     profile: async (req,res)=>{
 
         req.checkBody('email').isEmail();
@@ -195,6 +256,17 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {get} /v1/auth/registrationquestions Registration Questions
+     * @apiDescription Get list of questions to ask during registration
+     * @apiName registrationquestions
+     * @apiGroup Authentication
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     */
     registrationquestions: async (req,res)=>{
         try
         {
@@ -212,10 +284,28 @@ module.exports = {
         }
     },
 
+    /**
+     * 
+     * @api {post} /v1/auth/register Register
+     * @apiDescription Register for a course
+     * @apiName register
+     * @apiGroup Authentication
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} email Email address
+     * @apiParam  {String} lang Language code
+     * @apiParam  {String} hub_id ID of the chosen hub
+     * @apiParam  {String} age User age
+     * @apiParam  {Boolean} consent Consent to the registration
+     * @apiParam  {json} registration_info Additional registration information
+     * 
+     * 
+     */
     register: async (req,res) =>{
         try
         {
-
             req.checkBody('email').isEmail();
             req.checkBody('lang').notEmpty();
             req.checkBody('hub_id').notEmpty();
