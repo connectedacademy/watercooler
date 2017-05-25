@@ -102,13 +102,13 @@ module.exports = {
                 let ws = getLiveSegment(klass)
                 if (ws)
                 {
-                    let Wstart = ws.subtract(2,'days');
+                    let Wstart = ws.clone().subtract(2,'days');
                     if (i < _.size(data.classes)-1)
                     {
                         let ls = getLiveSegment(data.classes[i+1])
                         if (ls)
                         {
-                            let Nstart = ls.subtract(2,'days');
+                            let Nstart = ls.clone().subtract(2,'days');
 
                             if (NOW.isBetween(Wstart,Nstart))
                             {
@@ -226,6 +226,33 @@ module.exports = {
 
                 let live_segment_start = getSegmentWithHub(livesegment,myhub);
                 let webinar_segment_start = getSegmentWithHub(webinarsegment,myhub);                
+
+                let weekstart = live_segment_start.clone().subtract(2,'days');
+                if (NOW.isBefore(weekstart))
+                    klass.status = 'FUTURE';
+
+                let nextclassindex = _.indexOf(data.classes,klass) + 1;
+                if (nextclassindex < _.size(data.classes))
+                {
+                    let nextweeklivesegment = _.find(data.classes[nextclassindex].content,(k)=>{
+                        return _.has(k,'schedule');
+                    });
+                    if (nextweeklivesegment)
+                    {
+                        let nextweekstart = getSegmentWithHub(nextweeklivesegment,myhub).clone().subtract(2,'days');
+
+                        if (NOW.isBetween(weekstart,nextweekstart))
+                            klass.status = 'CURRENT';
+
+                        if (NOW.isAfter(nextweekstart))
+                            klass.status = 'RELEASED';
+                    }
+                    else
+                    {
+                         klass.status = 'RELEASED';
+                    }
+                }
+
 
                 let classreleased = false;
                 let webinareleased = false;

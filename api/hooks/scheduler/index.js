@@ -90,7 +90,7 @@ let run = async function(){
                 spec.classes.forEach(function(klass,i)
                 {
                     //find element which is the live class
-                    let Wstart = getLiveSegment(klass).subtract(2,'days');
+                    let Wstart = getLiveSegment(klass).clone().subtract(2,'days');
                     if (Wstart)
                     {
                         if (i < _.size(spec.classes)-1)
@@ -112,7 +112,7 @@ let run = async function(){
                 });
 
                 let live_segment_start = getLiveSegment(currentWeek); 
-                let class_week_start = live_segment_start.subtract(2,'days');
+                let class_week_start = live_segment_start.clone().subtract(2,'days');
                 let webinar_start = getLiveSegment(currentWeek);
                 let currentClass = _.indexOf(spec.classes, currentWeek);
                 
@@ -158,7 +158,7 @@ let run = async function(){
                 {
                     let hub_live_start = moment(hub.release_at);
                     
-                    if (NOW.isAfter(hub_live_start.subtract(6,'hours'))) // 6 hour before live
+                    if (NOW.isAfter(hub_live_start.clone().subtract(6,'hours'))) // 6 hour before live
                     {
                         NotificationEngine.liveClassWarning(course, currentClass, hub.hub_id);
                     }

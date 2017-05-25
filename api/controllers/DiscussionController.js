@@ -22,7 +22,7 @@ module.exports = {
             let query = "SELECT *, $discussion.size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = $parent.current) \
             WHERE cached=true AND course=:course AND class=:class AND content=:content AND user <> :user\
             AND $discussion CONTAINSALL (fromuser <> :user)\
-            ORDER BY discussion ASC LIMIT 9";
+            ORDER BY discussion ASC LIMIT 9 FETCHPLAN user:1";
             let data = await Submission.query(query,{
                 params:
                 {
