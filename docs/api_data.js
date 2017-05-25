@@ -1134,6 +1134,61 @@ define({ "api": [
     ]
   },
   {
+    "type": "get",
+    "url": "/v1/discussion/user/:class/:content/:user",
+    "title": "User Submissions",
+    "description": "<p>List submissions for this user</p>",
+    "name": "discussionuser",
+    "group": "Discussion",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "user",
+        "title": "Authenticated as User",
+        "description": ""
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "content",
+            "description": "<p>Content slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>User ID</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./api/controllers/DiscussionController.js",
+    "groupTitle": "Discussion",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/discussion/user/:class/:content/:user"
+      }
+    ]
+  },
+  {
     "type": "post",
     "url": "/v1/messages/create",
     "title": "New Message",

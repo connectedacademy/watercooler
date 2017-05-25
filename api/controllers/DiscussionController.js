@@ -68,6 +68,34 @@ module.exports = {
 
     /**
      * 
+     * @api {get} /v1/discussion/user/:class/:content/:user User Submissions
+     * @apiDescription List submissions for this user
+     * @apiName discussionuser
+     * @apiGroup Discussion
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} content Content slug
+     * @apiParam  {String} user User ID
+     * 
+     * 
+     */
+    user: async (req,res)=>{
+
+        let submissions = await Submission.find({
+            user: req.param('user'),
+            class: req.param('class'),
+            content: req.param('content'),
+            course: req.course.domain,
+            cached:true
+        }).populate('user');
+        return res.json(submissions);
+    },
+
+    /**
+     * 
      * @api {post} /v1/discussion/create New Feedback Message
      * @apiDescription Create a new message in a discussion
      * @apiName discussioncreate
@@ -291,7 +319,7 @@ module.exports = {
                 params:{
                     user: req.session.passport.user.id,
                     course: req.course.domain,
-                    class:req.parma('class'),
+                    class:req.param('class'),
                     content: req.param('content')
                 }
             });
