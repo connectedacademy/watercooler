@@ -1,5 +1,6 @@
 var winston = require('winston');
 var customLogger = new winston.Logger();
+let os = require('os');
 
 // A console transport logging debug and above.
 customLogger.add(winston.transports.Console, {
@@ -7,36 +8,20 @@ customLogger.add(winston.transports.Console, {
   colorize: true
 });
 
-//REMOTE LOGGING TO LOGGLY
-if (!process.env.CI)
+//REMOTE LOGGING
+if (!process.env.CI && process.env.NODE_ENV=='production')
 {
-  require('winston-loggly-bulk');
-  customLogger.add(winston.transports.Loggly, {
-    subdomain: process.env.LOGGLY_API_DOMAIN,
-    token:process.env.LOGGLY_API_KEY,
-    tags:['watercooler'],
-    level:'error',
-    json: true
+  let winstonAwsCloudWatch = require('winston-cloudwatch');
+  customLogger.on('error',(err)=>{
+    console.log(err);
+  });
+  customLogger.add(winstonAwsCloudWatch, {
+    logGroupName: 'ConnectedAcademyAPI',
+    logStreamName:'watercooler-'+ os.hostname(),
+    awsRegion: process.env.AWS_DEFAULT_REGION,
+    jsonMessage: true
   });
 }
-
-//LOCAL LOGGING TO ORIENTDB
-// require('winston-orientdb').OrientDB;
-// customLogger.add(winston.transports.OrientDB, {
-//   level:'info',
-//   connection:{
-//     host: process.env.ORIENTDB_HOST,
-//     port: process.env.ORIENTDB_PORT,
-//     username: process.env.ORIENTDB_USERNAME,
-//     password: process.env.ORIENTDB_PASSWORD,
-//   },
-//   db:{
-//     name: process.env.ORIENTDB_DB,
-//     username: process.env.ORIENTDB_USERNAME,
-//     password: process.env.ORIENTDB_PASSWORD
-//   },
-//   storeHost: true
-// });
 
 module.exports.log = {
   // Pass in our custom logger, and pass all log levels through.

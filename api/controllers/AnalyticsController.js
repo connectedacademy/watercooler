@@ -42,7 +42,7 @@ module.exports = {
 
     /**
      * 
-     * @api {post} /v1/analytics/submit Submit Answer
+     * @api {post} /v1/analytics/answer/response Submit Answer
      * @apiDescription Submit an answer to a question
      * @apiName submitanswer
      * @apiGroup Analytics

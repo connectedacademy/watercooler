@@ -95,12 +95,16 @@ let run = async function(){
                     {
                         if (i < _.size(spec.classes)-1)
                         {
-                            let Nstart = getLiveSegment(spec.classes[i+1]).add(2,'days');
-
-                            if (NOW.isAfter(Wstart) && NOW.isBefore(Nstart))
+                            let nn = getLiveSegment(spec.classes[i+1]);
+                            if (nn)
                             {
-                                //should be this one
-                                currentWeek = klass;
+                                let Nstart = nn.clone().add(2,'days');
+
+                                if (NOW.isAfter(Wstart) && NOW.isBefore(Nstart))
+                                {
+                                    //should be this one
+                                    currentWeek = klass;
+                                }
                             }
                         }
                         else //last on in array
@@ -163,7 +167,7 @@ let run = async function(){
                         NotificationEngine.liveClassWarning(course, currentClass, hub.hub_id);
                     }
 
-                    if (NOW.isAfter(hub_live_start.add(3,'hours')))
+                    if (NOW.isAfter(hub_live_start.clone().add(3,'hours')))
                     {
                         NotificationEngine.afterLiveClass(course, currentClass, hub.hub_id);
                     }
@@ -176,7 +180,7 @@ let run = async function(){
                 }
                 
                 // get ready for next week
-                if (NOW.isAfter(webinar_start.add(2,'hours')))
+                if (NOW.isAfter(webinar_start.clone().add(2,'hours')))
                 {
                     NotificationEngine.nextWeek(course, currentClass);
                 }
