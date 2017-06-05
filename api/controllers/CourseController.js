@@ -53,6 +53,17 @@ let getLiveSegment = function(klass)
     }
 };
 
+let getSchedForHub = function(segment,hub)
+{
+    let hubinfo = _.find(segment.schedule,{hub_id:hub});
+    if (!hubinfo && _.size(segment.schedule)>1)
+        hubinfo = _.find(segment.schedule,{leadhub:true});
+    else
+        hubinfo = _.first(segment.schedule);
+
+    return hubinfo;
+}
+
 module.exports = {
 
     /**
@@ -134,13 +145,19 @@ module.exports = {
                 else
                 {
                     if (i<currentClass)
+                    {
                         klass.status = 'RELEASED';
+                        klass.release_at = getLiveSegment(klass).clone().subtract(2,'days');
+                    }
                     if (i==currentClass)
+                    {
                         klass.status = 'CURRENT';
+                        klass.release_at = getLiveSegment(klass).clone().subtract(2,'days');
+                    }
                     if (i>currentClass)
                     {
                         klass.status = 'FUTURE';
-                        klass.release_at = getLiveSegment(klass);
+                        klass.release_at = getLiveSegment(klass).clone().subtract(2,'days');
                     }
                 }
             });            
@@ -283,8 +300,8 @@ module.exports = {
                         case 'class':
                             if (classreleased)
                                 content.status = 'RELEASED'
-                            else
-                                content.release_at = live_segment_start;
+                            content.release_at = live_segment_start;
+                            content.schedule = getSchedForHub(content,myhub);
                             break;
                             
 
@@ -297,8 +314,8 @@ module.exports = {
                         case 'webinar':
                             if (webinareleased)
                                 content.status = 'RELEASED'
-                            else
-                                content.release_at = webinar_segment_start;
+                            content.release_at = webinar_segment_start;
+                            content.schedule = getSchedForHub(content,myhub);
                             break;
                             
 
