@@ -147,17 +147,29 @@ module.exports = {
                     if (i<currentClass)
                     {
                         klass.status = 'RELEASED';
-                        klass.release_at = getLiveSegment(klass).clone().subtract(2,'days');
+                        let tim = getLiveSegment(klass);
+                        if (tim)
+                        {
+                            klass.release_at = tim.clone().subtract(2,'days');
+                        }
                     }
                     if (i==currentClass)
                     {
                         klass.status = 'CURRENT';
-                        klass.release_at = getLiveSegment(klass).clone().subtract(2,'days');
+                        let tim = getLiveSegment(klass);
+                        if (tim)
+                        {
+                            klass.release_at = tim.clone().subtract(2,'days');
+                        }
                     }
                     if (i>currentClass)
                     {
                         klass.status = 'FUTURE';
-                        klass.release_at = getLiveSegment(klass).clone().subtract(2,'days');
+                        let tim = getLiveSegment(klass);
+                        if (tim)
+                        {
+                            klass.release_at = tim.clone().subtract(2,'days');
+                        }
                     }
                 }
             });            
