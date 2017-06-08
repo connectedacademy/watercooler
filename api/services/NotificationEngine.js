@@ -335,6 +335,7 @@ module.exports = {
             for (let user of users) {
                 if (user.id != req.session.passport.user.id) {
                     email.body = email.body.replace('{{user}}', user.name);
+                    email.body = email.body.replace('{{id}}', message.relates_to.replace('#','%23'));
                     email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(user, email.subject, email.body);
                 }
