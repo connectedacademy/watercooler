@@ -256,7 +256,7 @@
   },
   {
     "type": "post",
-    "url": "/v1/analytics/submit",
+    "url": "/v1/analytics/answer/response",
     "title": "Submit Answer",
     "description": "<p>Submit an answer to a question</p>",
     "name": "submitanswer",
@@ -312,7 +312,7 @@
     "groupTitle": "Analytics",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/analytics/submit"
+        "url": "https://api.connectedacademy.io/v1/analytics/answer/response"
       }
     ]
   },
@@ -1571,6 +1571,34 @@
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/messages/summarybatch/:class/:content/:startsegment/:endsegment/:groupsize"
+      }
+    ]
+  },
+  {
+    "type": "socket.io",
+    "url": "/v1/messages/unsubscribe",
+    "title": "Unsubscribe",
+    "description": "<p>Unsubscribe to all message based socket events</p>",
+    "name": "message_unsubscribe",
+    "group": "Messages",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "user",
+        "title": "Authenticated as User",
+        "description": ""
+      }
+    ],
+    "filename": "./api/controllers/MessagesController.js",
+    "groupTitle": "Messages",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/messages/unsubscribe"
       }
     ]
   },

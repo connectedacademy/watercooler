@@ -34,7 +34,9 @@ module.exports.policies = {
         'likes':['cors','verifyDomain','jsononly'],
         'visualisation':['cors','verifyDomain','jsononly'],
         'summary':['cors','verifyDomain','jsononly'],
-        'summarybatch':['cors','verifyDomain','jsononly']             
+        'summarybatch':['cors','verifyDomain','jsononly'],
+        'subscribe':['cors','verifyDomain','jsononly','socketonly'],
+        'unsubscribe':['cors','verifyDomain','jsononly','socketonly']            
     },
     'classroom':
     {

@@ -61,6 +61,7 @@ module.exports.routes = {
   'GET /v1/messages/likes/:class/:content':'MessagesController.likes',
   'GET /v1/messages/list/:class/:content/:startsegment/:endsegment':'MessagesController.list',
   'GET /v1/messages/subscribe/:class/:content/:startsegment/:endsegment':'MessagesController.subscribe',
+  'GET /v1/messages/unsubscribe':'MessagesController.unsubscribe',  
   'POST /v1/messages/create':'MessagesController.create',
   'GET /v1/messages/summary/:class/:content/:startsegment/:endsegment':'MessagesController.summary',
   'GET /v1/messages/summarybatch/:class/:content/:startsegment/:endsegment/:groupsize':'MessagesController.summarybatch',

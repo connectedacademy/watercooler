@@ -33,6 +33,27 @@ module.exports = {
 
     /**
      * 
+     * @api {socket.io} /v1/messages/unsubscribe Unsubscribe
+     * @apiDescription Unsubscribe to all message based socket events
+     * @apiName message_unsubscribe
+     * @apiGroup Messages
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     */
+    unsubscribe: async (req, res) => {
+        try {
+            let success = await GossipmillApi.unsubscribe(req);
+            return res.json(success);
+        }
+        catch (e) {
+            return res.serverError(e);
+        }
+    },
+
+    /**
+     * 
      * @api {post} /v1/messages/create New Message
      * @apiDescription Create a new message
      * @apiName message_create
