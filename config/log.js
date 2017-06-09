@@ -4,7 +4,7 @@ let os = require('os');
 
 // A console transport logging debug and above.
 customLogger.add(winston.transports.Console, {
-  level: 'verbose',
+  level: 'silly',
   colorize: true
 });
 
@@ -26,7 +26,7 @@ if (!process.env.CI && process.env.NODE_ENV=='production')
 module.exports.log = {
   // Pass in our custom logger, and pass all log levels through.
   custom: customLogger,
-  level: 'verbose',
+  level: 'silly',
 
   // Disable captain's log so it doesn't prefix or stringify our meta data.
   inspect: false

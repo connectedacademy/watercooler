@@ -37,6 +37,9 @@
         io.socket.on('message',function(msg){
             console.log(msg);
         });
+        io.socket.on('user',function(msg){
+            console.log(msg);
+        });
 
         function register()
             {
@@ -78,7 +81,10 @@
 
             function subscribe()
             {
-                io.socket.get('/v1/messages/subscribe/evidence/liveclass/0/100',function(data,res){
+                // io.socket.get('/v1/messages/subscribe/evidence/liveclass/0/100',function(data,res){
+                //     console.log(data);
+                // });
+                io.socket.get('/v1/auth/me',function(data,res){
                     console.log(data);
                 });
             }

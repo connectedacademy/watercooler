@@ -166,6 +166,13 @@ module.exports = {
                 user.registration = _.first(user.registrations);
                 user = _.omit(user,'registrations');
 
+                if (req.isSocket)
+                {
+                    sails.log.verbose('Subscribed to WS for user',req.session.passport.user.id);
+                    User.subscribe(req,req.session.passport.user.id);
+                    // User.message(req.session.passport.user.id,{test:'hello'})
+                }
+
                 return res.json({
                     user: (user.service=='twitter')? user : null,
                     admin: (user.service=='github')? user : null
