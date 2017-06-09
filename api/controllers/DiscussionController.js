@@ -326,7 +326,6 @@ module.exports = {
 
             //get discussions for submissions I own:
             let o = Submission.find({
-                cached:true,
                 user: req.session.passport.user.id,
                 course: req.course.domain,
                 class: req.param('class'),
