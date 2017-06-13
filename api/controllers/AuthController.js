@@ -17,7 +17,7 @@ module.exports = {
                 req.login(user, (err)=>
                 {
                     // console.log(err);
-                    return res.redirect('/auth/admindashboard');
+                    return res.redirect(req.session.redirecturi + '/#/admin');
                 });
 
             });
@@ -40,7 +40,7 @@ module.exports = {
                 {
                     // console.log(err);
 
-                    return res.redirect('/auth/dashboard');
+                    return res.redirect(req.session.redirecturi + '/#/');
                 });
             });
         }
@@ -136,12 +136,12 @@ module.exports = {
     },
 
     admindashboard: (req,res)=>{
-        return res.redirect('/admin/dash');
+        return res.redirect(req.session.redirecturi + '/#/admin');
         // return res.redirect(req.session.redirecturi + '/admin');
     },
 
     fail: async (req,res)=>{
-       return res.redirect(req.session.redirecturi + '/loginfail');
+       return res.redirect(req.session.redirecturi + '/#/loginfail');
     },
 
     /**
