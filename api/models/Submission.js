@@ -10,9 +10,18 @@ module.exports = {
         cached: 'boolean',
         original:'string',
         cachedat:'datetime',
-        course: 'string',
-        class: 'string',
-        content: 'string',
+        course: {
+            type:'string',
+            index:true
+        },
+        class: {
+            type:'string',
+            index: true
+        },
+        content: {
+            type:'string',
+            index: true
+        },
         html:'text',
         thumbnail:'string',
         discussion:{

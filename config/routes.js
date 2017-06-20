@@ -34,17 +34,13 @@ module.exports.routes = {
 
   'GET /v1/auth/login':'AuthController.login',
   'GET /v1/auth/logout':'AuthController.logout',
-  'GET /v1/auth/dashboard':'AuthController.dashboard',
-  'GET /v1/auth/admindashboard':'AuthController.admindashboard',  
-  'GET /v1/auth/fail':'AuthController.fail',
   'GET /v1/auth/me':'AuthController.me',
   'POST /v1/auth/profile':'AuthController.profile',
   'POST /v1/auth/register':'AuthController.register',
   'GET /v1/auth/registrationquestions':'AuthController.registrationquestions',
   
 
-  'GET /v1/admin/login':'AuthController.admin',
-  'GET /v1/admin/logout':'AuthController.admin_logout',  
+  'GET /v1/admin/login':'AuthController.admin',  
   'GET /v1/admin/editor':'AdminController.editor',
   'POST /v1/admin/credentials':'AdminController.credentials',
   'GET /v1/admin/content/:class/:content':'AdminController.content',

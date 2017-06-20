@@ -75,7 +75,7 @@ module.exports = {
     },
 
     twitter_callback: (req,res,next)=>{
-        sails.passport.authenticate('twitter',{successRedirect: '/v1/auth/dashboard', failureRedirect: '/v1/auth/fail' })(req,res,next);
+        sails.passport.authenticate('twitter',{successRedirect: req.session.redirecturi + '/#/registration', failureRedirect: req.session.redirecturi + '/#/loginfail' })(req,res,next);
     },
 
     /**
@@ -128,21 +128,21 @@ module.exports = {
     },
 
     github_callback: (req,res,next)=>{
-        sails.passport.authenticate('github',{successRedirect: '/v1/auth/admindashboard', failureRedirect: '/v1/auth/fail' })(req,res,next);
+        sails.passport.authenticate('github',{successRedirect: req.session.redirecturi + '/#/admin', failureRedirect: req.session.redirecturi + '/#/loginfail' })(req,res,next);
     },
 
-    dashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + '/#/registration');
-    },
+    // dashboard: (req,res)=>{
+    //     return res.redirect(req.session.redirecturi + '/#/registration');
+    // },
 
-    admindashboard: (req,res)=>{
-        return res.redirect(req.session.redirecturi + '/#/admin');
-        // return res.redirect(req.session.redirecturi + '/admin');
-    },
+    // admindashboard: (req,res)=>{
+    //     return res.redirect(req.session.redirecturi + '/#/admin');
+    //     // return res.redirect(req.session.redirecturi + '/admin');
+    // },
 
-    fail: async (req,res)=>{
-       return res.redirect(req.session.redirecturi + '/#/loginfail');
-    },
+    // fail: async (req,res)=>{
+    //    return res.redirect(req.session.redirecturi + '/#/loginfail');
+    // },
 
     /**
      * 
@@ -155,37 +155,30 @@ module.exports = {
      * 
      */
     me: async (req,res)=>{
-        if (req.session.passport)
+        try
         {
-            try
+            var user = await User.findOne(req.session.passport.user.id)
+            .populate('admin')
+            .populate('registrations',{
+                course: req.course.domain
+            });
+
+            user.registration = _.first(user.registrations);
+            user = _.omit(user,'registrations');
+
+            if (req.isSocket)
             {
-                var user = await User.findOne(req.session.passport.user.id).populate('registrations',{
-                    course: req.course.domain
-                });
-
-                user.registration = _.first(user.registrations);
-                user = _.omit(user,'registrations');
-
-                if (req.isSocket)
-                {
-                    sails.log.verbose('Subscribed to WS for user',req.session.passport.user.id);
-                    User.subscribe(req,req.session.passport.user.id);
-                    // User.message(req.session.passport.user.id,{test:'hello'})
-                }
-
-                return res.json({
-                    user: (user.service=='twitter')? user : null,
-                    admin: (user.service=='github')? user : null
-                });
+                sails.log.verbose('Subscribed to WS for user',req.session.passport.user.id);
+                User.subscribe(req,req.session.passport.user.id);
             }
-            catch (e)
-            {
-                return res.serverError(e);
-            }
+
+            return res.json({
+                user: user
+            });
         }
-        else
+        catch (e)
         {
-            return res.forbidden();
+            return res.serverError(e);
         }
     },
 

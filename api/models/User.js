@@ -1,6 +1,9 @@
 module.exports = {
   
   orientdbClass : 'V',
+  joinTableNames: {
+    admin: 'isadmin'
+  },
 
   attributes: {
     account_number:'string',
@@ -18,6 +21,10 @@ module.exports = {
       collection: 'Registration',
       via:'user',
       dominant:true
+    },
+    admin:
+    {
+      model: 'User'
     },
 
     toJSON :function()

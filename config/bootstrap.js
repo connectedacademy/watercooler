@@ -52,7 +52,7 @@ module.exports.bootstrap = function(cb) {
               user.account= profile.username;
               user.profile= profile._json.profile_image_url_https;
               user.link= profile._json.url;
-
+              
               user.save(function(err){
                 return cb(err, user);
               });
@@ -68,9 +68,12 @@ module.exports.bootstrap = function(cb) {
   sails.passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: process.env.HOST + "/auth/github_callback"
+    callbackURL: process.env.HOST + "/auth/github_callback",
+    passReqToCallback: true
   },
-  function(accessToken, refreshToken, profile, cb) {
+  function(req, accessToken, refreshToken, profile, cb) {
+
+      //Get current user, and append these new details to their account:
 
       User.findOrCreate({ 
             service: profile.provider,
@@ -87,8 +90,8 @@ module.exports.bootstrap = function(cb) {
           service: profile.provider,
           account: profile.username
         }, async function (err, user) {
-          try
-          {
+            if (err || !user)
+              return cb(err,null);
 
             user._raw = profile._json;
             user.credentials = {
@@ -101,14 +104,19 @@ module.exports.bootstrap = function(cb) {
             user.profile= profile._json.avatar_url;
             user.link= profile._json.html_url;
             
-            user.save(function(err){
-              return cb(err, user);
+            user.save(async function(err){
+              if (err)
+                return cb(err,req.session.passport.user);
+
+              //put this github user onto the account of the current user:
+              let me_user = await User.findOne(req.session.passport.user.id);
+              me_user.admin = user.id+'';
+              
+              //save my account with admin appended
+              me_user.save(function(err){
+                return cb(err, req.session.passport.user);
+              });
             });
-          }
-          catch (e)
-          {
-            return cb(err);
-          }
       });
   }
   ));

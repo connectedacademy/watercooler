@@ -5,7 +5,7 @@ module.exports.policies = {
     {
         'root':['jsononly'],
         'login':['verifyDomain'],
-        'admin':['verifyDomain'],
+        'admin':['verifyDomain', 'isUser'],
         'twitter_callback':[true],
         'github_callback':[true],
         'dashboard':['isUser',true],
@@ -13,7 +13,7 @@ module.exports.policies = {
         'fail':[true],
         'logout':['cors'],
         'admin_logout':[true],
-        'me':['verifyDomain','jsononly','cors'],
+        'me':['verifyDomain','jsononly','cors','isUser'],
         'profile':['isUser','verifyDomain','jsononly','cors'],
         'register':['isUser','verifyDomain','jsononly','cors'],
         'registrationquestions':['isUser','verifyDomain','jsononly','cors'],
