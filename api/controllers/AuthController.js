@@ -75,7 +75,7 @@ module.exports = {
     },
 
     twitter_callback: (req,res,next)=>{
-        sails.passport.authenticate('twitter',{successRedirect: '/v1/auth/dashboard', failureRedirect: '/auth/fail' })(req,res,next);
+        sails.passport.authenticate('twitter',{successRedirect: '/v1/auth/dashboard', failureRedirect: '/v1/auth/fail' })(req,res,next);
     },
 
     /**
@@ -128,7 +128,7 @@ module.exports = {
     },
 
     github_callback: (req,res,next)=>{
-        sails.passport.authenticate('github',{successRedirect: '/auth/admindashboard', failureRedirect: '/auth/fail' })(req,res,next);
+        sails.passport.authenticate('github',{successRedirect: '/v1/auth/admindashboard', failureRedirect: '/v1/auth/fail' })(req,res,next);
     },
 
     dashboard: (req,res)=>{
