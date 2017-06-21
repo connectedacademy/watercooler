@@ -41,7 +41,8 @@
     "showdown":"1.6.4",
     "moment":"2.18.1",
     "shortid":"2.2.8",
-    "ioredis": "3.1.1"
+    "ioredis": "3.1.1",
+    "lodash": "4.17.4"
   },
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",

@@ -1,3 +1,5 @@
+let lodash = require('lodash');
+
 module.exports = {
 
     /**
@@ -104,14 +106,44 @@ module.exports = {
     answers: async (req,res)=>{
         //get the questions:
         let questions = await CacheEngine.getQuestions(req,res);
+        
         let answers = await Answer.find({course:req.course.domain});
-        let results = _.map(questions,(q)=>{
-            return {
-                question: q,
-                answers: _.filter(answers,{question_id:q.id})
-            }
-        });
 
-        return res.json(results);
+        let result = {};
+
+        for (let qtype in questions)
+        {
+            if (qtype!='release')
+            {
+                // console.log(qtype);
+                let results = _.map(questions[qtype],(q)=>{   
+                    let answ = _.filter(answers,{question_id:q.id});
+                    
+                    if (q.response_type=='text')
+                        return {
+                            question: q,
+                            answers: answ
+                        }
+
+                    if (q.response_type=='boolean')
+                        return {
+                            question: q,
+                            totals: lodash.countBy(answ,'answer')
+                        }
+
+                    if (q.response_type=='scale')
+                        return {
+                            question: q,
+                            mean: lodash.meanBy(answ,'answer'),
+                            min: lodash.minBy(answ,'answer'),
+                            max: lodash.maxBy(answ,'answer')
+                        }
+                });
+
+                result[qtype] = results;
+            }
+        }
+
+        return res.json(result);
     }
 }
