@@ -233,56 +233,73 @@ module.exports = {
         //list all messages for this submission
         let submission = await Submission.findOne(req.param('submission'));
         let data = await DiscussionMessage.find({relates_to:req.param('submission')}).populate('fromuser');
-        
         let msg = data;
-        let authors = _.uniq(_.map(msg,(m)=>{return m.fromuser.id}));
 
-        //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
-        let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
-        WHERE relates_to.user IN ["+authors.join(',')+"] \
-        AND relates_to.course=:course \
-        AND relates_to.class=:class \
-        AND relates_to.content=:content \
-        GROUP BY relates_to.user";
+        //if its my submission, 
+        if (submission.user == req.session.passport.user.id)
+        {
 
-        // console.log(query);
-        let author_messages = await Submission.query(query,{
-            params:
+            let authors = _.uniq(_.map(msg,(m)=>{return m.fromuser.id}));
+            //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
+            let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
+            WHERE relates_to.user IN ["+authors.join(',')+"] \
+            AND relates_to.course=:course \
+            AND relates_to.class=:class \
+            AND relates_to.content=:content \
+            GROUP BY relates_to.user";
+
+            // console.log(query);
+            let author_messages = await Submission.query(query,{
+                params:
+                {
+                    course: req.course.domain,
+                    class: submission.class,
+                    content: submission.content
+                }
+            });
+            
+            for (let m of msg)
             {
-                course: req.course.domain,
-                class: submission.class,
-                content: submission.content
-            }
-        });
+                // its mine
+                if (m.fromuser.id == req.session.passport.user.id)
+                    m.canview = true;
+                else
+                {
+                    // list of messages related to submissions by this author
+                    let forthisauthor = _.find(author_messages,{author:m.fromuser.id});
+                    //if there are messages for this author
+                    if (forthisauthor)
+                    {
+                        //if I have made a message to this author for a related submission
+                        m.canview = _.includes(forthisauthor.messagesfrom,req.session.passport.user.id);
+                    }
+                    else
+                    {
+                        //author has no messages, particularly not from me
+                        m.canview = false;
+                    }
+                }
 
+                delete m.readAt;
+            }
+        }
+        else
+        {
+            for (let m of msg)
+            {
+                m.canview = true;
+            }
+        }
+
+        //only made read the ones that I can actually read...
         let read = {
             user: req.session.passport.user.id+'',
             date: (new Date()).toISOString()
         };
 
-        let q = "UPDATE discussionmessage ADD readAt = "+JSON.stringify(read) + " WHERE @rid IN ["+_.pluck(data,'id').join(',') + '] AND readAt CONTAINSALL (user <> "'+req.session.passport.user.id+'")';
+        let q = "UPDATE discussionmessage ADD readAt = "+JSON.stringify(read) + " WHERE @rid IN ["+_.pluck(_.filter(msg,{canview:true}),'id').join(',') + '] AND readAt CONTAINSALL (user <> "'+req.session.passport.user.id+'")';
         // console.log(q);
         await DiscussionMessage.query(q);
-
-        for (let m of msg)
-        {
-            if (m.fromuser.id == req.session.passport.user.id)
-                m.canview = true;
-            else
-            {
-                let forthisauthor = _.find(author_messages,{author:m.fromuser.id});
-                if (forthisauthor)
-                {
-                    m.canview = _.includes(forthisauthor.messagesfrom,req.session.passport.user.id);
-                }
-                else
-                {
-                    m.canview = false;
-                }
-            }
-
-            delete m.readAt;
-        }
 
         Submission.removeCircularReferences(msg);
 
