@@ -1,5 +1,3 @@
-const shortid = require('shortid');
-
 module.exports = {
 
     /**
@@ -22,7 +20,7 @@ module.exports = {
         let klass = req.param('class');
         let content = req.param('content');
 
-        let hash = shortid.generate();
+        let hash = await Classroom.getcode();
 
         Classroom.findOrCreate({
             course: course,
