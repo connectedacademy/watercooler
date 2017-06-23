@@ -131,7 +131,7 @@ module.exports = {
 
         try
         {
-            DiscussionMessage.create(msg,(err,message)=>{
+            DiscussionMessage.create(msg,async (err,message)=>{
                 if (err)
                 {
                     return res.serverError(err);
@@ -139,10 +139,11 @@ module.exports = {
                 else
                 {
                     //publish to anyone listening
-                    Submission.publishCreate(message, req);
+                    let msg = await DiscussionMessage.findOne(message.id).populate('fromuser');
+                    Submission.publishCreate(msg, req);
                     //send offline notification (TODO: detect if they are not online)
-                    NotificationEngine.newPeerMessage(req, message);
-                    return res.json(message);
+                    NotificationEngine.newPeerMessage(req, msg);
+                    return res.json(msg);
                 }
             })
         }
