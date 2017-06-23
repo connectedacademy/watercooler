@@ -132,9 +132,11 @@ module.exports = {
 
                     users = _.uniq(users);
 
+                    msg.relates_to = msg.relates_to.id;
+
                     let wrapped = {
                         msgtype: 'discussion',
-                        msg: _.omit(msg,'relates_to')
+                        msg: msg
                     }
 
                     //to any user in this conversation:
@@ -147,7 +149,7 @@ module.exports = {
                     // //to subscribers of this submission:
                     // Submission.publishUpdate(msg);
                     //send offline notification (TODO: detect if they are not online)
-                    NotificationEngine.newPeerMessage(req, _.omit(msg,'relates_to'));
+                    NotificationEngine.newPeerMessage(req, msg);
                     return res.json(msg);
                 }
             })
