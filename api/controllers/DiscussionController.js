@@ -138,7 +138,7 @@ module.exports = {
                     }
 
                     //to any user in this conversation:
-                    for (let user in users)
+                    for (let user of users)
                     {
                         sails.log.verbose('Sending WS about discussion',user.toString(),msg.id);
                         User.message(user.toString(), wrapped);
