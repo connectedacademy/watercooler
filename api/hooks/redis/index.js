@@ -31,7 +31,7 @@ module.exports = function(sails)
 
 var newSubmission = async function(subid){
     //broadcast to this user's subscription:
-    let submission = await Submission.findOne(subid);
+    let submission = await Submission.findOne(subid).populate('user');
     Submission.removeCircularReferences(submission);
     sails.log.verbose('WS message to ',submission.user.toString());
     submission.msgtype = 'submission';
