@@ -121,19 +121,21 @@ module.exports = {
                 else
                 {
                     //publish to anyone listening
-                    let msg = await DiscussionMessage.findOne(message.id).populate('fromuser').populate('submission');
+                    let msg = await DiscussionMessage.findOne(message.id).populate('fromuser').populate('relates_to');
                     let users_dat = await DiscussionMessage.find({
                         relates_to: message.id
                     });
 
                     let users = _.pluck(users_dat,'fromuser');
 
-                    users.push(msg.submission.user);
+                    users.push(msg.relates_to.user);
 
                     users = _.uniq(users);
 
-                    let wrapped = _.omit(msg,'submission');
-                    wrapped.msgtype = 'discussion';
+                    let wrapped = {
+                        msgtype: 'discussion',
+                        msg: _.omit(msg,'relates_to')
+                    }
 
                     //to any user in this conversation:
                     for (let user in users)
