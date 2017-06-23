@@ -50,24 +50,6 @@ module.exports = {
 
     /**
      * 
-     * @api {socket.io} /v1/discussion/subscribe/:submission Subscribe to Updates
-     * @apiDescription Subscribe to live message updates for this discussion
-     * @apiName discussionsubscribe
-     * @apiGroup Discussion
-     * @apiVersion  1.0.0
-     * @apiPermission domainparse
-     * @apiPermission user
-     * 
-     * @apiParam  {String} submission Submission ID
-     * 
-     */
-    subscribe: async (req,res)=>{
-        Submission.watch(req,req.param('submission'));
-        return res.ok('Subscribed to new discussion messages for ' + req.param('submission'));
-    },
-
-    /**
-     * 
      * @api {get} /v1/discussion/user/:class/:content/:user User Submissions
      * @apiDescription List submissions for this user
      * @apiName discussionuser
@@ -139,8 +121,25 @@ module.exports = {
                 else
                 {
                     //publish to anyone listening
-                    let msg = await DiscussionMessage.findOne(message.id).populate('fromuser');
-                    Submission.publishCreate(msg, req);
+                    let msg = await DiscussionMessage.findOne(message.id).populate('fromuser').populate('submission');
+                    let users_dat = await DiscussionMessage.find({
+                        relates_to: message.id
+                    });
+
+                    let users = _.pluck(users_dat,'fromuser');
+
+                    users.push(msg.submission.user);
+
+                    users = _.uniq(users);
+
+                    //to any user in this conversation:
+                    for (let user in users)
+                    {
+                        User.message(user.toString(), _.omit(msg,'submission'));
+                    }
+
+                    // //to subscribers of this submission:
+                    // Submission.publishUpdate(msg);
                     //send offline notification (TODO: detect if they are not online)
                     NotificationEngine.newPeerMessage(req, msg);
                     return res.json(msg);
