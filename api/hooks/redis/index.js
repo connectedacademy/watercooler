@@ -33,10 +33,10 @@ var newSubmission = async function(subid){
     //broadcast to this user's subscription:
     let submission = await Submission.findOne(subid).populate('user');
     Submission.removeCircularReferences(submission);
-    sails.log.verbose('WS message to ',submission.user.toString());
+    sails.log.verbose('WS message to ',submission.user.id.toString());
     let wrapped = {
         msgtype: 'submission',
         msg: submission
     }
-    User.message(submission.user.toString(), wrapped);
+    User.message(submission.user.id.toString(), wrapped);
 }

@@ -140,13 +140,14 @@ module.exports = {
                     //to any user in this conversation:
                     for (let user in users)
                     {
+                        sails.log.verbose('Sending WS about discussion',user.toString(),msg.id);
                         User.message(user.toString(), wrapped);
                     }
 
                     // //to subscribers of this submission:
                     // Submission.publishUpdate(msg);
                     //send offline notification (TODO: detect if they are not online)
-                    NotificationEngine.newPeerMessage(req, msg);
+                    NotificationEngine.newPeerMessage(req, _.omit(msg,'relates_to'));
                     return res.json(msg);
                 }
             })
