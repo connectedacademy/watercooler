@@ -34,5 +34,6 @@ var newSubmission = async function(subid){
     let submission = await Submission.findOne(subid);
     Submission.removeCircularReferences(submission);
     sails.log.verbose('WS message to ',submission.user.toString());
+    submission.msgtype = 'submission';
     User.message(submission.user.toString(), submission);
 }

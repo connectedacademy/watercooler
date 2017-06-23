@@ -132,10 +132,13 @@ module.exports = {
 
                     users = _.uniq(users);
 
+                    let wrapped = _.omit(msg,'submission');
+                    wrapped.msgtype = 'discussion';
+
                     //to any user in this conversation:
                     for (let user in users)
                     {
-                        User.message(user.toString(), _.omit(msg,'submission'));
+                        User.message(user.toString(), wrapped);
                     }
 
                     // //to subscribers of this submission:
