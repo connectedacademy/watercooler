@@ -129,22 +129,69 @@ module.exports = {
                     let users = _.pluck(users_dat,'fromuser');
 
                     users.push(msg.relates_to.user);
-
+                    let ismysubmission = msg.relates_to.user == req.session.passport.user.id
+                    let submission = msg.relates_to;
                     users = _.uniq(users);
 
                     msg.relates_to = msg.relates_to.id;
+                    delete msg.readAt;
 
-                    let wrapped = {
-                        msgtype: 'discussion',
-                        msg: msg
-                    }
+                    //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
+                    let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
+                    WHERE relates_to.user = "+msg.fromuser.id+" \
+                    AND relates_to.course=:course \
+                    AND relates_to.class=:class \
+                    AND relates_to.content=:content \
+                    GROUP BY relates_to.user";
+                    let author_messages = await Submission.query(query,{
+                        params:
+                        {
+                            course: req.course.domain,
+                            class: submission.class,
+                            content: submission.content
+                        }
+                    });
 
                     //to any user in this conversation:
                     for (let user of users)
                     {
+                        //is my submission, and its me that the socket message is going to
+                        if (ismysubmission && user == req.session.passport.user.id)
+                        {
+                            // its me making the message
+                            if (msg.fromuser.id == req.session.passport.user.id)
+                                msg.canview = true;
+                            else
+                            {
+                                // list of messages related to submissions by this author
+                                let forthisauthor = _.find(author_messages,{author:msg.fromuser.id});
+                                //if there are messages for this author
+                                if (forthisauthor)
+                                {
+                                    //if I have made a message to this author for a related submission
+                                    msg.canview = _.includes(forthisauthor.messagesfrom,req.session.passport.user.id);
+                                }
+                                else
+                                {
+                                    //author has no messages, particularly not from me
+                                    msg.canview = false;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            msg.canview = true;
+                        }
+
                         sails.log.verbose('Sending WS about discussion',user.toString(),msg.id);
+                        let wrapped = {
+                            msgtype: 'discussion',
+                            msg: msg
+                        }
                         User.message(user.toString(), wrapped);
                     }
+
+
 
                     // //to subscribers of this submission:
                     // Submission.publishUpdate(msg);

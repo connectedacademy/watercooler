@@ -74,7 +74,6 @@ module.exports.routes = {
   // DISCUSSION MODULE
 
   'GET /v1/discussion/available/:class/:content':'DiscussionController.available',
-  'GET /v1/discussion/subscribe/:submission':'DiscussionController.subscribe',
   'POST /v1/discussion/create/:submission':'DiscussionController.create',
   'GET /v1/discussion/messages/:submission':'DiscussionController.messages',
   'GET /v1/discussion/submission/:submission':'DiscussionController.submission',  
