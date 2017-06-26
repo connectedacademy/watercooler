@@ -84,13 +84,13 @@ dockerhub:
   only:
     - master
 
-deploy-aws:
-  stage: deploy
-  environment: amazonlive
-  image: ruby:latest
-  when: manual
-  script:
-    - gem install dpl
-    - dpl --provider=elasticbeanstalk --access-key-id=<access-key-id> --secret-access-key="<secret-access-key>" --app="example-app-name" --env="example-app-environment" --region="us-west-2"
-  only:
-    - master
+# deploy-aws:
+#   stage: deploy
+#   environment: amazonlive
+#   image: ruby:latest
+#   when: manual
+#   script:
+#     - gem install dpl
+#     - dpl --provider=elasticbeanstalk --access-key-id=<access-key-id> --secret-access-key="<secret-access-key>" --app="example-app-name" --env="example-app-environment" --region="us-west-2"
+#   only:
+#     - master
