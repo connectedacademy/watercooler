@@ -13,7 +13,7 @@ services:
       - ./test:/usr/src/app/test:ro
       - ./.sailsrc:/usr/src/app/.sailsrc
       - ../spec:/usr/src/app/spec:ro
-    command: nodemon --debug=0.0.0.0:5858 -x "node --harmony-async-await" -L app.js
+    command: nodemon --inspect=0.0.0.0:5858 -x "node --harmony-async-await" -L app.js
     ports:
       - "4000:1337"
       - "5858:5858"

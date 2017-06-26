@@ -122,13 +122,24 @@ module.exports = {
                 {
                     //publish to anyone listening
                     let msg = await DiscussionMessage.findOne(message.id).populate('fromuser').populate('relates_to');
+                    // console.log(msg.relates_to+'');
                     let users_dat = await DiscussionMessage.find({
-                        relates_to: message.id
+                        relates_to: msg.relates_to.id+''
                     });
 
+                    // console.log(users_dat);
+
                     let users = _.pluck(users_dat,'fromuser');
+                    // console.log('users');
+                    // console.log(users);
+                    
 
                     users.push(msg.relates_to.user);
+                    // console.log('me');
+                    // console.log(msg.relates_to.user);
+                    
+
+
                     let ismysubmission = msg.relates_to.user == req.session.passport.user.id
                     let submission = msg.relates_to;
                     users = _.uniq(users);
@@ -138,7 +149,7 @@ module.exports = {
 
                     //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
                     let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
-                    WHERE relates_to.user = "+msg.fromuser.id+" \
+                    WHERE relates_to.user = IN ["+users.join(',')+"] \
                     AND relates_to.course=:course \
                     AND relates_to.class=:class \
                     AND relates_to.content=:content \
@@ -151,6 +162,10 @@ module.exports = {
                             content: submission.content
                         }
                     });
+                    // console.log(author_messages);
+                    // console.log(submission.class);
+                    // console.log(submission.content);
+                    
 
                     //to any user in this conversation:
                     for (let user of users)
@@ -183,14 +198,15 @@ module.exports = {
                             msg.canview = true;
                         }
 
-                        sails.log.verbose('Sending WS about discussion',user.toString(),msg.id);
+                        console.log(msg.canview);
+
+                        sails.log.verbose('Sending WS about discussion',{user: user.toString(), msg: msg.id});
                         let wrapped = {
                             msgtype: 'discussion',
                             msg: msg
                         }
                         User.message(user.toString(), wrapped);
                     }
-
 
 
                     // //to subscribers of this submission:
