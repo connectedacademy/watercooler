@@ -51,6 +51,7 @@ module.exports.routes = {
   'GET /v1/classroom/mycode/:class/:content':'ClassroomController.mycode',
   'GET /v1/classroom/users/:class/:content':'ClassroomController.users',
   'POST /v1/classroom/inclass':'ClassroomController.inclass',
+  'GET /v1/classroom/rss/:code':'ClassroomController.rss',
   
 
   'GET /v1/messages/visualisation/:class/:content':'MessagesController.visualisation',

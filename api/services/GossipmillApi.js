@@ -175,6 +175,51 @@ module.exports = {
         return response;
     },
 
+    listForUsers: async (course, klass, user, contentid, userlist, whitelist)=>{
+        let query = [
+            {
+                name: 'course',
+                query: course
+            },
+            {
+                name: 'class',
+                query: klass
+            },
+            {
+                name: 'content',
+                query: contentid
+            },
+            {
+                name: 'segment',
+                query: '*'
+            }
+        ];
+
+        //TODO: add user list:
+
+        sails.log.verbose('Requesting list');
+
+        let response = await request({
+            url: baseURI + 'messages/list/' + user.service + '/' + user.account,
+            method: 'POST',
+            json: true,
+            body:{
+                filter_by: query,
+                whitelist: whitelist,
+                depth: 100,
+                lang: 'en'  
+            },
+            qs: { 
+                psk: process.env.GOSSIPMILL_PSK
+            }
+        });
+
+        
+        // response.data = _.groupBy(response.data, 'segment');
+
+        return response;
+    },
+
     list: async (course, klass, user, language, contentid, startsegment, endsegment, depth, whitelist)=>{
         let query = [
             {

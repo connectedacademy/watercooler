@@ -40,7 +40,8 @@ module.exports.policies = {
     },
     'classroom':
     {
-        '*':['isUser','verifyDomain','jsononly','cors']
+        '*':['isUser','verifyDomain','jsononly','cors'],
+        'rss':[true]
     },
     'analytics':
     {
