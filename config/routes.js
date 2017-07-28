@@ -44,12 +44,13 @@ module.exports.routes = {
   'GET /v1/admin/editor':'AdminController.editor',
   'POST /v1/admin/credentials':'AdminController.credentials',
   'GET /v1/admin/content/:class/:content':'AdminController.content',
-  'GET /v1/admin/users':'AdminController.users',
+  'GET /v1/admin/users/:class?/:content?':'AdminController.users',
+  'GET /v1/admin/classes':'AdminController.classes',  
   'GET /v1/admin/dash':'AdminController.root',
   
   'GET /v1/classroom/getclass/:class/:content':'ClassroomController.getclass',  
   'GET /v1/classroom/mycode/:class/:content':'ClassroomController.mycode',
-  'GET /v1/classroom/users/:class/:content':'ClassroomController.users',
+  // 'GET /v1/classroom/users/:class/:content':'ClassroomController.users',
   'POST /v1/classroom/inclass':'ClassroomController.inclass',
   'GET /v1/classroom/rss/:code':'ClassroomController.rss',
   

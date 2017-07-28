@@ -192,10 +192,92 @@ module.exports = {
             {
                 name: 'segment',
                 query: '*'
+            },
+            {
+                name: 'user',
+                query: userlist
             }
         ];
 
-        //TODO: add user list:
+        sails.log.verbose('Requesting list');
+
+        let response = await request({
+            url: baseURI + 'messages/list/' + user.service + '/' + user.account,
+            method: 'POST',
+            json: true,
+            body:{
+                filter_by: query,
+                whitelist: whitelist,
+                depth: 100,
+                lang: 'en'  
+            },
+            qs: { 
+                psk: process.env.GOSSIPMILL_PSK
+            }
+        });
+
+        
+        // response.data = _.groupBy(response.data, 'segment');
+
+        return response;
+    },
+
+    listForUserForClass: async (course, klass, user, contentid, whitelist, filteruser)=>{
+        
+        let query = [
+            {
+                name: 'course',
+                query: course
+            },
+            {
+                name: 'class',
+                query: klass
+            },
+            {
+                name: 'content',
+                query: contentid
+            },
+            {
+                name: 'user',
+                query: filteruser
+            }
+        ];
+
+        sails.log.verbose('Requesting list');
+
+        let response = await request({
+            url: baseURI + 'messages/list/' + user.service + '/' + user.account,
+            method: 'POST',
+            json: true,
+            body:{
+                filter_by: query,
+                whitelist: whitelist,
+                depth: 100,
+                lang: 'en'  
+            },
+            qs: { 
+                psk: process.env.GOSSIPMILL_PSK
+            }
+        });
+
+        
+        // response.data = _.groupBy(response.data, 'segment');
+
+        return response;
+    },
+
+    listForUser: async (course, user, whitelist, filteruser)=>{
+        
+        let query = [
+            {
+                name: 'course',
+                query: course
+            },
+            {
+                name: 'user',
+                query: filteruser
+            }
+        ];
 
         sails.log.verbose('Requesting list');
 

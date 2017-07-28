@@ -26,6 +26,11 @@ module.exports = {
     {
       model: 'User'
     },
+    submissions:
+    {
+      collection: 'Submission',
+      via: 'user'
+    },
 
     toJSON :function()
     {

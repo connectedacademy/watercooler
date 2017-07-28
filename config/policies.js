@@ -25,6 +25,9 @@ module.exports.policies = {
         '*':['verifyDomain','isAdmin','jsononly','cors'],
         'editor':['verifyDomain'],
         'root':['verifyDomain','isAdmin','cors'],
+        'classes':['verifyDomain','cors','isRegistered'],
+        'users':['verifyDomain','cors'],
+        'content':['verifyDomain','cors'],
         'clearcache':true
     },
     'messages':

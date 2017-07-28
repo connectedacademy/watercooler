@@ -7,6 +7,11 @@
  * @apiDefine admin Authenticated as Admin
  */
 
+
+/**
+ * @apiDefine teacher Is a teacher (generated a code)
+ */
+
 /**
  * @apiDefine user Authenticated as User
  */

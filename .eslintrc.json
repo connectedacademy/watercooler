@@ -17,7 +17,8 @@
         "Submission":true,
         "DomainControl":true,
         "Notifications":true,
-        "Classroom":true
+        "Classroom":true,
+        "AuthCheck":true
         
         
     },

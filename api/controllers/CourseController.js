@@ -1,69 +1,5 @@
 let moment = require('moment');
 
-let applyFrontMatter = async (data, uri, course, user, klass, content)=>{
-    let courseinfo = await CacheEngine.getFrontmatter(uri);
-    _.extend(data, courseinfo);
-    delete data.published;
-    if (data.video)
-        delete data.url;
-    if (data.expectsubmission && user)
-    {
-        let submissions = await Submission.find({
-            course: course,
-            class: klass,
-            content: content,
-            user: user
-        });
-        data.submissions = submissions;
-    }
-}
-
-let getSegmentWithHub = function(segment,hub)
-{
-    let hubinfo = _.find(segment.schedule,{hub_id:hub});
-    if (!hubinfo && _.size(segment.schedule)>1)
-        hubinfo = _.find(segment.schedule,{leadhub:true});
-    else
-        hubinfo = _.first(segment.schedule);
-
-    return moment(hubinfo.release_at);
-}
-
-let getLiveSegment = function(klass)
-{
-    let livesegment = _.find(klass.content,(k)=>{
-        return _.has(k,'schedule');
-    });
-    
-    if (livesegment)
-    {
-        //get earliest timestamp:
-        let times = _.map(livesegment.schedule, (s)=>{
-            return moment(s.release_at);
-        });
-
-        let ordered_times = times.sort();
-        let start = _.first(ordered_times);
-        let Wstart = moment(start);
-        return Wstart;
-    }
-    else
-    {
-        return null;
-    }
-};
-
-let getSchedForHub = function(segment,hub)
-{
-    let hubinfo = _.find(segment.schedule,{hub_id:hub});
-    if (!hubinfo && _.size(segment.schedule)>1)
-        hubinfo = _.find(segment.schedule,{leadhub:true});
-    else
-        hubinfo = _.first(segment.schedule);
-
-    return hubinfo;
-}
-
 module.exports = {
 
     /**
@@ -86,12 +22,12 @@ module.exports = {
             let promises = [];
 
             //course info:
-            promises.push(applyFrontMatter(data, req.course.url + '/course/content/' + lang + '/info.md'));
+            promises.push(CacheEngine.applyFrontMatter(data, req.course.url + '/course/content/' + lang + '/info.md'));
 
             //for each file in the spec, get the markdown and parse it:
             for (let klass of data.classes)
             {
-                promises.push(applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
+                promises.push(CacheEngine.applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
             }
 
             await Promise.all(promises);
@@ -110,13 +46,13 @@ module.exports = {
             data.classes.forEach(function(klass,i)
             {
                 //find element which is the live class
-                let ws = getLiveSegment(klass)
+                let ws = CacheEngine.getLiveSegment(klass)
                 if (ws)
                 {
                     let Wstart = ws.clone().subtract(2,'days');
                     if (i < _.size(data.classes)-1)
                     {
-                        let ls = getLiveSegment(data.classes[i+1])
+                        let ls = CacheEngine.getLiveSegment(data.classes[i+1])
                         if (ls)
                         {
                             let Nstart = ls.clone().subtract(2,'days');
@@ -147,7 +83,7 @@ module.exports = {
                     if (i<currentClass)
                     {
                         klass.status = 'RELEASED';
-                        let tim = getLiveSegment(klass);
+                        let tim = CacheEngine.getLiveSegment(klass);
                         if (tim)
                         {
                             klass.release_at = tim.clone().subtract(2,'days');
@@ -156,7 +92,7 @@ module.exports = {
                     if (i==currentClass)
                     {
                         klass.status = 'CURRENT';
-                        let tim = getLiveSegment(klass);
+                        let tim = CacheEngine.getLiveSegment(klass);
                         if (tim)
                         {
                             klass.release_at = tim.clone().subtract(2,'days');
@@ -165,7 +101,7 @@ module.exports = {
                     if (i>currentClass)
                     {
                         klass.status = 'FUTURE';
-                        let tim = getLiveSegment(klass);
+                        let tim = CacheEngine.getLiveSegment(klass);
                         if (tim)
                         {
                             klass.release_at = tim.clone().subtract(2,'days');
@@ -214,14 +150,14 @@ module.exports = {
             let klass = _.find(data.classes,{slug:k});
             if (klass)
             {
-                promises.push(applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
+                promises.push(CacheEngine.applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
                 for (let content of klass.content)
                 {
                     //apply likes:
                     if (content.url)
                     {
                         content.likes = totals[klass.slug + '/' + content.slug] || 0;
-                        promises.push(applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url,req.course.domain, (req.session.passport && req.session.passport.user)?req.session.passport.user.id:null, klass.slug, content.slug));
+                        promises.push(CacheEngine.applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url,req.course.domain, (req.session.passport && req.session.passport.user)?req.session.passport.user.id:null, klass.slug, content.slug));
                     }
                 }
 
@@ -253,8 +189,8 @@ module.exports = {
                 });
                 let webinarsegmentindex = _.indexOf(klass.content,webinarsegment);
 
-                let live_segment_start = getSegmentWithHub(livesegment,myhub);
-                let webinar_segment_start = getSegmentWithHub(webinarsegment,myhub);                
+                let live_segment_start = CacheEngine.getSegmentWithHub(livesegment,myhub);
+                let webinar_segment_start = CacheEngine.getSegmentWithHub(webinarsegment,myhub);                
 
                 let weekstart = live_segment_start.clone().subtract(2,'days');
                 if (NOW.isBefore(weekstart))
@@ -268,7 +204,7 @@ module.exports = {
                     });
                     if (nextweeklivesegment)
                     {
-                        let nextweekstart = getSegmentWithHub(nextweeklivesegment,myhub).clone().subtract(2,'days');
+                        let nextweekstart = CacheEngine.getSegmentWithHub(nextweeklivesegment,myhub).clone().subtract(2,'days');
 
                         if (NOW.isBetween(weekstart,nextweekstart))
                             klass.status = 'CURRENT';
@@ -313,7 +249,7 @@ module.exports = {
                             if (classreleased)
                                 content.status = 'RELEASED'
                             content.release_at = live_segment_start;
-                            content.schedule = getSchedForHub(content,myhub);
+                            content.schedule = CacheEngine.getSchedForHub(content,myhub);
                             break;
                             
 
@@ -327,7 +263,7 @@ module.exports = {
                             if (webinareleased)
                                 content.status = 'RELEASED'
                             content.release_at = webinar_segment_start;
-                            content.schedule = getSchedForHub(content,myhub);
+                            content.schedule = CacheEngine.getSchedForHub(content,myhub);
                             break;
                             
 
