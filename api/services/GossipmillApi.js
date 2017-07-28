@@ -216,6 +216,7 @@ module.exports = {
             }
         });
 
+        console.log(response.data);
         
         // response.data = _.groupBy(response.data, 'segment');
 
