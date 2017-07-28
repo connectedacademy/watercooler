@@ -262,7 +262,7 @@ module.exports = {
             let messages = await GossipmillApi.listForUsers(classroom.course, klass.slug, classroom.teacher, content.slug, classroom.students, true);
             // submissions from these users
 
-            console.log(messages);
+            // console.log(messages);
 
             // let items = [];
             getItems(messages.data,feed, klass, content, req.course.url);
@@ -294,13 +294,16 @@ function getItems(messages, feed, klass, content, url)
     {
         
         let author = 'Unknown';
+
+        // console.log(message);
+
         if (message.author && message.author.name)
             author = message.author.name
         // console.log(message.createdAt);
         feed.item({
             title:  message.text,
             description: 'by @'+author + ' on ' + message.createdAt,
-            url: url + '/#/course/' +  klass.slug + '/' + content.slug + '/' + (message.segment)?message.segment:'', // link to the item
+            url: url + '/#/course/' +  klass.slug + '/' + content.slug + ((message.segment)? '/' + message.segment:''), // link to the item
             author: '@'+ author, // optional - defaults to feed author property 
             date: message.createdAt // any format that js Date can parse. 
         });
