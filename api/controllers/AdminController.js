@@ -323,8 +323,6 @@ module.exports = {
 
                 //admin user list
 
-
-
                 let registrations = await Registration.find({ course: req.course.domain });
                 users = await User.find({id:_.map(registrations,'user')}).populate('submissions',{
                     where:{
