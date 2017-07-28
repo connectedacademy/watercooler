@@ -494,7 +494,8 @@ module.exports = {
                     class: req.param('class'),
                     content: req.param('content'),
                     startsegment: req.param('startsegment'),
-                    endsegment: req.param('endsegment')
+                    endsegment: req.param('endsegment'),
+                    length: data.scope.length
                 },
                 data: data.data
             });
