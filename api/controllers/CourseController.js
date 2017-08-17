@@ -64,6 +64,10 @@ module.exports = {
                             }
                         }
                     }
+                    else
+                    {
+                        currentWeek = klass;
+                    }
                 }
             });
             
