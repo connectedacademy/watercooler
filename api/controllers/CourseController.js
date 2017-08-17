@@ -35,7 +35,7 @@ module.exports = {
             //calculate release schedule
             let startdate = moment(data.starts);
             let enddate = moment(data.ends);
-            let NOW = moment(req.param('time')) || moment();
+            let NOW = moment(req.query('time')) || moment();
 
             if (NOW.isBetween(startdate, enddate))
                 data.classrunning = true;
@@ -164,7 +164,7 @@ module.exports = {
                 await Promise.all(promises);
 
                 //current time / faketime
-                let NOW = moment(req.param('time')) || moment();
+                let NOW = moment(req.query('time')) || moment();
 
                 let myhub = null;
 
