@@ -23,7 +23,7 @@ module.exports = {
 
             sails.log.info("Authenticated as Admin");
             //check that this admin can authenticate for this course
-            if (!req.session.passport.allowedrepos)
+            if (!req.session.passport.allowedrepos || !_.includes(req.session.passport.allowedrepos, req.course.repo))
             {
                 sails.log.verbose('Checking push access with GitHub',admin.id,req.course);
                 let git = req.course.repo.split('/');

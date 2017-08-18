@@ -81,7 +81,7 @@ module.exports = {
             let valid_accounts = spec.accounts;
           
             if (!_.includes(valid_accounts,req.body.account))
-                return res.forbidden('You do not have permission to change that set of credentials');
+                return res.forbidden('The account provided is not the one associated with this course in the specification.');
             
             let git = req.course.repo.split('/');
             let url = 'https://api.github.com/repos/' + git[3] + '/' + git[4];
@@ -92,7 +92,7 @@ module.exports = {
                 uri: url,
                 json: true,
                 qs:{
-                    access_token: me_user.credentials.accessToken
+                    access_token: me_user.admin.credentials.accessToken
                 },
                 headers: {
                     'User-Agent': 'Connected-Academy-Watercooler'
