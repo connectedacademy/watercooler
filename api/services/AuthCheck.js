@@ -28,7 +28,9 @@ module.exports = {
                 sails.log.verbose('Checking push access with GitHub',admin.id,req.course);
                 let git = req.course.repo.split('/');
                 let url = 'https://api.github.com/repos/' + git[3] + '/' + git[4];
-                let me_user = await User.findOne({id:admin.id});
+                let me_user = await User.findOne({
+                    id:admin.id
+                });
                 let perms = await request({
                     uri: url,
                     json: true,

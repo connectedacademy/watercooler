@@ -86,7 +86,9 @@ module.exports = {
             let git = req.course.repo.split('/');
             let url = 'https://api.github.com/repos/' + git[3] + '/' + git[4];
 
-            let me_user = await User.findOne({id:req.session.passport.user.id});
+            let me_user = await User.findOne({
+                id:req.session.passport.user.id
+            }).populate('admin');
 
             let perms = await request({
                 uri: url,
