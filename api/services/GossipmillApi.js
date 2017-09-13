@@ -388,8 +388,13 @@ module.exports = {
                 if (!sockethandlers[data.room])
                 {
                     sockethandlers[data.room] = function(msg){
-                        sails.log.info(msg.message_id);
-                        sails.sockets.broadcast(data.room, msg);
+                        let wrapped = {
+                            msgtype: 'message',
+                            msg: msg
+                        };
+                        wrapped.msg.author = wrapped.msg.user;
+                        sails.log.info("Socket message with " + msg.message_id);
+                        sails.sockets.broadcast(data.room, wrapped);
                     };
                     io.socket.on(data.room,sockethandlers[data.room]);
                 }
