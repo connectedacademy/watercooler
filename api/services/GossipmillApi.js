@@ -366,13 +366,18 @@ module.exports = {
             }
         ];
         
-        for (let i=startsegment;i<=endsegment;i++)
+// console.log(startsegment);
+// console.log(endsegment);
+
+        for (let i=parseInt(startsegment);i<=parseInt(endsegment);i++)
         {
             query.push({
                 name:'segment',
                 query: i
             })
         }
+
+        // console.log(query);
 
         io.socket.post('/messages/subscribe/'+user.service + '/' + user.account+'?psk=' + process.env.GOSSIPMILL_PSK,{
                 lang: language,

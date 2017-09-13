@@ -88,6 +88,10 @@
                 io.socket.get('/v1/auth/me',function(data,res){
                     console.log(data);
                 });
+
+                io.socket.get('/v1/messages/subscribe/interpretation/liveclass/20/100',function(data,res){
+                    console.log(data);
+                });
             }
         </script>
     </body>
