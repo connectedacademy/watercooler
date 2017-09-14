@@ -167,7 +167,7 @@ module.exports = {
      * @apiPermission domainparse
      * @apiPermission user
      * 
-     * @apiParam  {String} class Content slug
+     * @apiParam  {String} class Class slug
      * @apiParam  {String} content Content slug
      * 
      */

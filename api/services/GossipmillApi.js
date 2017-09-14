@@ -132,6 +132,33 @@ module.exports = {
         return response;
     },
 
+    allTotalsForUser: async (course, user)=>{
+        let response = await request({
+             url: baseURI + 'messages/totals',
+             method: 'POST',
+             json: true,
+             body:{
+                group_by:{
+                 name:'tag'
+                },
+                filter_by:[
+                     {
+                        name: 'course',
+                        query: course
+                     },
+                     {
+                        name: 'user',
+                        query: user
+                     }
+                 ]
+             },
+             qs: {
+                 psk: process.env.GOSSIPMILL_PSK
+             }
+         });
+         return response;
+     },
+
     summary: async (course, klass, user, language, contentid, startsegment, endsegment, whitelist)=>{
         let query = [
             {

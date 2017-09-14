@@ -149,6 +149,12 @@ module.exports = {
             let promises = [];
             
             let totals = await GossipmillApi.allTotals(req.course.domain);
+            let totals_user = null;
+
+            if (req.session.passport.user)
+            {
+                totals_user = await GossipmillApi.allTotalsForUser(req.course.domain, req.session.passport.user.id);
+            }
 
             //for each file in the spec, get the markdown and parse it:
             let klass = _.find(data.classes,{slug:k});
@@ -161,6 +167,10 @@ module.exports = {
                     if (content.url)
                     {
                         content.likes = totals[klass.slug + '/' + content.slug] || 0;
+                        //have I liked it?
+                        if (totals_user)
+                            content.haveliked = totals_user[klass.slug + '/' + content.slug] > 0;
+
                         promises.push(CacheEngine.applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url,req.course.domain, (req.session.passport && req.session.passport.user)?req.session.passport.user.id:null, klass.slug, content.slug));
                     }
                 }
