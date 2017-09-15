@@ -383,12 +383,8 @@ module.exports = {
                 query: course
             },
             {
-                name: 'class',
-                query: klass
-            },
-            {
-                name: 'content',
-                query: contentid
+                name: 'tag',
+                query: klass + '/' + contentid
             }
         ];
 
@@ -411,6 +407,55 @@ module.exports = {
 
         return response;
     },
+
+    subscribecontent: async (req, course, klass, user, language,contentid, whitelist) =>{
+        
+                let query = [
+                    {
+                        name: 'course',
+                        query: course
+                    },
+                    {
+                        name: 'tag',
+                        query: klass + '/' + contentid
+                    }
+                ];
+
+                io.socket.post('/messages/subscribe/'+user.service + '/' + user.account+'?psk=' + process.env.GOSSIPMILL_PSK,{
+                        lang: language,
+                        socketid: sails.sockets.getId(req),
+                        depth: 5,
+                        filter_by:query,
+                        whitelist: whitelist
+                    },function(data){
+                        // console.log(data.room);
+                    //subscribe to this roomname
+                    sails.sockets.join(req.socket,data.room);
+                    // io.socket.off(data.room, function(){
+                        if (!sockethandlers[data.room])
+                        {
+                            sockethandlers[data.room] = function(msg){
+                                let wrapped = {
+                                    msgtype: 'message',
+                                    msg: msg
+                                };
+                                wrapped.msg.author = wrapped.msg.user;
+                                sails.log.info("Socket message with " + msg.message_id);
+                                sails.sockets.broadcast(data.room, wrapped);
+                            };
+                            io.socket.on(data.room,sockethandlers[data.room]);
+                        }
+                    });
+                // });
+        
+                return {
+                    scope:{
+                        class:klass,
+                        content: contentid
+                    },
+                    msg:'Subscribed'
+                };
+            },
 
     subscribe: async (req, course, klass, user, language,contentid, startsegment, endsegment, whitelist) =>{
 

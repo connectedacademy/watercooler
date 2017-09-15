@@ -558,7 +558,7 @@ module.exports = {
             if (req.isSocket)
             {
                 try {
-                    await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), 0, 0, whitelist);
+                    await GossipmillApi.subscribecontent(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), whitelist);
                 }
                 catch (e) {
                     return res.serverError(e);
