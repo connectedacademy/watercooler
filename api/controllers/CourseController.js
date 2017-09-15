@@ -4,6 +4,96 @@ module.exports = {
 
     /**
      * 
+     * @api {post} /v1/course/like/:class/:content Like
+     * @apiDescription Like the content
+     * @apiName like
+     * @apiGroup Course
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * 
+     */
+    like: async (req,res)=>{
+        
+        req.checkParams('class').notEmpty();
+        req.checkParams('content').notEmpty();
+
+        try
+        {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e)
+        {
+            return res.badRequest(e.mapped());
+        }
+
+        try
+        {
+            LikeTag.create({
+                course: req.course.domain,
+                class: req.param('class'),
+                content: req.param('content'),
+                user: req.session.passport.user.id
+            },function(err){
+                if (err)
+                    throw err;
+
+                return res.json({msg:'Like Registered'})
+            });
+        }
+        catch (e)
+        {
+            return res.serverError(e);
+        }
+    },
+
+        /**
+     * 
+     * @api {post} /v1/course/unlike/:class/:content Un-Like
+     * @apiDescription Like the content
+     * @apiName like
+     * @apiGroup Course
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * 
+     */
+    unlike: async (req,res)=>{
+        
+        req.checkParams('class').notEmpty();
+        req.checkParams('content').notEmpty();
+
+        try
+        {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e)
+        {
+            return res.badRequest(e.mapped());
+        }
+
+        try
+        {
+            LikeTag.destroy({
+                course: req.course.domain,
+                class: req.param('class'),
+                content: req.param('content'),
+                user: req.session.passport.user.id
+            },function(err){
+                if (err)
+                    throw err;
+
+                return res.json({msg:'Like Un-Registered'})
+            });
+        }
+        catch (e)
+        {
+            return res.serverError(e);
+        }
+    },
+
+    /**
+     * 
      * @api {get} /v1/course/schedule Schedule
      * @apiDescription Get the schedule for this course
      * @apiName schedule
@@ -148,13 +238,15 @@ module.exports = {
 
             let promises = [];
             
-            let totals = await GossipmillApi.allTotals(req.course.domain);
+            let totals = await LikeTag.getLikesGrouped(req.course.domain, k);
             let totals_user = null;
 
             if (req.session.passport.user)
             {
-                totals_user = await GossipmillApi.allTotalsForUser(req.course.domain, req.session.passport.user.id);
+                totals_user = await LikeTag.getUserLiked(req.course.domain, k, req.session.passport.user.id);
+                //totals_user = await GossipmillApi.allTotalsForUser(req.course.domain, req.session.passport.user.id);
             }
+
 
             //for each file in the spec, get the markdown and parse it:
             let klass = _.find(data.classes,{slug:k});
@@ -166,10 +258,10 @@ module.exports = {
                     //apply likes:
                     if (content.url)
                     {
-                        content.likes = totals[klass.slug + '/' + content.slug] || 0;
+                        content.likes = totals[content.slug] || 0;
                         //have I liked it?
                         if (totals_user)
-                            content.haveliked = totals_user[klass.slug + '/' + content.slug] > 0;
+                            content.haveliked = totals_user[content.slug] || false;
 
                         promises.push(CacheEngine.applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url,req.course.domain, (req.session.passport && req.session.passport.user)?req.session.passport.user.id:null, klass.slug, content.slug));
                     }

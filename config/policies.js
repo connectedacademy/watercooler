@@ -1,6 +1,10 @@
 var passport = require('passport');
 module.exports.policies = {
     '*':['verifyDomain','jsononly','cors'],
+    'course':{
+        'like':['isUser','verifyDomain','jsononly','cors'],
+        'unlike':['isUser','verifyDomain','jsononly','cors']
+    },
     'auth':
     {
         'root':['jsononly'],
