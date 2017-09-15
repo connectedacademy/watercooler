@@ -33,6 +33,59 @@
   },
   {
     "type": "get",
+    "url": "/v1/admin/classes",
+    "title": "Classes",
+    "description": "<p>List all classes for this course, if a teacher is logged in, only show ones they taught.</p>",
+    "name": "classes",
+    "group": "Admin",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "admin",
+        "title": "Authenticated as Admin",
+        "description": ""
+      },
+      {
+        "name": "teacher",
+        "title": "Is a teacher (generated a code)",
+        "description": ""
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "content",
+            "description": "<p>Content slug</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./api/controllers/AdminController.js",
+    "groupTitle": "Admin",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/admin/classes"
+      }
+    ]
+  },
+  {
+    "type": "get",
     "url": "/clearcache",
     "title": "Clear Cache",
     "name": "clearcache",
@@ -63,6 +116,11 @@
       {
         "name": "admin",
         "title": "Authenticated as Admin",
+        "description": ""
+      },
+      {
+        "name": "teacher",
+        "title": "Is a teacher (generated a code)",
         "description": ""
       }
     ],
@@ -152,7 +210,7 @@
   },
   {
     "type": "get",
-    "url": "/v1/admin/users",
+    "url": "/v1/admin/users/:class?/:content?",
     "title": "Users",
     "description": "<p>List all users registered for this course</p>",
     "name": "users",
@@ -170,11 +228,31 @@
         "description": ""
       }
     ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "content",
+            "description": "<p>Content slug</p>"
+          }
+        ]
+      }
+    },
     "filename": "./api/controllers/AdminController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/admin/users"
+        "url": "https://api.connectedacademy.io/v1/admin/users/:class?/:content?"
       }
     ]
   },
@@ -669,24 +747,12 @@
   },
   {
     "type": "get",
-    "url": "/v1/classroom/users/:class/:content",
-    "title": "List Students",
-    "description": "<p>Get a list of students who have registered in this classroom</p>",
-    "name": "users",
+    "url": "/v1/classroom/rss/{code}",
+    "title": "RSS Feed",
+    "description": "<p>RSS feed of the relevant content for a particular class to be used by the teacher to generate a (storify) narrative.</p>",
+    "name": "rss",
     "group": "Classroom",
     "version": "1.0.0",
-    "permission": [
-      {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
-      },
-      {
-        "name": "user",
-        "title": "Authenticated as User",
-        "description": ""
-      }
-    ],
     "parameter": {
       "fields": {
         "Parameter": [
@@ -694,15 +760,8 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "class",
-            "description": "<p>Class slug</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "content",
-            "description": "<p>Content slug</p>"
+            "field": "code",
+            "description": "<p>Classroom code provided by the teacher</p>"
           }
         ]
       }
@@ -711,7 +770,7 @@
     "groupTitle": "Classroom",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/classroom/users/:class/:content"
+        "url": "https://api.connectedacademy.io/v1/classroom/rss/{code}"
       }
     ]
   },
@@ -735,6 +794,52 @@
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/course/hubs"
+      }
+    ]
+  },
+  {
+    "type": "post",
+    "url": "/v1/course/unlike/:class/:content",
+    "title": "Un-Like",
+    "description": "<p>Like the content</p>",
+    "name": "like",
+    "group": "Course",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      }
+    ],
+    "filename": "./api/controllers/CourseController.js",
+    "groupTitle": "Course",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/course/unlike/:class/:content"
+      }
+    ]
+  },
+  {
+    "type": "post",
+    "url": "/v1/course/like/:class/:content",
+    "title": "Like",
+    "description": "<p>Like the content</p>",
+    "name": "like",
+    "group": "Course",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      }
+    ],
+    "filename": "./api/controllers/CourseController.js",
+    "groupTitle": "Course",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/course/like/:class/:content"
       }
     ]
   },
@@ -1093,47 +1198,6 @@
     ]
   },
   {
-    "type": "socket.io",
-    "url": "/v1/discussion/subscribe/:submission",
-    "title": "Subscribe to Updates",
-    "description": "<p>Subscribe to live message updates for this discussion</p>",
-    "name": "discussionsubscribe",
-    "group": "Discussion",
-    "version": "1.0.0",
-    "permission": [
-      {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
-      },
-      {
-        "name": "user",
-        "title": "Authenticated as User",
-        "description": ""
-      }
-    ],
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "submission",
-            "description": "<p>Submission ID</p>"
-          }
-        ]
-      }
-    },
-    "filename": "./api/controllers/DiscussionController.js",
-    "groupTitle": "Discussion",
-    "sampleRequest": [
-      {
-        "url": "https://api.connectedacademy.io/v1/discussion/subscribe/:submission"
-      }
-    ]
-  },
-  {
     "type": "get",
     "url": "/v1/discussion/user/:class/:content/:user",
     "title": "User Submissions",
@@ -1264,7 +1328,7 @@
             "type": "String",
             "optional": false,
             "field": "class",
-            "description": "<p>Content slug</p>"
+            "description": "<p>Class slug</p>"
           },
           {
             "group": "Parameter",

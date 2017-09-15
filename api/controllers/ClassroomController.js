@@ -47,47 +47,6 @@ module.exports = {
 
     },
 
-    // /**
-    //  * 
-    //  * @api {get} /v1/classroom/users/:class/:content List Students
-    //  * @apiDescription Get a list of students who have registered in this classroom
-    //  * @apiName users
-    //  * @apiGroup Classroom
-    //  * @apiVersion  1.0.0
-    //  * @apiPermission domainparse
-    //  * @apiPermission user
-    //  * 
-    //  * @apiParam  {String} class Class slug
-    //  * @apiParam  {String} content Content slug
-    //  */
-    // users: async (req,res) => {
-    //     //return users who have made messages in this classroom for my code (i.e. I am the teacher)
-    //     let course = req.course.domain;
-    //     let klass = req.param('class');
-    //     let content = req.param('content');
-
-    //     let classroom = await Classroom.findOne(
-    //         {
-    //             course: course,
-    //             class: klass,
-    //             content: content,
-    //             teacher: req.session.passport.user.id
-    //         }
-    //     );
-        
-    //     if (!classroom)
-    //         return res.notFound('No classroom found');
-        
-    //     let users = await User.find({
-    //         id: classroom.students
-    //     });
-
-    //     if (classroom)
-    //         return res.json(users);
-    //     else
-    //         return res.badRequest('Invalid class/content');
-    // },
-
     /**
      * 
      * @api {get} /v1/classroom/getclass/:class/:content My Classroom
