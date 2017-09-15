@@ -51,7 +51,7 @@ module.exports = {
      * 
      * @api {post} /v1/course/unlike/:class/:content Un-Like
      * @apiDescription Like the content
-     * @apiName like
+     * @apiName unlike
      * @apiGroup Course
      * @apiVersion  1.0.0
      * @apiPermission domainparse

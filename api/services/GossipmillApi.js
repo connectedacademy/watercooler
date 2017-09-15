@@ -376,6 +376,42 @@ module.exports = {
         return response;
     },
 
+    listcontent: async (course, klass, user, language, contentid, depth, whitelist)=>{
+        let query = [
+            {
+                name: 'course',
+                query: course
+            },
+            {
+                name: 'class',
+                query: klass
+            },
+            {
+                name: 'content',
+                query: contentid
+            }
+        ];
+
+        sails.log.verbose('Requesting Content list');
+
+        let response = await request({
+            url: baseURI + 'messages/list/' + user.service + '/' + user.account,
+            method: 'POST',
+            json: true,
+            body:{
+                filter_by: query,
+                whitelist: whitelist,
+                depth: depth || 10,
+                lang: language
+            },
+            qs: { 
+                psk: process.env.GOSSIPMILL_PSK
+            }
+        });
+
+        return response;
+    },
+
     subscribe: async (req, course, klass, user, language,contentid, startsegment, endsegment, whitelist) =>{
 
         let query = [
@@ -392,9 +428,6 @@ module.exports = {
                 query: contentid
             }
         ];
-        
-// console.log(startsegment);
-// console.log(endsegment);
 
         for (let i=parseInt(startsegment);i<=parseInt(endsegment);i++)
         {

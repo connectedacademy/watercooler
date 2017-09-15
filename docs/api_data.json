@@ -799,29 +799,6 @@
   },
   {
     "type": "post",
-    "url": "/v1/course/unlike/:class/:content",
-    "title": "Un-Like",
-    "description": "<p>Like the content</p>",
-    "name": "like",
-    "group": "Course",
-    "version": "1.0.0",
-    "permission": [
-      {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
-      }
-    ],
-    "filename": "./api/controllers/CourseController.js",
-    "groupTitle": "Course",
-    "sampleRequest": [
-      {
-        "url": "https://api.connectedacademy.io/v1/course/unlike/:class/:content"
-      }
-    ]
-  },
-  {
-    "type": "post",
     "url": "/v1/course/like/:class/:content",
     "title": "Like",
     "description": "<p>Like the content</p>",
@@ -899,6 +876,29 @@
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/course/spec/:class"
+      }
+    ]
+  },
+  {
+    "type": "post",
+    "url": "/v1/course/unlike/:class/:content",
+    "title": "Un-Like",
+    "description": "<p>Like the content</p>",
+    "name": "unlike",
+    "group": "Course",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      }
+    ],
+    "filename": "./api/controllers/CourseController.js",
+    "groupTitle": "Course",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/course/unlike/:class/:content"
       }
     ]
   },

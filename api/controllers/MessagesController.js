@@ -503,5 +503,80 @@ module.exports = {
         catch (e) {
             return res.serverError(e);
         }
+    },
+
+    /**
+     * 
+     * @api {get} /v1/messages/content/:class/:content Content Messages
+     * @apiDescription List messages for a specific piece of content, and subscribe to new ones
+     * @apiName message_content
+     * @apiGroup Messages
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * 
+     * @apiParam  {String} class Content slug
+     * @apiParam  {String} content Content slug
+     * @apiParam  {Boolean} whitelist Use only registered users messages
+     * @apiParam  {Number} limit Number of messages to return
+     * 
+     */
+    content: async (req, res) => {
+        
+        if (!req.isSocket)
+        {
+            req.checkParams('class').notEmpty();
+            req.checkParams('content').notEmpty();
+            req.checkQuery('whitelist').isBoolean();
+            req.checkQuery('limit').optional().isInt();   
+
+            try {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e) {
+                return res.badRequest(e.mapped());
+            }
+        }
+
+        try {
+            let whitelist = req.param('whitelist');
+            let depth = req.param('limit');
+            let lang = await LangService.lang(req);
+            let course = req.course.domain;
+            //course, klass, user, language,contentid, startsegment, endsegment, depth
+            let user = {};
+            if (req.session.passport && req.session.passport.user)
+                user = req.session.passport.user;
+            else {
+                let spec = await CacheEngine.getSpec(req);
+                user = {
+                    service: 'twitter',
+                    account: _.first(spec.accounts)
+                };
+            }
+
+            if (req.isSocket)
+            {
+                try {
+                    await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), 0, 0, whitelist);
+                }
+                catch (e) {
+                    return res.serverError(e);
+                }
+            }
+
+            let data = await GossipmillApi.listcontent(course, req.param('class'), user, lang, req.param('content'), depth, whitelist);
+            return res.json({
+                scope: {
+                    class: req.param('class'),
+                    content: req.param('content'),
+                    length: data.scope.length
+                },
+                data: data.data
+            });
+        }
+        catch (e) {
+            return res.serverError(e);
+        }
     }
 }
