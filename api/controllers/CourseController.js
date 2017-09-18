@@ -241,7 +241,7 @@ module.exports = {
             let totals = await LikeTag.getLikesGrouped(req.course.domain, k);
             let totals_user = null;
 
-            if (req.session.passport.user)
+            if (req.session.passport && req.session.passport.user)
             {
                 totals_user = await LikeTag.getUserLiked(req.course.domain, k, req.session.passport.user.id);
                 //totals_user = await GossipmillApi.allTotalsForUser(req.course.domain, req.session.passport.user.id);
