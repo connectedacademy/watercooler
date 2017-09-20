@@ -161,11 +161,7 @@ module.exports = {
                             class: submission.class,
                             content: submission.content
                         }
-                    });
-                    // console.log(author_messages);
-                    // console.log(submission.class);
-                    // console.log(submission.content);
-                    
+                    });                    
 
                     //to any user in this conversation:
                     for (let user of users)
@@ -175,7 +171,10 @@ module.exports = {
                         {
                             // its me making the message
                             if (msg.fromuser.id == req.session.passport.user.id)
+                            {
                                 msg.canview = true;
+                                sails.log.verbose('canview 1',{msg:msg,user:user});
+                            }
                             else
                             {
                                 // list of messages related to submissions by this author
@@ -185,6 +184,8 @@ module.exports = {
                                 {
                                     //if I have made a message to this author for a related submission
                                     msg.canview = _.includes(forthisauthor.messagesfrom,req.session.passport.user.id);
+                                    sails.log.verbose('canview 2',{msg:msg,user:user, msgsfrom:forthisauthor.messagesfrom});
+                                
                                 }
                                 else
                                 {
@@ -196,6 +197,7 @@ module.exports = {
                         else
                         {
                             msg.canview = true;
+                            sails.log.verbose('canview 3',{msg:msg,user:user});                            
                         }
 
                         console.log(msg.canview);
@@ -208,9 +210,6 @@ module.exports = {
                         User.message(user.toString(), wrapped);
                     }
 
-
-                    // //to subscribers of this submission:
-                    // Submission.publishUpdate(msg);
                     //send offline notification (TODO: detect if they are not online)
                     NotificationEngine.newPeerMessage(req, msg);
                     return res.json(msg);
