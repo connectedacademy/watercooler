@@ -28,8 +28,9 @@ let get = async (uri) => {
 module.exports = {
 
     applyFrontMatter: async (data, uri, course, user, klass, content) => {
-        let courseinfo = await CacheEngine.getFrontmatter(uri);
-        _.extend(data, courseinfo);
+        let courseinfo = await CacheEngine.getFrontmatter(uri,true);
+        _.extend(data, courseinfo.attributes);
+        data.hasContent = courseinfo.body != '';
         delete data.published;
         if (data.video)
             delete data.url;
