@@ -127,68 +127,77 @@ module.exports = {
                         relates_to: msg.relates_to.id+''
                     });
 
-                    // console.log(users_dat);
-
                     let users = _.pluck(users_dat,'fromuser');
-                    // console.log('users');
-                    // console.log(users);
                     
-
+                    //add owner of the submission to the list of users
                     users.push(msg.relates_to.user);
-                    // console.log('me');
-                    // console.log(msg.relates_to.user);
                     
-
-
-                    let ismysubmission = msg.relates_to.user == req.session.passport.user.id
                     let submission = msg.relates_to;
                     users = _.uniq(users);
 
-                    msg.relates_to = msg.relates_to.id;
-                    delete msg.readAt;
 
-                    //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
-                    let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
-                    WHERE relates_to.user = IN ["+users.join(',')+"] \
-                    AND relates_to.course=:course \
-                    AND relates_to.class=:class \
-                    AND relates_to.content=:content \
-                    GROUP BY relates_to.user";
-                    let author_messages = await Submission.query(query,{
-                        params:
-                        {
-                            course: req.course.domain,
-                            class: submission.class,
-                            content: submission.content
-                        }
-                    });                    
+                    msg.relates_to = msg.relates_to.id;
+                    delete msg.readAt;                   
 
                     //to any user in this conversation:
                     for (let user of users)
                     {
+                        // console.log("submission from: " + submission.user);
+                        // console.log("WS user: " + user);
+                        
+                        let isownerofsubmission = submission.user == user;
+                        // console.log("is owner: " + isownerofsubmission);
                         //is my submission, and its me that the socket message is going to
-                        if (ismysubmission && user == req.session.passport.user.id)
+                        if (isownerofsubmission)
                         {
-                            // its me making the message
-                            if (msg.fromuser.id == req.session.passport.user.id)
+                            // its the logged in user (i.e. the creator) making the message, so they can see it.
+                            if (user == req.session.passport.user.id)
                             {
                                 msg.canview = true;
-                                sails.log.verbose('canview 1',{msg:msg,user:user});
+                                // sails.log.verbose('canview 1',{msg:msg,user:user});
                             }
                             else
                             {
-                                // list of messages related to submissions by this author
-                                let forthisauthor = _.find(author_messages,{author:msg.fromuser.id});
+                                //its not the message creator, and it is the user that made the submission - decide if they should see the message:
+
+                                // if the owner of this submission (i.e. user) has made any messages relating to a submission by the author of the message (msg.fromuser)
+                                                    //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
+
+                                //select messages that have been made 
+
+                                let query = "SELECT count(message) as count FROM discussionmessage \
+                                WHERE fromuser = "+user+" \
+                                AND relates_to.course=:course \
+                                AND relates_to.class=:class \
+                                AND relates_to.content=:content";
+                                let author_messages = await DiscussionMessage.query(query,{
+                                    params:
+                                    {
+                                        course: req.course.domain,
+                                        class: submission.class,
+                                        content: submission.content
+                                    }
+                                }); 
+
+                                // list of messages by this author related to submissions in this space
+
+                                // console.log(author_messages);
+
+                                // let forthisauthor = _.find(author_messages,{
+                                //     author:user
+                                // });
+
                                 //if there are messages for this author
-                                if (forthisauthor)
+                                if (author_messages[0].count > 0)
                                 {
                                     //if I have made a message to this author for a related submission
-                                    msg.canview = _.includes(forthisauthor.messagesfrom,req.session.passport.user.id);
-                                    sails.log.verbose('canview 2',{msg:msg,user:user, msgsfrom:forthisauthor.messagesfrom});
-                                
+                                    msg.canview = true;
+                                    // sails.log.verbose('canview 2',{msg:msg,user:user});
                                 }
                                 else
                                 {
+                                    
+                                    // sails.log.verbose('canview 4',{msg:msg,user:user});
                                     //author has no messages, particularly not from me
                                     msg.canview = false;
                                 }
@@ -197,7 +206,7 @@ module.exports = {
                         else
                         {
                             msg.canview = true;
-                            sails.log.verbose('canview 3',{msg:msg,user:user});                            
+                            // sails.log.verbose('canview 3',{ismine: isownerofsubmission,loggedin:req.session.passport.user.id, msg:msg, user:user});                            
                         }
 
                         console.log(msg.canview);

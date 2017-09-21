@@ -6,6 +6,7 @@ networks:
 services:
   watercooler:
     build: .
+    image: connectedacademy/watercooler:latest
     volumes:
       - ./api:/usr/src/app/api
       - ./config:/usr/src/app/config
