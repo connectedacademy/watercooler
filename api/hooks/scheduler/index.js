@@ -128,7 +128,7 @@ module.exports = function (sails) {
                     /**
                      * Notification of course starting 1 day before
                      */
-                    if (Now.diff(startdate) < moment.duration(1, 'day').asMilliseconds()) {
+                    if (NOW.diff(startdate) < moment.duration(1, 'day').asMilliseconds()) {
                         sails.log.verbose('Triggering day before ' + course.domain);
                         NotificationEngine.dayBefore(course);
                     }

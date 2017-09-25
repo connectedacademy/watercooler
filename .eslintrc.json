@@ -18,9 +18,8 @@
         "DomainControl":true,
         "Notifications":true,
         "Classroom":true,
-        "AuthCheck":true
-        
-        
+        "AuthCheck":true,
+        "LikeTag":true
     },
     "parserOptions": {
         "ecmaVersion": 8,

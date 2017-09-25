@@ -247,7 +247,6 @@ module.exports = {
                 //totals_user = await GossipmillApi.allTotalsForUser(req.course.domain, req.session.passport.user.id);
             }
 
-
             //for each file in the spec, get the markdown and parse it:
             let klass = _.find(data.classes,{slug:k});
             if (klass)
@@ -273,15 +272,17 @@ module.exports = {
                 let NOW = moment(req.query.time) || moment();
 
                 let myhub = null;
+                let me = null;
 
                 if (req.session.passport && req.session.passport.user)
                 {
                     //my hub:
-                    let me = await Registration.find({
+                    me = await Registration.findOne({
                         user:req.session.passport.user.id,
                         course: req.course.domain
-                    });
-                    if (me.hub_id)
+                    }).populate('user');
+
+                    if (me && me.hub_id)
                         myhub = me.hub_id;
                 }
 
@@ -381,9 +382,186 @@ module.exports = {
                     }
                 });
 
+                return res.json({
+                    user: (me)?me.user:null,
+                    spec:klass,
+                });
+            }
+            else
+            {
+                return res.notFound();
+            }
+        }
+        catch (e)
+        {
+            return res.serverError(e);
+        }
+    },
+
+    /**
+     * 
+     * @api {get} /v1/course/specpreload/:class/:blocks Class List Preload
+     * @apiDescription Get the pre-load content list for this class
+     * @apiName specpreload
+     * @apiGroup Course
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * 
+     * @apiParam  {String} class Class slug
+     * @apiParam  {String} blocks Number of blocks to load (-1 is all) 
+     * 
+     */
+    specpreload: async (req,res)=> {
+        try
+        {
+            let k = req.param('class');
+
+            let lang = await LangService.lang(req);
+
+            var data = await CacheEngine.getSpec(req,res);
+
+            let promises = [];
+
+            //for each file in the spec, get the markdown and parse it:
+            let klass = _.find(data.classes,{slug:k});
+            if (klass)
+            {
+                promises.push(CacheEngine.applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
+                let numberofblocks = _.size(klass.content);
+                let blocksparam = parseInt(req.param('blocks'));
+                if (blocksparam > 0)
+                    numberofblocks = blocksparam;
+
+                for (let i=0;i<numberofblocks;i++)
+                {
+                    let content = klass.content[i];
+                    if (content.url)
+                    {
+                        promises.push(CacheEngine.applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url));
+                    }
+                }
+
+                await Promise.all(promises);
+
+                //current time / faketime
+                let NOW = moment(req.query.time) || moment();
+
+                let myhub = null;
+                let me = null;
+
+                if (req.session.passport && req.session.passport.user)
+                {
+                    //my hub:
+                    me = await Registration.findOne({
+                        user:req.session.passport.user.id,
+                        course: req.course.domain
+                    }).populate('user');
+                    if (me && me.hub_id)
+                        myhub = me.hub_id;
+                }
+
+                let livesegment = _.find(klass.content,(k)=>{
+                    return _.has(k,'schedule');
+                });
+                let livesegmentindex = _.indexOf(klass.content,livesegment);
+
+                let webinarsegment = _.findLast(klass.content,(k)=>{
+                    return _.has(k,'schedule');
+                });
+                let webinarsegmentindex = _.indexOf(klass.content,webinarsegment);
+
+                let live_segment_start = CacheEngine.getSegmentWithHub(livesegment,myhub);
+                let webinar_segment_start = CacheEngine.getSegmentWithHub(webinarsegment,myhub);                
+
+                let weekstart = live_segment_start.clone().subtract(2,'days');
+                if (NOW.isBefore(weekstart))
+                    klass.status = 'FUTURE';
+
+                let nextclassindex = _.indexOf(data.classes,klass) + 1;
+                if (nextclassindex < _.size(data.classes))
+                {
+                    let nextweeklivesegment = _.find(data.classes[nextclassindex].content,(k)=>{
+                        return _.has(k,'schedule');
+                    });
+                    if (nextweeklivesegment)
+                    {
+                        let nextweekstart = CacheEngine.getSegmentWithHub(nextweeklivesegment,myhub).clone().subtract(2,'days');
+
+                        if (NOW.isBetween(weekstart,nextweekstart))
+                            klass.status = 'CURRENT';
+
+                        if (NOW.isAfter(nextweekstart))
+                            klass.status = 'RELEASED';
+                    }
+                    else
+                    {
+                         klass.status = 'RELEASED';
+                    }
+                }
 
 
-                return res.json(klass);
+                let classreleased = false;
+                let webinareleased = false;
+
+                if (NOW.isAfter(live_segment_start)) classreleased = true;
+                if (NOW.isAfter(webinar_segment_start)) webinareleased = true;
+
+                klass.content.forEach(function(content,i)
+                {
+                    content.status = 'FUTURE';
+
+                    switch (content.content_type)
+                    {
+                        case 'pre':
+                            content.status = 'RELEASED';
+                            break;
+                        
+                        case 'question':
+                            if (i < livesegmentindex)
+                                content.status = 'RELEASED';
+                            else if (i > livesegmentindex && i < webinarsegmentindex && classreleased)
+                                content.status = 'RELEASED';
+                            else if (i > webinarsegmentindex && webinareleased)
+                                content.status = 'RELEASED';
+                            break;
+                            
+
+                        case 'class':
+                            if (classreleased)
+                                content.status = 'RELEASED'
+                            content.release_at = live_segment_start;
+                            content.schedule = CacheEngine.getSchedForHub(content,myhub);
+                            break;
+                            
+
+                        case 'postclass':
+                            if (classreleased)
+                                content.status = 'RELEASED'
+                            break;
+                            
+
+                        case 'webinar':
+                            if (webinareleased)
+                                content.status = 'RELEASED'
+                            content.release_at = webinar_segment_start;
+                            content.schedule = CacheEngine.getSchedForHub(content,myhub);
+                            break;
+                            
+
+                        case 'postwebinar':
+                            if (webinareleased)
+                                content.status = 'RELEASED'
+                            break;
+                            
+                    }
+                });
+
+                klass.content = _.take(klass.content,numberofblocks);
+
+                return res.json({
+                    user: (me)?me.user:null,
+                    spec:klass,
+                });
             }
             else
             {

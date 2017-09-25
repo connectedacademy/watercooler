@@ -3,6 +3,7 @@ let URL = require('url');
 module.exports = async function(req,res,next)
 {
     //apply origin if the referrer matches the whitelist:
+    
     try
     {
         let url = URL.parse(req.get('origin'));
@@ -31,7 +32,7 @@ module.exports = async function(req,res,next)
                 res.header("Access-Control-Allow-Origin", '*');
                 res.header("Access-Control-Allow-Headers","Content-Type");                
                 res.header("Access-Control-Allow-Credentials", "true");
-                 if (req.method == 'OPTIONS')
+                if (req.method == 'OPTIONS')
                     return res.end();
                 else
                     return next();

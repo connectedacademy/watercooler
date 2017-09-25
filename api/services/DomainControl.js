@@ -28,7 +28,6 @@ module.exports = {
     },
 
     getWhitelist: async ()=>{
-        
         let whitelist = await CacheEngine.getYaml(master_config);
         return whitelist;
     }

@@ -48,6 +48,7 @@
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",
     "start": "node --harmony-async-await app.js",
+    "test-speed":"mocha --harmony-async-await test/speed.test.js test/speed/**/*.test.js",
     "test":"nyc mocha --harmony-async-await test/bootstrap.test.js test/**/*.test.js",
     "docs":"apidoc -o docs"
   },

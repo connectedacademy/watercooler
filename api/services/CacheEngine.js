@@ -122,25 +122,30 @@ module.exports = {
 
     getYaml: async (url) => {
         sails.log.verbose('Getting ' + url);
-        try {
-            //get from remote
-            let raw = await get(url);
-            //try load yaml
-            let yml = yaml.safeLoad(raw);
-            //if succeeds, put in cache
-            rediscache.set("ymlcache:" + url, JSON.stringify(yml));
-            return yml;
+
+        try
+        {
+            let resp = await rediscache.getAsync("ymlcache:" + url);
+            if (resp)
+            {
+                sails.log.verbose('Using redis cache for ' + url);
+                return JSON.parse(resp);
+            }
+            else
+            {
+                sails.log.verbose('Getting original file ' + url);
+                
+                let raw = await get(url);
+                //try load yaml
+                let yml = yaml.safeLoad(raw);
+                //if succeeds, put in cache
+                rediscache.set("ymlcache:" + url, JSON.stringify(yml));
+                return yml;
+            }
         }
         catch (e) {
-            //if fails (network, invalid update), try load from cache
-            let resp = await rediscache.getAsync("ymlcache:" + url)
-            if (resp)
-                return JSON.parse(resp);
-            else {
-                //if no cache, fail
-                sails.log.error(e);
-                throw new Error("No live data or cache available for " + url);
-            }
+            sails.log.error(e);
+            throw new Error("No live data or cache available for " + url);
         }
     },
 

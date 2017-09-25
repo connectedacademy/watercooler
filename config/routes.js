@@ -31,6 +31,7 @@ module.exports.routes = {
   'GET /v1/course/hubs':'CourseController.hubs',
   'GET /v1/course/schedule':'CourseController.schedule',  
   'GET /v1/course/spec/:class':'CourseController.spec',
+  'GET /v1/course/specpreload/:class/:blocks':'CourseController.specpreload',  
   'POST /v1/course/like/:class/:content':'CourseController.like',
   'POST /v1/course/unlike/:class/:content':'CourseController.unlike',  
 

@@ -17,11 +17,7 @@ _.deepTypeMatch = function(expected, actual)
   var act_flatted = flat(actual);
   var act_mapped = _.mapValues(act_flatted,(v,k)=>{
     return typeof(act_flatted[k])
-  });
-
-  // console.log(act_mapped);
-  // console.log(exp_mapped);
-  
+  });  
 
   return _.isEqual(act_mapped,exp_mapped);
 };
