@@ -105,7 +105,7 @@ module.exports = {
     inclass: async (req,res)=>{
         try
         {
-            let code = req.body.code;
+            let code = req.body.code.toUpperCase();
             let classroom = await Classroom.findOne({
                 code:code
             });
