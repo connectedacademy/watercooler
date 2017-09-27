@@ -8,7 +8,7 @@ module.exports = {
     testadminlogin: (req,res)=>
     {
         req.session.redirecturi = req.get('origin') || req.get('referer');
-        if (process.env.CI)
+        if (process.env.CI || req.query.psk == process.env.TESTKEY)
         {
             let testuser = require('../../spec/examples/adminuser.json');
 
@@ -24,13 +24,13 @@ module.exports = {
         }
         else
         {
-            return res.forbidden('NOT IN DEBUG MODE');
+            return res.forbidden('NOT IN CI OR TEST MODE');
         }
     },
 
     testuserlogin: (req,res)=>{
         req.session.redirecturi = req.get('origin') || req.get('referer');
-        if (process.env.CI)
+        if (process.env.CI || req.query.psk == process.env.TESTKEY)
         {
             let testuser = require('../../spec/examples/normaluser.json');
 
@@ -46,7 +46,7 @@ module.exports = {
         }
         else
         {
-             return res.forbidden('NOT IN DEBUG MODE');
+             return res.forbidden('NOT IN CI OR TEST MODE');
         }
     },
 
