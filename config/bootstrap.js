@@ -11,7 +11,7 @@
 let TwitterStrategy = require('passport-twitter');
 let GitHubStrategy = require('passport-github');
 
-module.exports.bootstrap = function(cb) {
+module.exports.bootstrap = function (cb) {
 
   sails.passport = require('passport');
 
@@ -20,19 +20,19 @@ module.exports.bootstrap = function(cb) {
     consumerKey: process.env.TWITTER_KEY,
     consumerSecret: process.env.TWITTER_SECRET,
     callbackURL: process.env.HOST + "/auth/twitter_callback"
-    },
-    function(token, tokenSecret, profile, cb) {
+  },
+    function (token, tokenSecret, profile, cb) {
 
-        User.findOrCreate({ 
-            service: profile.provider,
-            account_number: profile.id
-        },
+      User.findOrCreate({
+        service: profile.provider,
+        account_number: profile.id
+      },
         {
           account_number: profile.id,
           _raw: profile._json,
-          credentials:{
-            token:token,
-            tokenSecret:tokenSecret
+          credentials: {
+            token: token,
+            tokenSecret: tokenSecret
           },
           name: profile.displayName,
           service: profile.provider,
@@ -40,27 +40,25 @@ module.exports.bootstrap = function(cb) {
           profile: profile._json.profile_image_url_https,
           link: profile._json.url
         }, async function (err, user) {
-            try
-            {
-              user._raw= profile._json;
-              user.credentials={
-                  token:token,
-                  tokenSecret:tokenSecret
-                };
-              user.name= profile.displayName;
-              user.service= profile.provider;
-              user.account= profile.username;
-              user.profile= profile._json.profile_image_url_https;
-              user.link= profile._json.url;
-              
-              user.save(function(err){
-                return cb(err, user);
-              });
-            }
-            catch (e)
-            {
-              return cb(err);
-            }
+          try {
+            user._raw = profile._json;
+            user.credentials = {
+              token: token,
+              tokenSecret: tokenSecret
+            };
+            user.name = profile.displayName;
+            user.service = profile.provider;
+            user.account = profile.username;
+            user.profile = profile._json.profile_image_url_https;
+            user.link = profile._json.url;
+
+            user.save(function (err) {
+              return cb(err, user);
+            });
+          }
+          catch (e) {
+            return cb(err);
+          }
         });
     }
   ));
@@ -71,65 +69,73 @@ module.exports.bootstrap = function(cb) {
     callbackURL: process.env.HOST + "/auth/github_callback",
     passReqToCallback: true
   },
-  function(req, accessToken, refreshToken, profile, cb) {
+    function (req, accessToken, refreshToken, profile, cb) {
 
       //Get current user, and append these new details to their account:
-
-      User.findOrCreate({ 
-            service: profile.provider,
-            account_number: profile.id
-        },
+      User.findOrCreate({
+        service: profile.provider,
+        account_number: profile.id
+      },
         {
           account_number: profile.id,
           _raw: profile._json,
-          credentials:{
-            accessToken:accessToken,
-            refreshToken:refreshToken
+          credentials: {
+            accessToken: accessToken,
+            refreshToken: refreshToken
           },
           name: profile.displayName,
           service: profile.provider,
           account: profile.username
         }, async function (err, user) {
-            if (err || !user)
-              return cb(err,null);
+          if (err || !user)
+            return cb(err, null);
 
-            user._raw = profile._json;
-            user.credentials = {
-                accessToken:accessToken,
-                refreshToken:refreshToken
-              };
-            user.name= profile.displayName;
-            user.service= profile.provider;
-            user.account= profile.username;
-            user.profile= profile._json.avatar_url;
-            user.link= profile._json.html_url;
-            
-            user.save(async function(err){
-              if (err)
-                return cb(err,req.session.passport.user);
+          user._raw = profile._json;
+          user.credentials = {
+            accessToken: accessToken,
+            refreshToken: refreshToken
+          };
+          user.name = profile.displayName;
+          user.service = profile.provider;
+          user.account = profile.username;
+          user.profile = profile._json.avatar_url;
+          user.link = profile._json.html_url;
 
+          user.save(async function (err) {
+            if (err)
+              return cb(err, req.session.passport.user);
+
+            //check if they have access to this course:
+
+            let isadmin = await AuthCheck.isAdmin(req, user);
+
+            if (isadmin) {
               //put this github user onto the account of the current user:
               let me_user = await User.findOne(req.session.passport.user.id);
-              me_user.admin = user.id+'';
-              
+              me_user.admin = user.id + '';
+
               //save my account with admin appended
-              me_user.save(function(err){
+              me_user.save(function (err) {
                 return cb(err, req.session.passport.user);
               });
-            });
-      });
-  }
+            }
+            else {
+              return cb(new Error("No rights to administer this course", req.session.passport.user));
+            }
+          });
+        });
+    }
   ));
 
 
 
   sails.passport.serializeUser(function (user, done) {
-	  done(null, user);
-	});
+    done(null, user);
+  });
 
   sails.passport.deserializeUser(function (user, done) {
-	    done(null, user);
-	});
-  
+    done(null, user);
+  });
+
   cb();
 };

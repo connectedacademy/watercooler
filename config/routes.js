@@ -75,6 +75,7 @@ module.exports.routes = {
 
   'GET /v1/auth/testadminlogin':'AuthController.testadminlogin',
   'GET /v1/auth/testuserlogin':'AuthController.testuserlogin',
+  'GET /v1/auth/loginexistinguser':'AuthController.loginexistinguser',  
   
 
   // DISCUSSION MODULE

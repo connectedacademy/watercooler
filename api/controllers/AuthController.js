@@ -5,28 +5,28 @@ let URL = require('url').URL;
 module.exports = {
 
 
-    testadminlogin: (req,res)=>
-    {
-        req.session.redirecturi = req.get('origin') || req.get('referer');
-        if (process.env.CI || req.query.psk == process.env.TESTKEY)
-        {
-            let testuser = require('../../spec/examples/adminuser.json');
+    // testadminlogin: (req,res)=>
+    // {
+    //     req.session.redirecturi = req.get('origin') || req.get('referer');
+    //     if (process.env.CI || req.query.psk == process.env.TESTKEY)
+    //     {
+    //         let testuser = require('../../spec/examples/adminuser.json');
 
-            User.create(testuser).exec((err,user)=>{
+    //         User.create(testuser).exec((err,user)=>{
 
-                req.login(user, (err)=>
-                {
-                    // console.log(err);
-                    return res.redirect(req.session.redirecturi + '/#/admin');
-                });
+    //             req.login(user, (err)=>
+    //             {
+    //                 // console.log(err);
+    //                 return res.redirect(req.session.redirecturi + '/#/admin');
+    //             });
 
-            });
-        }
-        else
-        {
-            return res.forbidden('NOT IN CI OR TEST MODE');
-        }
-    },
+    //         });
+    //     }
+    //     else
+    //     {
+    //         return res.forbidden('NOT IN CI OR TEST MODE');
+    //     }
+    // },
 
     testuserlogin: (req,res)=>{
         req.session.redirecturi = req.get('origin') || req.get('referer');
@@ -42,6 +42,27 @@ module.exports = {
 
                     return res.redirect(req.session.redirecturi + '/#/');
                 });
+            });
+        }
+        else
+        {
+             return res.forbidden('NOT IN CI OR TEST MODE');
+        }
+    },
+
+    loginexistinguser: async (req,res)=>{
+        req.session.redirecturi = req.query.callback || req.get('origin') || req.get('referer');
+
+        if (process.env.CI || req.query.psk == process.env.TESTKEY)
+        {
+
+            let user = await User.findOne({
+                account: req.query.account
+            });
+
+            req.login(user, (err)=>
+            {
+                return res.redirect(req.session.redirecturi + '/#/');
             });
         }
         else
