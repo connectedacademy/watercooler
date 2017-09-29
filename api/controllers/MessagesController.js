@@ -110,7 +110,7 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/messages/visualisation/:class/:content Visualisation
+     * @api {get} /v1/messages/visualisation/:class/:content/:groupby Visualisation
      * @apiDescription Visualisation of message activity for each segment
      * @apiName message_visualisation
      * @apiGroup Messages
@@ -120,6 +120,7 @@ module.exports = {
      * 
      * @apiParam  {String} class Content slug
      * @apiParam  {String} content Content slug
+     * @apiParam  {int} groupby Number of segments to group by
      * @apiParam  {Boolean} whitelist Limit to messages from registered users 
      * 
      */
@@ -130,6 +131,7 @@ module.exports = {
             req.checkQuery('whitelist').optional().isBoolean();
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
+            req.checkParams('groupby').notEmpty();
 
             try {
                 let result = await req.getValidationResult();
@@ -142,12 +144,13 @@ module.exports = {
 
         let lang = await LangService.lang(req);
         try {
-            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'));
+            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'));
 
             return res.json({
                 scope: {
                     class: req.param('class'),
-                    content: req.param('content')
+                    content: req.param('content'),
+                    groupby: req.param('groupby')
                 },
                 data: data
             });

@@ -35,7 +35,7 @@ let sockethandlers = {};
 
 module.exports = {
 
-    visualisation: async (course, klass,content, language, whitelist)=>{
+    visualisation: async (course, klass,content, language, whitelist, groupby)=>{
         let response = await request({
             url: baseURI + 'messages/visualisation',
             method: 'POST',
@@ -68,18 +68,33 @@ module.exports = {
 
         let min = 0;
         let max = parseInt(_.max(response,'segment').segment);
-        let max_val = _.max(response,'count').count;
+        
         let ordered = {};
 
         for(let i=min;i<=max;i++)
         {
             let seg = _.find(response,{segment:i+''});
+            let realindex = i/groupby | 0;
+            if (!ordered[realindex])
+                ordered[realindex] = 0;
+
             if (seg)
-                ordered[i] = seg.count / max_val;
-            else
-                ordered[i] = 0;
+                ordered[realindex] += seg.count;
         }
-        return ordered;
+
+        let max_val = _.max(_.values(ordered));        
+        
+        ordered = _.mapValues(ordered,(o)=>{
+            return (o / max_val).toFixed(3);
+        });
+
+        let maxk = _.size(ordered) -1;
+
+        let nordered = _.mapKeys(ordered, (v,k)=>{
+            return k/maxk;
+        });
+
+        return nordered;
     },
 
     totals: async (course, klass, content)=>{
