@@ -41,7 +41,8 @@ module.exports = {
                 return res.serverError(err);
 
             return res.json({
-                code: result.code
+                code: result.code,
+                students: _.size(result.students)
             });
         });
 
