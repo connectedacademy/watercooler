@@ -296,6 +296,57 @@ module.exports = {
 
     /**
      * 
+     * @api {post} /v1/discussion/remove Remove Submission
+     * @apiDescription Removes a specific submission for any reason
+     * @apiName rmsubmission
+     * @apiGroup Discussion
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     */
+    remove: async (req,res) =>{
+
+        req.checkBody('id').notEmpty();
+        
+        try
+        {
+            let result = await req.getValidationResult();
+            result.throw();
+        }
+        catch (e)
+        {
+            return res.badRequest(e.mapped());
+        }
+
+        let submission = await Submission.findOne({id:req.body.id});
+        if (submission)
+            if (submission.user == req.session.passport.user.id)
+            {
+                let q = 'UPDATE submission SET cached = false WHERE @rid=:id';
+                let result = await Submission.query(q,{
+                    params:{
+                       id: submission.id
+                }});
+
+                console.log(result);
+
+                return res.json({
+                    msg:'Submission removed!'
+                });
+            }
+            else
+            {
+                return res.status(403).json({
+                    msg:'You are not the owner of that submission, and cannot remove it'
+                });                
+            }
+        else
+            return res.notFound();
+    },
+
+    /**
+     * 
      * @api {get} /v1/discussion/messages/:submission Get Messages
      * @apiDescription Return message thread for a submission
      * @apiName discussionmessages
@@ -325,6 +376,7 @@ module.exports = {
             AND relates_to.course=:course \
             AND relates_to.class=:class \
             AND relates_to.content=:content \
+            AND relates_to.cached=true \
             GROUP BY relates_to.user";
 
             // console.log(query);
@@ -409,6 +461,7 @@ module.exports = {
                 AND relates_to.course=:course \
                 AND relates_to.class=:class \
                 AND relates_to.content=:content \
+                AND relates_to.cached=true\
                 GROUP BY relates_to FETCHPLAN submission:2 discussion:1";
             
             let p = Submission.query(query,{
@@ -425,7 +478,8 @@ module.exports = {
                 user: req.session.passport.user.id,
                 course: req.course.domain,
                 class: req.param('class'),
-                content: req.param('content')
+                content: req.param('content'),
+                matched:true
             })
             .populate('discussion').populate('user');
 

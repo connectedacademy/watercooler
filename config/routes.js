@@ -73,7 +73,7 @@ module.exports.routes = {
   'GET /v1/analytics/question/:class/:content':'AnalyticsController.question',
 
 
-  'GET /v1/auth/testadminlogin':'AuthController.testadminlogin',
+  // 'GET /v1/auth/testadminlogin':'AuthController.testadminlogin',
   'GET /v1/auth/testuserlogin':'AuthController.testuserlogin',
   'GET /v1/auth/loginexistinguser':'AuthController.loginexistinguser',  
   
@@ -87,6 +87,7 @@ module.exports.routes = {
   'GET /v1/discussion/list/:class/:content':'DiscussionController.list',
   'POST /v1/discussion/read/:message':'DiscussionController.read',
   'GET /v1/discussion/user/:class/:content/:user':'Discussion.user',
+  'POST /v1/discussion/remove':'DiscussionController.remove',  
 
   'OPTIONS /*':{policy:'cors'}
 };
