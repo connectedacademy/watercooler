@@ -111,7 +111,9 @@ module.exports.bootstrap = function (cb) {
 
             if (isadmin) {
               //put this github user onto the account of the current user:
-              let me_user = await User.findOne(req.session.passport.user.id);
+              let me_user = await User.findOne({
+                id:req.session.passport.user.id
+              });
               me_user.admin = user.id + '';
 
               //save my account with admin appended

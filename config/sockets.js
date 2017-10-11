@@ -124,7 +124,7 @@ module.exports.sockets = {
   ***************************************************************************/
   afterDisconnect: function(session, socket, cb) {
     // By default: do nothing.
-    sails.log.verbose("Socket disconnect",session);
+    sails.log.silly("Socket",{msg:'disconnect',session:session});
     GossipmillApi.unsubscribe(socket);
     return cb();
   },

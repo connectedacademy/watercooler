@@ -19,9 +19,25 @@ module.exports = {
 
         if (req.session.passport) {
             let adminuser = admin || req.session.passport.user.admin;
-
+            // console.log(adminuser);
             if (adminuser) {
-                let admin = await User.findOne(adminuser);
+                let admin = await User.findOne({id:adminuser.id});
+
+                //if not called from policy (i.e. req.course not set)
+                if (admin)
+                {
+                    // console.log('setting repo');
+                    var verified = await DomainControl.verifyDomain(req);
+                    if (verified)
+                    {
+                        // console.log(verified);
+                        req.course = verified;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
 
                 // sails.log.info("Authenticated as Admin");
                 //check that this admin can authenticate for this course

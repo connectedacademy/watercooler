@@ -10,7 +10,8 @@ module.exports = {
     },
     fromuser:
     {
-      model: 'User'
+      model: 'User',
+      index: true
     },
 
     toJSON :function()

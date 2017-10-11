@@ -6,14 +6,16 @@ module.exports = {
     attributes: {
         code:{
             type:'string',
-            unique: true
+            unique: true,
+            index: true
         },
         class:'string',
         course:'string',
         content:'string',
         teacher:
         {
-            model: 'User'
+            model: 'User',
+            index: true
         },
         students: 'array'
     },

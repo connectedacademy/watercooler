@@ -3,12 +3,12 @@ let URL = require('url');
 
 module.exports = {
 
-    verifyDomain: async (req,res)=>{
+    verifyDomain: async (req)=>{
         //parse domain
         let url = URL.parse(req.get('referer') || req.get('origin'));
         let domain = url.hostname;
         
-        let whitelist = await DomainControl.getWhitelist(req,res);
+        let whitelist = await DomainControl.getWhitelist();
 
         let isvalid = false
         _.each(whitelist.courses,(entry)=>{
