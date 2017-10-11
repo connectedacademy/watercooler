@@ -24,7 +24,7 @@ io.socket.on('reconnect_attempt',function(){
 });
 
 io.socket.on('reconnecting',function(num){
-    sails.log.info('Gossipmill API Socket reconnecting', num);    
+    sails.log.error('Gossipmill API Socket reconnecting', num);    
 });
 
 let request = require('request-promise-native');
@@ -198,7 +198,7 @@ module.exports = {
             });
         }
 
-        sails.log.verbose('Requesting summary');
+        // sails.log.verbose('Requesting summary');
 
         let response = await request({
             url: baseURI + 'messages/summary/' + user.service + '/' + user.account,
@@ -241,7 +241,7 @@ module.exports = {
             }
         ];
 
-        sails.log.verbose('Requesting list');
+        // sails.log.verbose('Requesting list');
 
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
@@ -257,10 +257,6 @@ module.exports = {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
-
-        console.log(response.data);
-        
-        // response.data = _.groupBy(response.data, 'segment');
 
         return response;
     },
@@ -286,7 +282,7 @@ module.exports = {
             }
         ];
 
-        sails.log.verbose('Requesting list');
+        // sails.log.verbose('Requesting list');
 
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
@@ -322,7 +318,7 @@ module.exports = {
             }
         ];
 
-        sails.log.verbose('Requesting list');
+        // sails.log.verbose('Requesting list');
 
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
@@ -369,7 +365,7 @@ module.exports = {
             });
         }
 
-        sails.log.verbose('Requesting list');
+        // sails.log.verbose('Requesting list');
 
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
@@ -403,7 +399,7 @@ module.exports = {
             }
         ];
 
-        sails.log.verbose('Requesting Content list');
+        // sails.log.verbose('Requesting Content list');
 
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
@@ -455,7 +451,7 @@ module.exports = {
                                     msg: msg
                                 };
                                 wrapped.msg.author = wrapped.msg.user;
-                                sails.log.info("Socket message with " + msg.message_id);
+                                sails.log.silly("Socket message with " + msg.message_id);
                                 sails.sockets.broadcast(data.room, wrapped);
                             };
                             io.socket.on(data.room,sockethandlers[data.room]);
@@ -518,7 +514,7 @@ module.exports = {
                             msg: msg
                         };
                         wrapped.msg.author = wrapped.msg.user;
-                        sails.log.info("Socket message with " + msg.message_id);
+                        sails.log.silly("Socket message with " + msg.message_id);
                         sails.sockets.broadcast(data.room, wrapped);
                     };
                     io.socket.on(data.room,sockethandlers[data.room]);

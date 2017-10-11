@@ -5,7 +5,7 @@ module.exports = function(req, res, next) {
     }
     else
     {
-        sails.log.verbose('Not a JSON request',req.uri);
+        sails.log.silly('Not a JSON request',req.uri);
         return res.view('jsononly');
     }
 }

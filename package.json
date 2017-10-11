@@ -12,7 +12,6 @@
     "connect-redis": "3.2.0",
     "handlebars": "4.0.6",
     "include-all": "^1.0.0",
-    "osprey": "0.4.0",
     "passport": "0.3.2",
     "passport-github": "1.1.0",
     "passport-twitter": "1.0.4",
@@ -30,8 +29,6 @@
     "js-yaml": "3.8.2",
     "fs-promise": "2.0.2",
     "requestify": "0.2.5",
-    "raml-validate":"1.1.1",
-    "raml-1-parser": "1.1.19",
     "raml-js-validator": "0.5.1",
     "request-promise-native":"1.0.3",
     "sails.io.js":"1.1.10",
@@ -43,7 +40,8 @@
     "randomstring":"1.1.5",
     "ioredis": "3.1.1",
     "lodash": "4.17.4",
-    "rss":"1.2.2"
+    "rss":"1.2.2",
+    "express-useragent": "1.0.8"
   },
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",

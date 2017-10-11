@@ -129,7 +129,7 @@ module.exports = {
     admin: (req,res,next)=>{
         //verify referer / origin, if valid, then allow and save into session
         let url = new URL(req.get('origin') || req.get('referer'))
-        req.session.redirecturi = url.origin;
+        req.session.redirecturi = url;
         // req.session.redirecturi = req.get('origin') || req.get('referer');
         sails.passport.authenticate('github')(req,res,next);
     },
@@ -151,19 +151,6 @@ module.exports = {
     github_callback: (req,res,next)=>{
         sails.passport.authenticate('github',{successRedirect: req.session.redirecturi + '/#/admin', failureRedirect: req.session.redirecturi + '/#/loginfail' })(req,res,next);
     },
-
-    // dashboard: (req,res)=>{
-    //     return res.redirect(req.session.redirecturi + '/#/registration');
-    // },
-
-    // admindashboard: (req,res)=>{
-    //     return res.redirect(req.session.redirecturi + '/#/admin');
-    //     // return res.redirect(req.session.redirecturi + '/admin');
-    // },
-
-    // fail: async (req,res)=>{
-    //    return res.redirect(req.session.redirecturi + '/#/loginfail');
-    // },
 
     /**
      * 

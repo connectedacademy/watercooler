@@ -23,10 +23,10 @@ module.exports = {
             if (adminuser) {
                 let admin = await User.findOne(adminuser);
 
-                sails.log.info("Authenticated as Admin");
+                // sails.log.info("Authenticated as Admin");
                 //check that this admin can authenticate for this course
                 if (!req.session.passport.allowedrepos || !_.includes(req.session.passport.allowedrepos, req.course.repo)) {
-                    sails.log.verbose('Checking push access with GitHub', admin.id, req.course);
+                    sails.log.silly('Checking push access with GitHub', admin.id, req.course);
                     let git = req.course.repo.split('/');
                     let url = 'https://api.github.com/repos/' + git[3] + '/' + git[4];
                     let me_user = await User.findOne({
@@ -45,7 +45,7 @@ module.exports = {
 
                     req.session.passport.allowedrepos = [];
                     if (perms.permissions.push) {
-                        sails.log.verbose('Push access granted', admin.id, req.course);
+                        sails.log.silly('Push access granted', admin.id, req.course);
                         req.session.passport.allowedrepos.push(req.course.repo);
                     }
                 }

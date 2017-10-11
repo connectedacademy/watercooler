@@ -4,7 +4,7 @@ module.exports = async (req,res,next) =>{
 
     try
     {
-        sails.log.verbose('Verifying domain',req.url, URL.parse(req.get('referer') || req.get('origin')).hostname);
+        sails.log.silly('Verifying domain',req.url, URL.parse(req.get('referer') || req.get('origin')).hostname);
         var verified = await DomainControl.verifyDomain(req,res);
         if (verified)
         {
@@ -22,7 +22,7 @@ module.exports = async (req,res,next) =>{
     catch (e)
     {
         console.log(e);
-        sails.log.verbose('Failed to verify domain',req.url);
+        sails.log.silly('Failed to verify domain',req.url);
         return res.forbidden({
             err:'INVALID_DOMAIN',
             msg:'No valid Origin or Referer header were provided'

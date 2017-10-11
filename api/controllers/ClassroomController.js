@@ -208,8 +208,8 @@ module.exports = {
                 {
                     feed.item({
                         title:  'Image ' + i,
-                        description: '<img src="'+req.course.url + '/course/content/' + lang + '/' + klass.dir + '/transcripts/' + image.text+'" />',
-                        url: req.course.url + '/course/content/' + lang + '/' + klass.dir + '/transcripts/' + image.text, // link to the item
+                        description: '<img src="'+req.course.url + '/course/content/media/medium/' + image.text+'" />',
+                        url: req.course.url + '/course/content/media/medium/' + image.text, // link to the item
                         author: 'Connected Academy', // optional - defaults to feed author property 
                         date: new Date().toISOString() // any format that js Date can parse. 
                     });
@@ -220,23 +220,11 @@ module.exports = {
             // latest messages / notes
 
             let messages = await GossipmillApi.listForUsers(classroom.course, klass.slug, classroom.teacher, content.slug, classroom.students, true);
-            // submissions from these users
 
             // console.log(messages);
 
             // let items = [];
             getItems(messages.data,feed, klass, content, req.course.url);
-
-            // for (let message of messages.data)
-            // {
-            //     feed.item({
-            //         title:  message.text,
-            //         description: message.text,
-            //         url: req.course.url + '/#/course/' +  klass.slug + '/' + content.slug + '/' + message.segment, // link to the item
-            //         author: '@' + (typeof(message.user) !== 'undefined') ? message.user.name : 'Unknown', // optional - defaults to feed author property 
-            //         date: message.createdAt // any format that js Date can parse. 
-            //     });
-            // }
 
             res.type('xml');
             return res.send(feed.xml());
@@ -259,11 +247,11 @@ function getItems(messages, feed, klass, content, url)
 
         if (message.author && message.author.name)
             author = message.author.name
-        // console.log(message.createdAt);
+        // console.log(message.segment);
         feed.item({
             title:  message.text,
             description: 'by @'+author + ' on ' + message.createdAt,
-            url: url + '/#/course/' +  klass.slug + '/' + content.slug + ((message.segment)? '/' + message.segment:''), // link to the item
+            url: url + '/#/course/' +  klass.slug + '/' + content.slug + '/' + message.segment, // + ((message.segment)? '/' + message.segment:''), // link to the item
             author: '@'+ author, // optional - defaults to feed author property 
             date: message.createdAt // any format that js Date can parse. 
         });

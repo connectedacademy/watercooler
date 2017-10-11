@@ -880,6 +880,49 @@
     ]
   },
   {
+    "type": "get",
+    "url": "/v1/course/specpreload/:class/:blocks",
+    "title": "Class List Preload",
+    "description": "<p>Get the pre-load content list for this class</p>",
+    "name": "specpreload",
+    "group": "Course",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "blocks",
+            "description": "<p>Number of blocks to load (-1 is all)</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./api/controllers/CourseController.js",
+    "groupTitle": "Course",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/course/specpreload/:class/:blocks"
+      }
+    ]
+  },
+  {
     "type": "post",
     "url": "/v1/course/unlike/:class/:content",
     "title": "Un-Like",
@@ -1249,6 +1292,91 @@
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/discussion/user/:class/:content/:user"
+      }
+    ]
+  },
+  {
+    "type": "post",
+    "url": "/v1/discussion/remove",
+    "title": "Remove Submission",
+    "description": "<p>Removes a specific submission for any reason</p>",
+    "name": "rmsubmission",
+    "group": "Discussion",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "user",
+        "title": "Authenticated as User",
+        "description": ""
+      }
+    ],
+    "filename": "./api/controllers/DiscussionController.js",
+    "groupTitle": "Discussion",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/discussion/remove"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/messages/content/:class/:content",
+    "title": "Content Messages",
+    "description": "<p>List messages for a specific piece of content, and subscribe to new ones</p>",
+    "name": "message_content",
+    "group": "Messages",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Content slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "content",
+            "description": "<p>Content slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "whitelist",
+            "description": "<p>Use only registered users messages</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>Number of messages to return</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./api/controllers/MessagesController.js",
+    "groupTitle": "Messages",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/messages/content/:class/:content"
       }
     ]
   },
@@ -1668,7 +1796,7 @@
   },
   {
     "type": "get",
-    "url": "/v1/messages/visualisation/:class/:content",
+    "url": "/v1/messages/visualisation/:class/:content/:groupby",
     "title": "Visualisation",
     "description": "<p>Visualisation of message activity for each segment</p>",
     "name": "message_visualisation",
@@ -1705,6 +1833,13 @@
           },
           {
             "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "groupby",
+            "description": "<p>Number of segments to group by</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "Boolean",
             "optional": false,
             "field": "whitelist",
@@ -1717,7 +1852,7 @@
     "groupTitle": "Messages",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/messages/visualisation/:class/:content"
+        "url": "https://api.connectedacademy.io/v1/messages/visualisation/:class/:content/:groupby"
       }
     ]
   }

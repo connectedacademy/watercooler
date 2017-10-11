@@ -16,7 +16,7 @@ module.exports = function(sails)
                     switch (channel)
                     {
                         case 'submissions':
-                            sails.log.verbose('PubSub Submission',message);
+                            sails.log.silly('PubSub Submission',message);
                             newSubmission(message);
                             break;
                     }
@@ -33,7 +33,7 @@ var newSubmission = async function(subid){
     //broadcast to this user's subscription:
     let submission = await Submission.findOne(subid).populate('user');
     Submission.removeCircularReferences(submission);
-    sails.log.verbose('WS message to ',submission.user.id.toString());
+    sails.log.silly('WS message to ',submission.user.id.toString());
     let wrapped = {
         msgtype: 'submission',
         msg: submission

@@ -9,7 +9,7 @@ module.exports = async function(req,res,next)
     if (registration)
     {
         req.session.passport.user.registration = registration;
-        sails.log.info("Confirmed registration as User");
+        sails.log.silly("Confirmed registration as User");
         return next();
     }
     else

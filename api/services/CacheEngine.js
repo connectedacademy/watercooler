@@ -92,7 +92,7 @@ module.exports = {
     },
 
     getFrontmatter: async (url, content = false) => {
-        sails.log.verbose('Getting ' + url);
+        sails.log.silly('Getting ' + url);
         //get from remote
         let raw = await get(url);
         try {
@@ -110,7 +110,7 @@ module.exports = {
     getEmail: async (course, lang, email_type) => {
         // let lang = await LangService.lang(req);
         let url = course.url + '/course/content/' + lang + '/emails/' + email_type + '.md';
-        sails.log.verbose('Getting Email ' + email_type, url);
+        sails.log.silly('Getting Email ' + email_type, url);
         //get file
         let email = await CacheEngine.getFrontmatter(url, true);
         //parse markdown, title etc
@@ -121,19 +121,19 @@ module.exports = {
     },
 
     getYaml: async (url) => {
-        sails.log.verbose('Getting ' + url);
+        sails.log.silly('Getting ' + url);
 
         try
         {
             let resp = await rediscache.getAsync("ymlcache:" + url);
             if (resp)
             {
-                sails.log.verbose('Using redis cache for ' + url);
+                sails.log.silly('Using redis cache for ' + url);
                 return JSON.parse(resp);
             }
             else
             {
-                sails.log.verbose('Getting original file ' + url);
+                sails.log.silly('Getting original file ' + url);
                 
                 let raw = await get(url);
                 //try load yaml
@@ -154,7 +154,7 @@ module.exports = {
             return CacheEngine.getYaml(req.course.url + '/course/config/hubs.yaml');
         }
         else {
-            sails.log.verbose('Should be getting ' + req.course.url + '/course/config/hubs.yaml, actually serving examples/hubs.yaml');
+            sails.log.silly('Should be getting ' + req.course.url + '/course/config/hubs.yaml, actually serving examples/hubs.yaml');
             let raw = await fs.readFile(__dirname + '/../../spec/examples/hubs.yaml');
             return yaml.safeLoad(raw);
         }
@@ -165,7 +165,7 @@ module.exports = {
             return CacheEngine.getYaml(req.course.url + '/course/config/spec.yaml');
         }
         else {
-            sails.log.verbose('Should be getting ' + req.course.url + '/course/config/spec.yaml, actually serving examples/spec.yaml');
+            sails.log.silly('Should be getting ' + req.course.url + '/course/config/spec.yaml, actually serving examples/spec.yaml');
             let raw = await fs.readFile(__dirname + '/../../spec/examples/spec.yaml');
             return yaml.safeLoad(raw);
         }
@@ -178,7 +178,7 @@ module.exports = {
         }
         else {
             // console.log(req.course);
-            sails.log.verbose('Should be getting ' + req.course.url + '/course/config/questions.yaml, actually serving examples/questions.yaml');
+            sails.log.silly('Should be getting ' + req.course.url + '/course/config/questions.yaml, actually serving examples/questions.yaml');
             let raw = await fs.readFile(__dirname + '/../../spec/examples/questions.yaml');
             return yaml.safeLoad(raw);
         }
