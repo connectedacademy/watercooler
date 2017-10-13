@@ -163,9 +163,13 @@ module.exports = {
             
             let currentClass = _.indexOf(data.classes, currentWeek);
 
+            if (NOW.isBefore(enddate) && currentClass == -1)
+                currentClass = 0;
+
             data.classes.forEach(function(klass,i){
                 if (currentClass==-1 && NOW.isAfter(enddate))
                 {
+                    //release all classed if the course has finished
                     klass.status = 'RELEASED';
                 }
                 else if (currentClass==-1 && NOW.isBefore(startdate))
