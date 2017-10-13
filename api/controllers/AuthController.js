@@ -71,7 +71,7 @@ module.exports = {
         }
     },
 
-	root: (req,res) =>
+	root: async (req,res) =>
     {
         return res.json({
             msg:'Watercooler Running',

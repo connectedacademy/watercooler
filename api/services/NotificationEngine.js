@@ -10,6 +10,8 @@ let sendEmail = async function (user, subject, content) {
 
     let template = await fs.readFile(__dirname + '/../../views/email.html');
     let realcontent = template.toString().replace('{{body}}', content)
+    realcontent = realcontent.replace('{{user}}', user.name);
+    realcontent = realcontent.replace('{{date}}', new Date().toString());
 
     var content = new helper.Content('text/html', realcontent);
     var mail = new helper.Mail(from_email, subject, to_email, content);
@@ -62,8 +64,6 @@ module.exports = {
             sails.log.verbose('Sending signup notification', user.id);
             let lang = await LangService.lang(req);
             let email = await CacheEngine.getEmail(req.course, lang, 'intro');
-            email.body = email.body.replace('{{user}}', user.name);
-            email.body = email.body.replace('{{date}}', new Date().toString());
             await sendEmail(user, email.subject, email.body);
         }
         catch (e) {
@@ -83,8 +83,6 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'coursestarting_week');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(reg.user, email.subject, email.body);
                 }
                 await markSent(course.domain, 'weekbefore');
@@ -107,8 +105,6 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'coursestarting_day');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(reg.user, email.subject, email.body);
                 }
                 await markSent(course.domain, 'daybefore');
@@ -131,8 +127,6 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'courseclose');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(reg.user, email.subject, email.body);
                 }
                 await markSent(course.domain, 'courseclose');
@@ -156,8 +150,6 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'readprecontent');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(reg.user, email.subject, email.body);
                 }
 
@@ -183,8 +175,6 @@ module.exports = {
                 if (reg)
                 {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'postsubmission');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(reg.user, email.subject, email.body);
                 }
 
@@ -197,11 +187,11 @@ module.exports = {
     },
 
     // you should submit feedback
-    submitFeedback: async (course, currentClass, user) => {
+    submitFeedback: async (course, currentClass, user, content) => {
         try {
-            if (!await hasSent(course.domain, 'submitfeedback', currentClass, user.id)) {
+            if (!await hasSent(course.domain, 'submitfeedback', currentClass+'-'+content, user.id)) {
 
-                sails.log.verbose('Sending submitfeedback notification', course.domain,  currentClass, user);
+                sails.log.verbose('Sending submitfeedback notification', course.domain,  currentClass, user, content);
                 
                 let reg = await Registration.findOne({
                     course: course.domain,
@@ -211,11 +201,11 @@ module.exports = {
                 if (reg)
                 {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'joindiscussion');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
+                    email = email.replace('{{class}}',currentClass);
+                    email = email.replace('{{content}}',content);                    
                     sendEmail(reg.user, email.subject, email.body);
                 }
-                await markSent(course.domain, 'submitfeedback', currentClass, user.id);
+                await markSent(course.domain, 'submitfeedback', currentClass+'-'+content, user.id);
             }
         }
         catch (e) {
@@ -234,8 +224,6 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'joinliveclass');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(reg.user, email.subject, email.body);
                 }
 
@@ -258,8 +246,6 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'readdeepdive');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(reg.user, email.subject, email.body);
                 }
 
@@ -281,8 +267,6 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'webinarsoon');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(reg.user, email.subject, email.body);
                 }
 
@@ -305,8 +289,6 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'nextweek');
-                    email.body = email.body.replace('{{user}}', reg.user.name);
-                    email.body = email.body.replace('{{date}}', new Date().toString());
                     sendEmail(reg.user, email.subject, email.body);
                 }
 
@@ -319,27 +301,25 @@ module.exports = {
     },
 
     // notification of a new peer discussion message
-    newPeerMessage: async (req, message) => {
+    newPeerMessage: async (req, user, message) => {
         try {
-            sails.log.verbose('Sending offline notification about new peer message', message);
+            sails.log.verbose('PeerMessage',{msg:'notification email', message:message});
             let lang = await LangService.lang(req);
             let email = await CacheEngine.getEmail(req.course, lang || process.env.DEFAULT_LANG, 'newfeedback');
 
             //find all other people in discussion for this submission:
-            let users = await DiscussionMessage.find({
-                relates_to: message.relates_to
-            }).populate('fromuser');
+            // let users = await DiscussionMessage.find({
+            //     relates_to: message.relates_to
+            // }).populate('fromuser');
 
-            users = _.uniq(_.pluck(users,'fromuser'),'id');
+            // users = _.uniq(_.pluck(users,'fromuser'),'id');
 
-            for (let user of users) {
-                if (user.id != req.session.passport.user.id) {
-                    email.body = email.body.replace('{{user}}', user.name);
-                    email.body = email.body.replace('{{id}}', message.relates_to.replace('#','%23'));
-                    email.body = email.body.replace('{{date}}', new Date().toString());
-                    sendEmail(user, email.subject, email.body);
-                }
-            }
+            // for (let user of users) {
+            // if (user.id != req.session.passport.user.id) {
+            email.body = email.body.replace('{{id}}', message.relates_to.replace('#','%23'));
+            sendEmail(user, email.subject, email.body);
+            // }
+            // }
         }
         catch (e) {
             sails.log.error(e);

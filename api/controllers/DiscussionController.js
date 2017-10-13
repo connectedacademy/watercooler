@@ -78,7 +78,7 @@ module.exports = {
 
     /**
      * 
-     * @api {post} /v1/discussion/create New Feedback Message
+     * @api {post} /v1/discussion/create/:submission New Feedback Message
      * @apiDescription Create a new message in a discussion
      * @apiName discussioncreate
      * @apiGroup Discussion
@@ -141,12 +141,8 @@ module.exports = {
 
                     //to any user in this conversation:
                     for (let user of users)
-                    {
-                        // console.log("submission from: " + submission.user);
-                        // console.log("WS user: " + user);
-                        
+                    {                        
                         let isownerofsubmission = submission.user == user;
-                        // console.log("is owner: " + isownerofsubmission);
                         //is my submission, and its me that the socket message is going to
                         if (isownerofsubmission)
                         {
@@ -154,14 +150,13 @@ module.exports = {
                             if (user == req.session.passport.user.id)
                             {
                                 msg.canview = true;
-                                // sails.log.verbose('canview 1',{msg:msg,user:user});
                             }
                             else
                             {
                                 //its not the message creator, and it is the user that made the submission - decide if they should see the message:
 
                                 // if the owner of this submission (i.e. user) has made any messages relating to a submission by the author of the message (msg.fromuser)
-                                                    //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
+                                //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
 
                                 //select messages that have been made 
 
@@ -179,25 +174,14 @@ module.exports = {
                                     }
                                 }); 
 
-                                // list of messages by this author related to submissions in this space
-
-                                // console.log(author_messages);
-
-                                // let forthisauthor = _.find(author_messages,{
-                                //     author:user
-                                // });
-
                                 //if there are messages for this author
                                 if (author_messages[0].count > 0)
                                 {
                                     //if I have made a message to this author for a related submission
                                     msg.canview = true;
-                                    // sails.log.verbose('canview 2',{msg:msg,user:user});
                                 }
                                 else
                                 {
-                                    
-                                    // sails.log.verbose('canview 4',{msg:msg,user:user});
                                     //author has no messages, particularly not from me
                                     msg.canview = false;
                                 }
@@ -206,21 +190,27 @@ module.exports = {
                         else
                         {
                             msg.canview = true;
-                            // sails.log.verbose('canview 3',{ismine: isownerofsubmission,loggedin:req.session.passport.user.id, msg:msg, user:user});                            
                         }
 
-                        console.log(msg.canview);
-
-                        sails.log.verbose('Sending WS about discussion',{user: user.toString(), msg: msg.id});
+                        // Notify ALL users via websocket
+                        sails.log.verbose('PeerMessage',{user: user.toString(), msg: msg.id});
                         let wrapped = {
                             msgtype: 'discussion',
                             msg: msg
                         }
                         User.message(user.toString(), wrapped);
+
+                        // notify all other users that a message has been posted:
+                        //send offline notification (TODO: detect if they are not online)
+                        if (user != req.session.passport.user.id)
+                        {
+                            //only if its not the logged in user
+                            let u = await User.findOne({id:user});
+                            NotificationEngine.newPeerMessage(req, u, msg);
+                        }
+                        
                     }
 
-                    //send offline notification (TODO: detect if they are not online)
-                    NotificationEngine.newPeerMessage(req, msg);
                     return res.json(msg);
                 }
             })

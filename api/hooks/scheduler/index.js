@@ -22,7 +22,7 @@ module.exports = function (sails) {
 
                 let ordered_times = times.sort();
                 let start = _.first(ordered_times);
-                let Wstart = moment(start*1000);
+                let Wstart = moment(start * 1000);
                 return Wstart;
             }
             else {
@@ -50,7 +50,7 @@ module.exports = function (sails) {
 
                 let ordered_times = times.sort();
                 let start = _.last(ordered_times);
-                let Wstart = moment(start*1000);
+                let Wstart = moment(start * 1000);
                 return Wstart;
             }
             else {
@@ -62,8 +62,7 @@ module.exports = function (sails) {
         }
     };
 
-    let getCurrentWeek = function(NOW,spec)
-    {
+    let getCurrentWeek = function (NOW, spec) {
         let currentWeek = null;
         // Loop through classes in this course and work out which is the current class based on the time
         spec.classes.forEach(function (klass, i) {
@@ -89,13 +88,16 @@ module.exports = function (sails) {
                         currentWeek = klass;
                 }
             }
-            else
-            {
+            else {
                 //no live class, so can't calculate date:
                 if (!currentWeek)
                     currentWeek = klass
             }
         });
+
+        if (!currentWeek)
+            currentWeek = _.last(spec.classes);
+
         return currentWeek;
     }
 
@@ -106,6 +108,7 @@ module.exports = function (sails) {
                 sails.log.verbose('Running Notification Scheduler');
 
                 let NOW = moment();
+
                 let whitelist = await DomainControl.getWhitelist();
 
                 //FOR EACH COURSE IN WHITELIST
@@ -154,11 +157,13 @@ module.exports = function (sails) {
 
                     // now is between   L -2 days and next L - 2
 
+
+
                     //get current class based on current time
                     let currentWeek = getCurrentWeek(NOW, spec);
                     //get index of the current class
                     let currentClass = _.indexOf(spec.classes, currentWeek);
-                    
+
                     /**
                      * Notifications for pre-content reading before the live class (hub independent)
                      */
@@ -183,8 +188,7 @@ module.exports = function (sails) {
                     });
 
                     // if this week has a live class schedule
-                    if (current_schedule)
-                    {
+                    if (current_schedule) {
                         // For each hub (which has a different live release schedule)
                         for (let hub of current_schedule.schedule) {
 
@@ -217,37 +221,95 @@ module.exports = function (sails) {
                         }
                     }
 
-                    
+
 
                     /**
                      * Notifications to submit work
                      */
-                    //TODO: Adjust to cope with multiple submissions in a class:
 
-                    // Get all registered users for this course
-                    let registered = await Registration.find({
-                        course: course.domain
-                    }).populate('user');
-                    //just user ids
-                    let userids = _.pluck(registered, 'user.id');
-                    //get submissions for this class and course
-                    let submissions = await Submission.find({
-                        course: course.domain,
-                        class: currentClass
-                    }).populate('user');
+                    // |---------|---------|----------|--------|
+                    // | pre     |homework | liveclass|homework|
 
-                    //for each user, if they have submitted
-                    for (let user of submissions) {
-                        NotificationEngine.submitFeedback(course, currentClass, user);
+                    let promises = [];
+
+                    //for each file in the spec, get the markdown and parse it:
+                    for (let content of currentWeek.content) {
+                        if (content.url) {
+                            promises.push(CacheEngine.applyFrontMatter(content, whitelist.courses[c].url + '/course/content/' + spec.langs[0] + '/' + currentWeek.dir + '/' + content.url, whitelist.courses[c].domain, null));
+                        }
                     }
-                    // list of users who have not submitted one:
-                    let notsubmitted = _.difference(userids, _.pluck(submissions, 'user.id'));
 
-                    //for each user who has not submitted, send a reminder
-                    for (let user of notsubmitted) {
-                        NotificationEngine.submitWork(course, currentClass, _.find(registered, (r) => {
-                            return r.user.id == user
-                        }));
+                    await Promise.all(promises);
+
+                    let submission = null;
+                    if (currentWeek) {
+
+                        for (let i = 0; i < _.size(currentWeek.content); i++) {
+                            //if this is a homework tile
+                            if (currentWeek.content[i].expectsubmission) {
+                                //find the next time released tile after this:
+                                let remaining = _.takeRight(currentWeek.content, _.size(currentWeek.content) - i - 1);
+                                //find next timed event
+                                let next = _.find(remaining, (k) => {
+                                    return _.has(k, 'schedule');
+                                });
+                                //if it has a schedule
+                                if (next) {
+                                    //get earliest timestamp:
+                                    let times = _.map(next.schedule, (s) => {
+                                        let tt = moment(s.release_at);
+                                        return tt.unix();
+                                    });
+
+                                    //get earliest schedule
+                                    let ordered_times = times.sort();
+                                    let start = _.first(ordered_times);
+                                    let Wstart = moment(start * 1000);
+
+                                    if (NOW.isBefore(Wstart)) {
+                                        submission = currentWeek.content[i];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!submission) {
+                            submission = _.findLast(currentWeek.content, (k) => {
+                                return k.expectsubmission;
+                            });
+                        }
+                    }
+
+                    //if there is a submission to warn about:
+                    if (submission) {
+                        // Get all registered users for this course
+                        let registered = await Registration.find({
+                            course: course.domain
+                        }).populate('user');
+                        //just user ids
+                        let userids = _.pluck(registered, 'user.id');
+                        //get submissions for this class and course
+                        let submissions = await Submission.find({
+                            course: course.domain,
+                            class: currentClass,
+                            content: submission.slug
+                        }).populate('user');
+
+                        //for each user, if they have submitted
+                        for (let user of submissions) {
+                            NotificationEngine.submitFeedback(course, currentClass, user, submission.slug);
+                        }
+
+                        // list of users who have not submitted one:
+                        let notsubmitted = _.difference(userids, _.pluck(submissions, 'user.id'));
+
+                        //for each user who has not submitted, send a reminder
+                        for (let user of notsubmitted) {
+                            NotificationEngine.submitWork(course, currentClass, _.find(registered, (r) => {
+                                return r.user.id == user
+                            }));
+                        }
                     }
                 }
                 running = false;
