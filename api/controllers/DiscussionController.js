@@ -197,7 +197,7 @@ module.exports = {
                         let wrapped = {
                             msgtype: 'discussion',
                             msg: msg
-                        }
+                        };
                         User.message(user.toString(), wrapped);
 
                         // notify all other users that a message has been posted:

@@ -40,6 +40,12 @@ module.exports = {
             if (err)
                 return res.serverError(err);
 
+            //if socket connection -- subscribe to updates:
+            if (req.isSocket)
+            {
+                Classroom.subscribe(req, result.id);
+            }
+
             return res.json({
                 code: result.code,
                 students: _.size(result.students)
@@ -123,6 +129,15 @@ module.exports = {
                 classroom.save((err)=>{
                     if (err)
                         return res.serverError(err);
+
+                    //publish update via message:
+                    let wrapped = {
+                        msgtype: 'classroom',
+                        msg: req.session.passport.user.id
+                    };
+
+                    Classroom.message(classroom.id, wrapped, req);
+                    
                     return res.ok('Registered');
                 });
             }
