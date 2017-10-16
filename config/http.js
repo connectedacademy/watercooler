@@ -44,7 +44,7 @@ module.exports.http = {
           time: res.get('X-Response-Time')
         });
       });
-      require('response-time')()(req, res, next);
+      require('response-time')({suffix:false})(req, res, next);
     },
 
     order: [
