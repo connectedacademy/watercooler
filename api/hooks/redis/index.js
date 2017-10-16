@@ -37,6 +37,6 @@ var newSubmission = async function(subid){
     let wrapped = {
         msgtype: 'submission',
         msg: submission
-    }
+    };
     User.message(submission.user.id.toString(), wrapped);
 }

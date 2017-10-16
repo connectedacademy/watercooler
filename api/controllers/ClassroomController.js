@@ -22,6 +22,7 @@ module.exports = {
         let klass = req.param('class');
         let content = req.param('content');
 
+        let lang = await LangService.lang(req);
         let hash = await Classroom.getcode();
 
         Classroom.findOrCreate({
@@ -44,6 +45,8 @@ module.exports = {
             if (req.isSocket)
             {
                 Classroom.subscribe(req, result.id);
+                //req, course, klass, user, language,contentid, classroom
+                GossipmillApi.subscribeToClass(req, course, klass, req.session.passport.user, lang, content, result.code);
             }
 
             return res.json({
