@@ -19,6 +19,7 @@ module.exports.bootstrap = function (cb) {
   sails.passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_KEY,
     consumerSecret: process.env.TWITTER_SECRET,
+    userAuthorizationURL: 'https://api.twitter.com/oauth/authorize',
     callbackURL: process.env.HOST + "/auth/twitter_callback"
   },
     function (token, tokenSecret, profile, cb) {
@@ -106,7 +107,6 @@ module.exports.bootstrap = function (cb) {
               return cb(err, req.session.passport.user);
 
             //check if they have access to this course:
-
             let isadmin = await AuthCheck.isAdmin(req, user);
 
             if (isadmin) {
@@ -114,7 +114,14 @@ module.exports.bootstrap = function (cb) {
               let me_user = await User.findOne({
                 id:req.session.passport.user.id
               });
-              me_user.admin = user.id + '';
+
+              if (!_.isArray(me_user.admin))
+                me_user.admin = [];
+            
+              if (!_.includes(me_user.admin,req.course.domain))
+                me_user.admin.push(req.course.domain);
+
+              me_user.owner = user.id + '';
 
               //save my account with admin appended
               me_user.save(function (err) {

@@ -4,6 +4,10 @@
 **/
 
 /**
+ * @apiDefine owner Authenticated as Owner of Course (Github Access)
+ */
+
+/**
  * @apiDefine admin Authenticated as Admin
  */
 
@@ -13,5 +17,5 @@
  */
 
 /**
- * @apiDefine user Authenticated as User
+ * @apiDefine user Authenticated as Student on the Course
  */

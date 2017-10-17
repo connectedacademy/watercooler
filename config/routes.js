@@ -50,6 +50,7 @@ module.exports.routes = {
   'GET /v1/admin/users/:class?/:content?':'AdminController.users',
   'GET /v1/admin/classes':'AdminController.classes',  
   'GET /v1/admin/dash':'AdminController.root',
+  'POST /v1/admin/makeadmin':'AdminController.makeadmin',
   
   'GET /v1/classroom/getclass/:class/:content':'ClassroomController.getclass',  
   'GET /v1/classroom/mycode/:class/:content':'ClassroomController.mycode',

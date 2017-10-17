@@ -94,7 +94,7 @@ module.exports = {
                 uri: url,
                 json: true,
                 qs:{
-                    access_token: me_user.admin.credentials.accessToken
+                    access_token: me_user.owner.credentials.accessToken
                 },
                 headers: {
                     'User-Agent': 'Connected-Academy-Watercooler'
@@ -186,6 +186,64 @@ module.exports = {
 
     /**
      * 
+     * @api {get} /v1/admin/makeadmin Make Admin
+     * @apiDescription Make this user an admin
+     * @apiName makeadmin
+     * @apiGroup Admin
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission owner
+     * 
+     */
+    makeadmin: async (req,res)=>{
+        try
+        {
+            req.checkBody('user').notEmpty();
+
+            try
+            {
+                let result = await req.getValidationResult();
+                result.throw();
+            }
+            catch (e)
+            {
+                return res.badRequest(e.mapped());
+            }
+
+            let user = await User.findOne({id:req.body.user});
+            if (user)
+            {
+                if (!user.admin)
+                    user.admin = [];
+                
+                if (_.includes(user.admin,req.course.domain))
+                    _.pull(user.admin, req.course.domain);
+                else
+                    user.admin.push(req.course.domain);
+                
+                user.save(function(err){
+                    if (err)
+                        return res.status(500).json(err);
+                    
+                    res.json({
+                        msg:'Success'
+                    });
+                });
+            }
+            else
+            {
+                return res.status(404).json({
+                    msg: 'No user with that ID found'
+                });
+            }
+        }
+        catch(e){
+            return res.serverError(e);
+        }
+    },
+
+    /**
+     * 
      * @api {get} /v1/admin/classes Classes
      * @apiDescription List all classes for this course, if a teacher is logged in, only show ones they taught.
      * @apiName classes
@@ -193,14 +251,10 @@ module.exports = {
      * @apiVersion  1.0.0
      * @apiPermission domainparse
      * @apiPermission admin
-     * @apiPermission teacher 
-     * 
-     * @apiParam  {String} class Class slug
-     * @apiParam  {String} content Content slug
+     * @apiPermission teacher
      * 
      */
     classes: async (req,res)=>{
-        //TODO:
 
         //should mainly list from the spec:
         let lang = await LangService.lang(req);
@@ -224,7 +278,6 @@ module.exports = {
         await Promise.all(promises);
 
         if (req.session.passport.user.admin)
-        // if (false)
         {
             // console.log('as admin');
             //if they are an admin, list all classes (and the primary release date for each one)
@@ -234,7 +287,7 @@ module.exports = {
                     slug: s.slug,
                     content: _.map(
                         _.filter(s.content, (f)=>{
-                            return f.content_type == 'class';
+                            return f.content_type == 'class' || f.content_type == 'webinar';
                         }),
                         (c)=>{
                             return {
@@ -247,12 +300,10 @@ module.exports = {
             });
 
             //TODO: for each of those -- need to find which classrooms actually ran?
-
             return res.json(mapped);
         }
         else
         {
-            // console.log('as teacher');     
             //if they are a teacher, then list only their classes (i.e. ones they have codes for, and the dates of the hub releases relevent to their hub)
             let codes = await Classroom.find({
                 teacher: req.session.passport.user.id,
@@ -302,8 +353,7 @@ module.exports = {
             //list users from this class (or course)
             let users = [];
 
-            if (req.session.passport.user.admin)
-            // if (false)
+            if (_.includes(req.session.passport.user.admin, req.course.domain))
             {
                 req.checkParams('class').isEmpty();
                 req.checkParams('content').isEmpty();
@@ -349,8 +399,9 @@ module.exports = {
             }
             else
             {
+
+                //is a techer:
                 req.checkParams('class').notEmpty();
-                req.checkParams('content').notEmpty();
 
                 try
                 {
@@ -362,16 +413,15 @@ module.exports = {
                     return res.badRequest(e.mapped());
                 }
 
-                let isTeacher = await AuthCheck.isTeacher(req, req.course.domain, req.param('class'),req.param('content'));
-                if (!isTeacher)
-                    return res.forbidden();
+                // let isTeacher = await AuthCheck.isTeacher(req, req.course.domain, req.param('class'),req.param('content'));
+                // if (!isTeacher)
+                    // return res.forbidden();
                 
 
                 let criteria = {
                     course: req.course.domain,
                     teacher: req.session.passport.user.id,
-                    class: req.param('class'),
-                    content: req.param('content')
+                    class: req.param('class')
                 };
                 
                 //teacher:

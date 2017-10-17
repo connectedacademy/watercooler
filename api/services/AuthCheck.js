@@ -18,7 +18,7 @@ module.exports = {
     isAdmin: async function (req, admin = false) {
 
         if (req.session.passport) {
-            let adminuser = admin || req.session.passport.user.admin;
+            let adminuser = admin || req.session.passport.user.owner;
             // console.log(adminuser);
             if (adminuser) {
                 let admin = await User.findOne({id:adminuser.id});

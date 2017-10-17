@@ -96,7 +96,9 @@ module.exports = {
     },
 
     twitter_callback: (req,res,next)=>{
-        sails.passport.authenticate('twitter',{successRedirect: req.session.redirecturi + '/#/registration', failureRedirect: req.session.redirecturi + '/#/loginfail' })(req,res,next);
+        let success = (req.session.redirecturi + '/#/registration').replace('//#','/#');
+        let fail = (req.session.redirecturi + '/#/loginfail').replace('//#','/#');
+        sails.passport.authenticate('twitter',{successRedirect: success, failureRedirect: fail})(req,res,next);
     },
 
     /**
@@ -149,7 +151,9 @@ module.exports = {
     },
 
     github_callback: (req,res,next)=>{
-        sails.passport.authenticate('github',{successRedirect: req.session.redirecturi + '/#/admin', failureRedirect: req.session.redirecturi + '/#/loginfail' })(req,res,next);
+        let success = (req.session.redirecturi + '/#/admin').replace('//#','/#');
+        let fail = (req.session.redirecturi + '/#/loginfail').replace('//#','/#');
+        sails.passport.authenticate('github',{successRedirect: success, failureRedirect: fail })(req,res,next);
     },
 
     /**
@@ -166,7 +170,7 @@ module.exports = {
         try
         {
             var user = await User.findOne(req.session.passport.user.id)
-            .populate('admin')
+            .populate('owner')
             .populate('registrations',{
                 course: req.course.domain
             });
@@ -174,11 +178,25 @@ module.exports = {
             user.registration = _.first(user.registrations);
             user = _.omit(user,'registrations');
 
+            let roles = ['user'];
+            if (_.includes(user.admin,req.course.domain))
+                roles.push('admin');
+            else
+            {
+                if (req.session.passport.allowedrepos && _.includes(req.session.passport.allowedrepos,req.course.repo))
+                {
+                    roles.push('admin');
+                    roles.push('owner');
+                }
+            }
+
             if (req.isSocket)
             {
                 sails.log.verbose('Subscribed to WS for user',req.session.passport.user.id);
                 User.subscribe(req,req.session.passport.user.id);
             }
+            
+            user.roles = roles;
 
             return res.json({
                 user: user

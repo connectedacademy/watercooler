@@ -126,6 +126,8 @@ module.exports = {
             let startdate = moment(data.starts);
             let enddate = moment(data.ends);
             let NOW = moment(req.query.time) || moment();
+            if (req.session.passport && req.session.passport.user && _.includes(req.session.passport.user.admin,req.course.domain))
+                NOW = moment(data.enddate);
 
             if (NOW.isBetween(startdate, enddate))
                 data.classrunning = true;

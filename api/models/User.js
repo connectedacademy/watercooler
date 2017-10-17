@@ -22,7 +22,7 @@ module.exports = {
       via:'user',
       dominant:true
     },
-    admin:
+    owner:
     {
       model: 'User'
     },

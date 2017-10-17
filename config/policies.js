@@ -13,7 +13,6 @@ module.exports.policies = {
         'twitter_callback':[true],
         'github_callback':[true],
         'dashboard':['isUser',true],
-        'admindashboard':['verifyDomain','isAdmin',true],
         'fail':[true],
         'logout':['cors'],
         'admin_logout':[true],
@@ -33,6 +32,8 @@ module.exports.policies = {
         'classes':['verifyDomain','cors','isRegistered'],
         'users':['verifyDomain','cors'],
         'content':['verifyDomain','cors'],
+        'credentials':['verifyDomain','cors','isOwner'],
+        'makeadmin':['verifyDomain','cors','isOwner'],
         'clearcache':true
     },
     'messages':
