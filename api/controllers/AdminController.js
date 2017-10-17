@@ -260,6 +260,25 @@ module.exports = {
         let lang = await LangService.lang(req);
         var data = await CacheEngine.getSpec(req,res);
         let promises = [];
+
+        //get teacher codes (if you happen to be a teacher):
+        let codes = null;
+        if (_.includes(req.session.passport.user.admin, req.course.domain))
+        {
+            //admin, so get all classrooms
+            codes = await Classroom.find({
+                course: req.course.domain
+            }).populate('teacher');
+        }
+        else
+        {
+            //not admin, only get the ones I am intested in
+            codes = await Classroom.find({
+                course: req.course.domain,
+                teacher: req.session.passport.user.id
+            });
+        }
+
         //course info:
         promises.push(CacheEngine.applyFrontMatter(data, req.course.url + '/course/content/' + lang + '/info.md'));
         //for each file in the spec, get the markdown and parse it:
@@ -274,65 +293,28 @@ module.exports = {
                     promises.push(CacheEngine.applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url, req.course.domain, null, klass.slug, content.slug));
                 }
             }
+
+            applyClassroom(klass, codes);
         }
+
         await Promise.all(promises);
 
-        if (req.session.passport.user.admin)
-        {
-            // console.log('as admin');
-            //if they are an admin, list all classes (and the primary release date for each one)
-            let mapped = _.map(data.classes,(s)=>{
-                return {
-                    title: s.title,
-                    slug: s.slug,
-                    content: _.map(
-                        _.filter(s.content, (f)=>{
-                            return f.content_type == 'class' || f.content_type == 'webinar';
-                        }),
-                        (c)=>{
-                            return {
-                                slug: c.slug,
-                                title: c.title,
-                                schedule: _.find(c.schedule, {leadhub:true})
-                            }
-                    })
-                };
-            });
+        let mapped = _.map(data.classes,(s)=>{
+            return {
+                title: s.title,
+                slug: s.slug,
+                classes: s.classes,
+                students: s.students,
+                codes: s.codes
+            };
+        });
 
-            //TODO: for each of those -- need to find which classrooms actually ran?
-            return res.json(mapped);
-        }
-        else
-        {
-            //if they are a teacher, then list only their classes (i.e. ones they have codes for, and the dates of the hub releases relevent to their hub)
-            let codes = await Classroom.find({
-                teacher: req.session.passport.user.id,
-                course: req.course.domain
-            });
-
-            let mapped = _.map(codes,(code)=>{
-                let klass = _.find(data.classes,{slug:code.class});
-                let content = _.find(klass.content,{slug:code.content});
-                return {
-                    title: klass.title,
-                    slug: klass.slug,
-                    content:[
-                        {
-                            slug: content.slug,
-                            title: content.title,
-                            schedule: _.find(content.schedule, {hub_id:req.session.passport.user.registration.hub_id})
-                        }
-                    ]
-                }
-            });
-
-            return res.json(mapped);
-        }
+        return res.json(mapped);
     },
 
     /**
      * 
-     * @api {get} /v1/admin/users/:class?/:content? Users
+     * @api {get} /v1/admin/users/:class? Users
      * @apiDescription List all users registered for this course
      * @apiName users
      * @apiGroup Admin
@@ -353,10 +335,10 @@ module.exports = {
             //list users from this class (or course)
             let users = [];
 
+            //is admin
             if (_.includes(req.session.passport.user.admin, req.course.domain))
             {
                 req.checkParams('class').isEmpty();
-                req.checkParams('content').isEmpty();
 
                 try
                 {
@@ -368,13 +350,7 @@ module.exports = {
                     return res.badRequest(e.mapped());
                 }
 
-                let isAdmin = await AuthCheck.isAdmin(req);
-
-                if (!isAdmin)
-                    return res.forbidden();
-
                 //admin user list
-
                 let registrations = await Registration.find({ course: req.course.domain });
                 users = await User.find({id:_.map(registrations,'user')}).populate('submissions',{
                     where:{
@@ -399,7 +375,6 @@ module.exports = {
             }
             else
             {
-
                 //is a techer:
                 req.checkParams('class').notEmpty();
 
@@ -456,4 +431,17 @@ let applyMessages = async function(req, course, filteruser)
 {
     let messages = await GossipmillApi.listForUser(course, req.session.passport.user.id, false, filteruser.id);
     filteruser.messages = _.size(messages);
+}
+
+let applyClassroom = async function(klass, codes)
+{
+    let codesforclass = _.filter(codes,{class:klass.slug});
+    let totalstudents = _.sum(_.map(codesforclass,function(r){
+        return _.size(r.students)
+    }));
+    klass.classes = _.size(codesforclass);
+    klass.students = totalstudents;
+    klass.codes = _.map(codes,function(c){
+        return _.pick(c,['teacher','code']);
+    });
 }

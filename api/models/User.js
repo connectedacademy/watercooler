@@ -31,6 +31,7 @@ module.exports = {
       collection: 'Submission',
       via: 'user'
     },
+    admin:'array',
 
     toJSON :function()
     {

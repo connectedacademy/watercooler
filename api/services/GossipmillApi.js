@@ -416,7 +416,7 @@ module.exports = {
         return response;
     },
 
-    subscribeToClass: async (req, course, klass, user, language, contentid, classroom) =>{
+    subscribeToClass: async (req, course, klass, user, language, classroom) =>{
         
         let klassroom = classroom;
 
@@ -428,10 +428,6 @@ module.exports = {
             {
                 name: 'class',
                 query: klass
-            },
-            {
-                name: 'content',
-                query: contentid
             }
         ];
 
@@ -474,8 +470,7 @@ module.exports = {
 
         return {
             scope:{
-                class:klass,
-                content: contentid
+                class:klass
             },
             msg:'Subscribed'
         };

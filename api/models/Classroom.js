@@ -11,7 +11,6 @@ module.exports = {
         },
         class:'string',
         course:'string',
-        content:'string',
         teacher:
         {
             model: 'User',

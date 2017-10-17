@@ -366,6 +366,9 @@ module.exports = {
 
             let user = await User.findOne(req.session.passport.user.id).populate('registrations');
 
+            console.log(req.session.passport.user.id);
+            console.log(user);
+
             //check there is not an existing registration for this course
             if (!_.find(user.registrations,{course:req.course.domain}))
             {

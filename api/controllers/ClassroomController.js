@@ -4,7 +4,7 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/classroom/mycode/:class/:content My Teacher Code
+     * @api {get} /v1/classroom/mycode/:class My Teacher Code
      * @apiDescription Get the code to give to students if I am a teacher
      * @apiName mycode
      * @apiGroup Classroom
@@ -13,14 +13,12 @@ module.exports = {
      * @apiPermission user 
      * 
      * @apiParam  {String} class Class slug
-     * @apiParam  {String} content Content slug
      * 
      */
     mycode: async (req,res) => {
 
         let course = req.course.domain;
         let klass = req.param('class');
-        let content = req.param('content');
 
         let lang = await LangService.lang(req);
         let hash = await Classroom.getcode();
@@ -28,13 +26,11 @@ module.exports = {
         Classroom.findOrCreate({
             course: course,
             class: klass,
-            content: content,
             teacher: req.session.passport.user.id
         },
         {
             course: course,
             class: klass,
-            content: content,
             teacher: req.session.passport.user.id,
             code: hash
         }).exec((err,result)=>{
@@ -46,7 +42,7 @@ module.exports = {
             {
                 Classroom.subscribe(req, result.id);
                 //req, course, klass, user, language,contentid, classroom
-                GossipmillApi.subscribeToClass(req, course, klass, req.session.passport.user, lang, content, result.code);
+                GossipmillApi.subscribeToClass(req, course, klass, req.session.passport.user, lang, result.code);
             }
 
             return res.json({
@@ -59,7 +55,7 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/classroom/getclass/:class/:content My Classroom
+     * @api {get} /v1/classroom/getclass/:class My Classroom
      * @apiDescription Get status on ths current user in a classroom
      * @apiName getclass
      * @apiGroup Classroom
@@ -75,13 +71,11 @@ module.exports = {
         {
             let course = req.course.domain;
             let klass = req.param('class');
-            let content = req.param('content');
             let mystudent = await Classroom.findOne(
                 {
                     students:[req.session.passport.user.id],
                     course: course,
-                    class: klass,
-                    content: content
+                    class: klass
                 }
             ).populate('teacher');
 
@@ -195,7 +189,7 @@ module.exports = {
             });
             // console.log(klass);
             let content = _.find(klass.content,{
-                slug: classroom.content
+                content_type: 'liveclass'
             });
             // console.log(content);
 
@@ -207,7 +201,7 @@ module.exports = {
                 title: 'Connected Academy - ' + metadata.title,
                 description: 'Live feed of CA classroom',
                 feed_url: 'https://api.connectedacademy.io/v1/classroom/rss/' + code,
-                site_url: 'https://'+classroom.course + '/#/course/' + klass.slug + '/' + content.slug,
+                site_url: 'https://'+classroom.course + '/#/course/' + klass.slug,
                 language: lang,
                 pubDate: new Date().toISOString(),
                 ttl: '1',

@@ -123,8 +123,11 @@ module.exports.bootstrap = function (cb) {
 
               me_user.owner = user.id + '';
 
+              
+
               //save my account with admin appended
               me_user.save(function (err) {
+                req.session.passport.user.owner = user;
                 return cb(err, req.session.passport.user);
               });
             }
