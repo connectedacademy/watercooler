@@ -126,11 +126,14 @@ module.exports = {
             let startdate = moment(data.starts);
             let enddate = moment(data.ends);
             let NOW = moment(req.query.time) || moment();
+
             if (req.session.passport && req.session.passport.user && _.includes(req.session.passport.user.admin,req.course.domain))
-                NOW = moment(data.enddate);
+                NOW = enddate.clone().add(1,'day');
 
             if (NOW.isBetween(startdate, enddate))
                 data.classrunning = true;
+            else
+                data.classrunning = false;
 
             // has been released or is current, or will be released
             let currentWeek = null;
@@ -277,6 +280,9 @@ module.exports = {
                 //current time / faketime
                 let NOW = moment(req.query.time) || moment();
 
+                if (req.session.passport && req.session.passport.user && _.includes(req.session.passport.user.admin,req.course.domain))
+                    NOW = moment(data.ends).add(1,'day');
+
                 let myhub = null;
                 let me = null;
 
@@ -389,7 +395,7 @@ module.exports = {
                 });
 
                 return res.json({
-                    user: (me)?me.user:null,
+                    user: (me)?_.omit(me.user,'account_credentials'):null,
                     spec:klass,
                 });
             }
@@ -451,6 +457,8 @@ module.exports = {
 
                 //current time / faketime
                 let NOW = moment(req.query.time) || moment();
+                if (req.session.passport && req.session.passport.user && _.includes(req.session.passport.user.admin,req.course.domain))
+                    NOW = moment(data.ends).add(1,'day');
 
                 let myhub = null;
                 let me = null;
