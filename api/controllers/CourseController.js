@@ -132,8 +132,6 @@ module.exports = {
 
             if (NOW.isBetween(startdate, enddate))
                 data.classrunning = true;
-            else
-                data.classrunning = false;
 
             // has been released or is current, or will be released
             let currentWeek = null;
