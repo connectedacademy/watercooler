@@ -244,6 +244,23 @@ module.exports = {
 
     /**
      * 
+     * @api {get} /v1/admin/messages Messages
+     * @apiDescription List all messages for this course, if a teacher is logged in, only show ones from their classes.
+     * @apiName admin_messages
+     * @apiGroup Admin
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission admin
+     * @apiPermission teacher
+     * 
+     */
+    messages: async (req,res)=>{
+
+
+    },
+
+    /**
+     * 
      * @api {get} /v1/admin/classes Classes
      * @apiDescription List all classes for this course, if a teacher is logged in, only show ones they taught.
      * @apiName classes
@@ -429,7 +446,7 @@ let applyMessagesForClass = async function(req, course, klass, contentid, filter
 
 let applyMessages = async function(req, course, filteruser)
 {
-    let messages = await GossipmillApi.listForUser(course, req.session.passport.user.id, false, filteruser.id);
+    let messages = await GossipmillApi.listForUser(course, req.session.passport.user, false, filteruser.id);
     filteruser.messages = _.size(messages);
 }
 
@@ -442,6 +459,10 @@ let applyClassroom = async function(klass, codes)
     klass.classes = _.size(codesforclass);
     klass.students = totalstudents;
     klass.codes = _.map(codes,function(c){
-        return _.pick(c,['teacher','code']);
-    });
+        return {
+            teacher:c.teacher,
+            code:c.code,
+            students: _.size(c.students)
+        }}
+    );
 }

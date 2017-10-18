@@ -21,9 +21,12 @@ module.exports = {
      */
     subscribe: async (req, res) => {
         let whitelist = req.param('whitelist');
+        let justmine = req.param('justmine');
+        if (justmine && req.session.passport && req.session.passport.user)
+            justmine = req.session.passport.user.id;
         let lang = await LangService.lang(req);
         try {
-            let success = await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), whitelist);
+            let success = await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), whitelist, justmine);
             return res.json(success);
         }
         catch (e) {
@@ -132,6 +135,7 @@ module.exports = {
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
             req.checkParams('groupby').notEmpty();
+            req.checkQuery('justmine').optional().isBoolean();
 
             try {
                 let result = await req.getValidationResult();
@@ -144,13 +148,18 @@ module.exports = {
 
         let lang = await LangService.lang(req);
         try {
-            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'));
+            let justmine = req.param('justmine');
+            if (justmine && req.session.passport && req.session.passport.user)
+                justmine = req.session.passport.user.id;
+            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'), justmine);
 
             return res.json({
                 scope: {
                     class: req.param('class'),
                     content: req.param('content'),
-                    groupby: req.param('groupby')
+                    groupby: req.param('groupby'),
+                    whitelist: req.param('whitelist'),
+                    justmine: req.param('justmine')
                 },
                 data: data
             });
@@ -179,7 +188,7 @@ module.exports = {
         {
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
-
+            req.checkQuery('justmine').optional().notEmpty();
 
             try {
                 let result = await req.getValidationResult();
@@ -191,8 +200,12 @@ module.exports = {
 
         }
         // let uri = decodeURI(req.param('class'));
+        let justmine = req.param('justmine');
+        if (justmine && req.session.passport && req.session.passport.user)
+            justmine = req.session.passport.user.id;
+
         try {
-            let data = await GossipmillApi.totals(req.course.domain, req.param('class'), req.param('content'));
+            let data = await GossipmillApi.totals(req.course.domain, req.param('class'), req.param('content'), justmine);
             if (_.isEmpty(data))
             {
                 data = {};
@@ -231,6 +244,7 @@ module.exports = {
             req.checkParams('startsegment').notEmpty().isInt();
             req.checkParams('endsegment').notEmpty().isInt();
             req.checkQuery('whitelist').isBoolean();
+            req.checkQuery('ismine').optional().isBoolean();
 
             if (parseInt(req.param('startsegment')) > parseInt(req.param('endsegment')))
                 return res.badRequest({
@@ -248,6 +262,10 @@ module.exports = {
 
         try {
             let lang = await LangService.lang(req);
+
+            let justmine = req.param('justmine');
+            if (justmine && req.session.passport && req.session.passport.user)
+                justmine = req.session.passport.user.id;
             
             let course = req.course.domain;
             let user = {};
@@ -263,7 +281,7 @@ module.exports = {
                 };
             }
 
-            let dat = await GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), req.param('whitelist'));
+            let dat = await GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), req.param('whitelist'), justmine);
             let data = dat.data;
 
 
@@ -274,26 +292,32 @@ module.exports = {
 
                 //get class spec
                 let klass = _.find(spec.classes,{slug:req.param('class')});
-                let content = _.find(klass.content,{slug:req.param('content')});
-                //get file:
-                let file = await CacheEngine.getFrontmatter(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url);
-                if (file.prompts)
+                if (klass)
                 {
-                    //load prompts file:
-                    let srt = await CacheEngine.getSubs(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + file.prompts);
+                    let content = _.find(klass.content,{slug:req.param('content')});
+                    //get file:
+                    let file = await CacheEngine.getFrontmatter(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url);
+                    if (file.prompts)
+                    {
+                        //load prompts file:
+                        let srt = await CacheEngine.getSubs(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + file.prompts);
 
-                    let startseg = parseInt(req.param('startsegment'));
-                    let endseg = parseInt(req.param('endsegment'));
-                    let sub = _.find(srt,function(s){
-                        return Math.round(s.start) >= startseg && Math.round(s.start) <= endseg;
-                    });
-                    if (sub)
-                        data.message = {
-                            text: sub.text,
-                            suggestion: true
-                        }
+                        let startseg = parseInt(req.param('startsegment'));
+                        let endseg = parseInt(req.param('endsegment'));
+                        let sub = _.find(srt,function(s){
+                            return Math.round(s.start) >= startseg && Math.round(s.start) <= endseg;
+                        });
+                        if (sub)
+                            data.message = {
+                                text: sub.text,
+                                suggestion: true
+                            }
+                    }
                 }
-                // console.log(sub);
+                else
+                {
+                    sails.log.error('No class found', 'messsages/summary',req.param('class'));
+                }
             }
 
             return res.json({
@@ -301,7 +325,9 @@ module.exports = {
                     class: req.param('class'),
                     content: req.param('content'),
                     startsegment: req.param('startsegment'),
-                    endsegment: req.param('endsegment')
+                    endsegment: req.param('endsegment'),
+                    whitelist: req.param('whitelist'),
+                    justmine: req.param('justmine')
                 },
                 data: data
             });
@@ -339,6 +365,7 @@ module.exports = {
             req.checkParams('endsegment').notEmpty().isInt();
             req.checkParams('groupsize').notEmpty().isInt();            
             req.checkQuery('whitelist').isBoolean();
+            req.checkQuery('justmine').optional().isBoolean();
 
             if (parseInt(req.param('startsegment')) > parseInt(req.param('endsegment')))
                 return res.badRequest({
@@ -372,11 +399,14 @@ module.exports = {
             let start = parseInt(req.param('startsegment'));
             let end = parseInt(req.param('endsegment'));
             let group = parseInt(req.param('groupsize'));
+            let justmine = req.param('justmine');
+            if (justmine && req.session.passport && req.session.passport.user)
+                justmine = req.session.passport.user.id;
 
             let promises = [];
             for (let i=start;i<end;i=i+group)
             {
-                promises.push(GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), i, (i+group)-1, req.param('whitelist')));
+                promises.push(GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), i, (i+group)-1, req.param('whitelist'), justmine));
             }
 
             let results = await Promise.all(promises);
@@ -426,7 +456,9 @@ module.exports = {
                     content: req.param('content'),
                     startsegment: req.param('startsegment'),
                     endsegment: req.param('endsegment'),
-                    groupsize: req.param('groupsize')
+                    groupsize: req.param('groupsize'),
+                    whitelist: req.param('whitelist'),
+                    justmine: req.param('justmine')
                 },
                 data: results_all
             });
@@ -464,6 +496,7 @@ module.exports = {
             req.checkParams('endsegment').notEmpty().isInt();
             req.checkQuery('whitelist').isBoolean();
             req.checkQuery('depth').optional().isInt();   
+            req.checkQuery('justmine').optional().isBoolean();
 
             try {
                 let result = await req.getValidationResult();
@@ -476,6 +509,10 @@ module.exports = {
 
         try {
             let whitelist = req.param('whitelist');
+            let justmine = req.param('justmine');
+            if (justmine && req.session.passport && req.session.passport.user)
+                justmine = req.session.passport.user.id;
+
             let depth = req.param('depth');
             let lang = await LangService.lang(req);
             let course = req.course.domain;
@@ -491,14 +528,16 @@ module.exports = {
                 };
             }
 
-            let data = await GossipmillApi.list(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), depth, whitelist);
+            let data = await GossipmillApi.list(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), depth, whitelist, justmine);
             return res.json({
                 scope: {
                     class: req.param('class'),
                     content: req.param('content'),
                     startsegment: req.param('startsegment'),
                     endsegment: req.param('endsegment'),
-                    length: data.scope.length
+                    length: data.scope.length,
+                    whitelist: req.param('whitelist'),
+                    justmine: req.param('justmine')
                 },
                 data: data.data
             });
@@ -530,7 +569,8 @@ module.exports = {
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
             req.checkQuery('whitelist').isBoolean();
-            req.checkQuery('limit').optional().isInt();   
+            req.checkQuery('limit').optional().isInt();
+            req.checkQuery('justmine').optional().isBoolean();
 
             try {
                 let result = await req.getValidationResult();
@@ -543,6 +583,9 @@ module.exports = {
 
         try {
             let whitelist = req.param('whitelist');
+            let justmine = req.param('justmine');
+            if (justmine && req.session.passport && req.session.passport.user)
+                justmine = req.session.passport.user.id;
             let depth = req.param('limit');
             let lang = await LangService.lang(req);
             let course = req.course.domain;
@@ -561,19 +604,21 @@ module.exports = {
             if (req.isSocket)
             {
                 try {
-                    await GossipmillApi.subscribecontent(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), whitelist);
+                    await GossipmillApi.subscribecontent(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), whitelist, justmine);
                 }
                 catch (e) {
                     return res.serverError(e);
                 }
             }
 
-            let data = await GossipmillApi.listcontent(course, req.param('class'), user, lang, req.param('content'), depth, whitelist);
+            let data = await GossipmillApi.listcontent(course, req.param('class'), user, lang, req.param('content'), depth, whitelist, justmine);
             return res.json({
                 scope: {
                     class: req.param('class'),
                     content: req.param('content'),
-                    length: data.scope.length
+                    length: data.scope.length,
+                    whitelist: req.param('whitelist'),
+                    justmine: req.param('justmine')
                 },
                 data: data.data
             });

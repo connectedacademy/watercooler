@@ -35,32 +35,42 @@ let sockethandlers = {};
 
 module.exports = {
 
-    visualisation: async (course, klass, content, language, whitelist, groupby) => {
+    visualisation: async (course, klass, content, language, whitelist, groupby, justmine) => {
+        let query = {
+            lang: language,
+            whitelist: whitelist,
+            group_by: {
+                name: 'segment'
+            },
+            filter_by: [
+                {
+                    name: 'course',
+                    query: course
+                },
+                {
+                    name: 'class',
+                    query: klass
+                },
+                {
+                    name: 'content',
+                    query: content
+                }
+            ]
+        };
+
+        if (justmine)
+        {
+            query.filter_by.push({
+                name:'user',
+                query: justmine
+            });
+        }
+
         let response = await request({
             url: baseURI + 'messages/visualisation',
             method: 'POST',
             json: true,
-            body: {
-                lang: language,
-                whitelist: whitelist,
-                group_by: {
-                    name: 'segment'
-                },
-                filter_by: [
-                    {
-                        name: 'course',
-                        query: course
-                    },
-                    {
-                        name: 'class',
-                        query: klass
-                    },
-                    {
-                        name: 'content',
-                        query: content
-                    }
-                ]
-            },
+            body: query,
             qs: {
                 psk: process.env.GOSSIPMILL_PSK
             }
@@ -96,26 +106,36 @@ module.exports = {
         return nordered;
     },
 
-    totals: async (course, klass, content) => {
+    totals: async (course, klass, content, justmine) => {
+        let query = {
+            group_by: {
+                name: 'tag'
+            },
+            filter_by: [
+                {
+                    name: 'course',
+                    query: course
+                },
+                {
+                    name: 'tag',
+                    query: klass + '/' + content
+                }
+            ]
+        };
+
+        if (justmine)
+        {
+            query.filter_by.push({
+                name:'user',
+                query: justmine
+            });
+        }
+
         let response = await request({
             url: baseURI + 'messages/totals',
             method: 'POST',
             json: true,
-            body: {
-                group_by: {
-                    name: 'tag'
-                },
-                filter_by: [
-                    {
-                        name: 'course',
-                        query: course
-                    },
-                    {
-                        name: 'tag',
-                        query: klass + '/' + content
-                    }
-                ]
-            },
+            body: query,
             qs: {
                 psk: process.env.GOSSIPMILL_PSK
             }
@@ -173,7 +193,7 @@ module.exports = {
         return response;
     },
 
-    summary: async (course, klass, user, language, contentid, startsegment, endsegment, whitelist) => {
+    summary: async (course, klass, user, language, contentid, startsegment, endsegment, whitelist, justmine) => {
         let query = [
             {
                 name: 'course',
@@ -188,6 +208,14 @@ module.exports = {
                 query: contentid
             }
         ];
+
+        if (justmine)
+        {
+            query.push({
+                name: 'user',
+                query: justmine
+            })
+        }
 
         for (let i = parseInt(startsegment); i <= parseInt(endsegment); i++) {
             query.push({
@@ -239,8 +267,6 @@ module.exports = {
             }
         ];
 
-        // sails.log.verbose('Requesting list');
-
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
             method: 'POST',
@@ -249,7 +275,7 @@ module.exports = {
                 filter_by: query,
                 whitelist: whitelist,
                 depth: 100,
-                lang: 'en'
+                lang: '*'
             },
             qs: {
                 psk: process.env.GOSSIPMILL_PSK
@@ -280,8 +306,6 @@ module.exports = {
             }
         ];
 
-        // sails.log.verbose('Requesting list');
-
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
             method: 'POST',
@@ -290,15 +314,12 @@ module.exports = {
                 filter_by: query,
                 whitelist: whitelist,
                 depth: 100,
-                lang: 'en'
+                lang: '*'
             },
             qs: {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
-
-
-        // response.data = _.groupBy(response.data, 'segment');
 
         return response;
     },
@@ -316,8 +337,6 @@ module.exports = {
             }
         ];
 
-        // sails.log.verbose('Requesting list');
-
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
             method: 'POST',
@@ -326,20 +345,17 @@ module.exports = {
                 filter_by: query,
                 whitelist: whitelist,
                 depth: 100,
-                lang: 'en'
+                lang: '*'
             },
             qs: {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
 
-
-        // response.data = _.groupBy(response.data, 'segment');
-
         return response;
     },
 
-    list: async (course, klass, user, language, contentid, startsegment, endsegment, depth, whitelist) => {
+    list: async (course, klass, user, language, contentid, startsegment, endsegment, depth, whitelist, justmine) => {
         let query = [
             {
                 name: 'course',
@@ -355,14 +371,20 @@ module.exports = {
             }
         ];
 
+        if (justmine)
+        {
+            query.push({
+                name: 'user',
+                query: justmine
+            })
+        }
+
         for (let i = parseInt(startsegment); i <= parseInt(endsegment); i++) {
             query.push({
                 name: 'segment',
                 query: i
             });
         }
-
-        // sails.log.verbose('Requesting list');
 
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
@@ -379,12 +401,10 @@ module.exports = {
             }
         });
 
-        // response.data = _.groupBy(response.data, 'segment');
-
         return response;
     },
 
-    listcontent: async (course, klass, user, language, contentid, depth, whitelist) => {
+    listcontent: async (course, klass, user, language, contentid, depth, whitelist, justmine) => {
         let query = [
             {
                 name: 'course',
@@ -396,7 +416,13 @@ module.exports = {
             }
         ];
 
-        // sails.log.verbose('Requesting Content list');
+        if (justmine)
+        {
+            query.push({
+                name: 'user',
+                query: justmine
+            })
+        }
 
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
@@ -476,7 +502,7 @@ module.exports = {
         };
     },
 
-    subscribecontent: async (req, course, klass, user, language, contentid, whitelist) => {
+    subscribecontent: async (req, course, klass, user, language, contentid, whitelist, justmine) => {
 
         let query = [
             {
@@ -488,6 +514,14 @@ module.exports = {
                 query: klass + '/' + contentid
             }
         ];
+
+        if (justmine)
+        {
+            query.push({
+                name: 'user',
+                query: justmine
+            })
+        }
 
         io.socket.post('/messages/subscribe/' + user.service + '/' + user.account + '?psk=' + process.env.GOSSIPMILL_PSK, {
             lang: language,
@@ -524,7 +558,7 @@ module.exports = {
         };
     },
 
-    subscribe: async (req, course, klass, user, language, contentid, startsegment, endsegment, whitelist) => {
+    subscribe: async (req, course, klass, user, language, contentid, startsegment, endsegment, whitelist, justmine) => {
 
         let query = [
             {
@@ -540,6 +574,14 @@ module.exports = {
                 query: contentid
             }
         ];
+
+        if (justmine)
+        {
+            query.push({
+                name: 'user',
+                query: justmine
+            })
+        }
 
         for (let i = parseInt(startsegment); i <= parseInt(endsegment); i++) {
             query.push({
