@@ -1,6 +1,59 @@
 [
   {
     "type": "get",
+    "url": "/v1/admin/messages/:class?/:user?",
+    "title": "Messages",
+    "description": "<p>List all messages for this course, if a teacher is logged in, only show ones from their classes.</p>",
+    "name": "admin_messages",
+    "group": "Admin",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "admin",
+        "title": "Authenticated as Admin",
+        "description": ""
+      },
+      {
+        "name": "teacher",
+        "title": "Is a teacher (generated a code)",
+        "description": ""
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>(optional) Class slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>(optional) User ID</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./api/controllers/AdminController.js",
+    "groupTitle": "Admin",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/admin/messages/:class?/:user?"
+      }
+    ]
+  },
+  {
+    "type": "get",
     "url": "/v1/admin/login",
     "title": "Login",
     "description": "<p>Login</p>",
@@ -56,26 +109,6 @@
         "description": ""
       }
     ],
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "class",
-            "description": "<p>Class slug</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "content",
-            "description": "<p>Content slug</p>"
-          }
-        ]
-      }
-    },
     "filename": "./api/controllers/AdminController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
@@ -210,7 +243,35 @@
   },
   {
     "type": "get",
-    "url": "/v1/admin/users/:class?/:content?",
+    "url": "/v1/admin/makeadmin",
+    "title": "Make Admin",
+    "description": "<p>Make this user an admin</p>",
+    "name": "makeadmin",
+    "group": "Admin",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "owner",
+        "title": "Authenticated as Owner of Course (Github Access)",
+        "description": ""
+      }
+    ],
+    "filename": "./api/controllers/AdminController.js",
+    "groupTitle": "Admin",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/admin/makeadmin"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/admin/users/:class?",
     "title": "Users",
     "description": "<p>List all users registered for this course</p>",
     "name": "users",
@@ -237,13 +298,6 @@
             "optional": false,
             "field": "class",
             "description": "<p>Class slug</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "content",
-            "description": "<p>Content slug</p>"
           }
         ]
       }
@@ -252,7 +306,7 @@
     "groupTitle": "Admin",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/admin/users/:class?/:content?"
+        "url": "https://api.connectedacademy.io/v1/admin/users/:class?"
       }
     ]
   },
@@ -285,6 +339,29 @@
     ]
   },
   {
+    "type": "post",
+    "url": "/v1/analytics/log",
+    "title": "Log",
+    "description": "<p>Log anything from client</p>",
+    "name": "log",
+    "group": "Analytics",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      }
+    ],
+    "filename": "./api/controllers/AnalyticsController.js",
+    "groupTitle": "Analytics",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/analytics/log"
+      }
+    ]
+  },
+  {
     "type": "get",
     "url": "/v1/analytics/question/:class/:content",
     "title": "Get Question",
@@ -300,7 +377,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -348,7 +425,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -465,7 +542,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -520,7 +597,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -596,7 +673,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -610,7 +687,7 @@
   },
   {
     "type": "get",
-    "url": "/v1/classroom/getclass/:class/:content",
+    "url": "/v1/classroom/getclass/:class",
     "title": "My Classroom",
     "description": "<p>Get status on ths current user in a classroom</p>",
     "name": "getclass",
@@ -624,7 +701,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -652,7 +729,7 @@
     "groupTitle": "Classroom",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/classroom/getclass/:class/:content"
+        "url": "https://api.connectedacademy.io/v1/classroom/getclass/:class"
       }
     ]
   },
@@ -672,7 +749,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -699,7 +776,7 @@
   },
   {
     "type": "get",
-    "url": "/v1/classroom/mycode/:class/:content",
+    "url": "/v1/classroom/mycode/:class",
     "title": "My Teacher Code",
     "description": "<p>Get the code to give to students if I am a teacher</p>",
     "name": "mycode",
@@ -713,7 +790,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -726,13 +803,6 @@
             "optional": false,
             "field": "class",
             "description": "<p>Class slug</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "content",
-            "description": "<p>Content slug</p>"
           }
         ]
       }
@@ -741,7 +811,7 @@
     "groupTitle": "Classroom",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/classroom/mycode/:class/:content"
+        "url": "https://api.connectedacademy.io/v1/classroom/mycode/:class"
       }
     ]
   },
@@ -989,7 +1059,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1023,7 +1093,7 @@
   },
   {
     "type": "post",
-    "url": "/v1/discussion/create",
+    "url": "/v1/discussion/create/:submission",
     "title": "New Feedback Message",
     "description": "<p>Create a new message in a discussion</p>",
     "name": "discussioncreate",
@@ -1037,7 +1107,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1065,7 +1135,7 @@
     "groupTitle": "Discussion",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/discussion/create"
+        "url": "https://api.connectedacademy.io/v1/discussion/create/:submission"
       }
     ]
   },
@@ -1085,7 +1155,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1133,7 +1203,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1174,7 +1244,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1215,7 +1285,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1256,7 +1326,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1311,7 +1381,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1396,7 +1466,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1444,7 +1514,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1492,7 +1562,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1568,7 +1638,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1637,7 +1707,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1706,7 +1776,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1782,7 +1852,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],
@@ -1810,7 +1880,7 @@
       },
       {
         "name": "user",
-        "title": "Authenticated as User",
+        "title": "Authenticated as Student on the Course",
         "description": ""
       }
     ],

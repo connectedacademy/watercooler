@@ -42,13 +42,13 @@ module.exports.routes = {
   'POST /v1/auth/register':'AuthController.register',
   'GET /v1/auth/registrationquestions':'AuthController.registrationquestions',
   
-
-  'GET /v1/admin/login':'AuthController.admin',  
+  'GET /v1/admin/login':'AuthController.admin',
   'GET /v1/admin/editor':'AdminController.editor',
   'POST /v1/admin/credentials':'AdminController.credentials',
   'GET /v1/admin/content/:class/:content':'AdminController.content',
   'GET /v1/admin/users/:class?':'AdminController.users',
-  'GET /v1/admin/classes':'AdminController.classes',  
+  'GET /v1/admin/classes':'AdminController.classes',
+  'GET /v1/admin/messages/:class?/:user?':'AdminController.messages',
   'GET /v1/admin/dash':'AdminController.root',
   'POST /v1/admin/makeadmin':'AdminController.makeadmin',
   
@@ -72,6 +72,8 @@ module.exports.routes = {
   'POST /v1/analytics/answer/response':'AnalyticsController.submit',
   'GET /v1/analytics/answers':'AnalyticsController.answers',
   'GET /v1/analytics/question/:class/:content':'AnalyticsController.question',
+
+  'POST /v1/analytics/log':'AnalyticsController.log',
 
 
   // 'GET /v1/auth/testadminlogin':'AuthController.testadminlogin',

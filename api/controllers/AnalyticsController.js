@@ -145,5 +145,36 @@ module.exports = {
         }
 
         return res.json(result);
+    },
+
+    /**
+     * 
+     * @api {post} /v1/analytics/log Log
+     * @apiDescription Log anything from client
+     * @apiName log
+     * @apiGroup Analytics
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * 
+     * 
+     */
+    log: async function(req,res){
+
+        let user = null;
+        if (req.session && req.session.passport && req.session.passport.user)
+           user = req.session.passport.user.id;
+
+        sails.log.verbose('ClientLog',{
+            url: req.method + ' ' + req.path,
+            session: req.session.id,
+            referrer: req.get('referer') || req.get('origin'),
+            user: user,
+            agent: _.pick(req.useragent, _.identity),
+            event: req.body
+        });
+
+        return res.json({
+            msg:'ok'
+        });
     }
 }

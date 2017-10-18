@@ -243,7 +243,7 @@ module.exports = {
         return response;
     },
 
-    listForUsers: async (course, klass, user, contentid, userlist, whitelist) => {
+    listForUsers: async (course, klass, user, userlist, whitelist) => {
         let query = [
             {
                 name: 'course',
@@ -252,10 +252,6 @@ module.exports = {
             {
                 name: 'class',
                 query: klass
-            },
-            {
-                name: 'content',
-                query: contentid
             },
             {
                 name: 'segment',
@@ -285,7 +281,7 @@ module.exports = {
         return response;
     },
 
-    listForUserForClass: async (course, klass, user, contentid, whitelist, filteruser) => {
+    listForUserForClass: async (course, klass, user, whitelist, filteruser) => {
 
         let query = [
             {
@@ -295,10 +291,6 @@ module.exports = {
             {
                 name: 'class',
                 query: klass
-            },
-            {
-                name: 'content',
-                query: contentid
             },
             {
                 name: 'user',

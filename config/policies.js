@@ -29,11 +29,12 @@ module.exports.policies = {
         '*':['verifyDomain','isAdmin','jsononly','cors'],
         'editor':['verifyDomain'],
         'root':['verifyDomain','isAdmin','cors'],
-        'classes':['verifyDomain','cors','isRegistered'],
-        'users':['verifyDomain','cors'],
-        'content':['verifyDomain','cors'],
+        'classes':['verifyDomain','cors','isRegistered','isUser'],
+        'users':['verifyDomain','cors','isUser'],
+        'content':['verifyDomain','cors','isUser'],
         'credentials':['verifyDomain','cors','isOwner'],
         'makeadmin':['verifyDomain','cors','isOwner'],
+        'messages':['verifyDomain','cors','isUser'],        
         'clearcache':true
     },
     'messages':
@@ -56,7 +57,8 @@ module.exports.policies = {
     {
         'submit':['isUser','verifyDomain','jsononly','cors'],
         'question':['isUser','verifyDomain','jsononly','cors'],
-        'answers':['verifyDomain','isAdmin','jsononly','cors']
+        'answers':['verifyDomain','isAdmin','jsononly','cors'],
+        'log':['verifyDomain','cors']
     },
     'discussion':{
         '*':['isUser','verifyDomain','jsononly','cors'],

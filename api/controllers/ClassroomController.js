@@ -231,7 +231,7 @@ module.exports = {
             
             // latest messages / notes
 
-            let messages = await GossipmillApi.listForUsers(classroom.course, klass.slug, classroom.teacher, content.slug, classroom.students, true);
+            let messages = await GossipmillApi.listForUsers(classroom.course, klass.slug, classroom.teacher, classroom.students, true);
 
             // console.log(messages);
 

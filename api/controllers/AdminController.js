@@ -8,7 +8,7 @@ let rediscache = redis.createClient({
 
 module.exports = {
 
-    root: (req,res) => {
+    root: (req, res) => {
         return res.view();
     },
 
@@ -20,11 +20,10 @@ module.exports = {
      * @apiVersion  1.0.0 
      * 
      */
-    clearcache: (req,res)=>
-    {
+    clearcache: (req, res) => {
         //clear redis cache:
-        rediscache.flushdb(function(msg){
-            sails.log.verbose('Redis cached cleared',msg);
+        rediscache.flushdb(function (msg) {
+            sails.log.verbose('Redis cached cleared', msg);
             return res.ok('Cached cleared');
         });
     },
@@ -40,7 +39,7 @@ module.exports = {
      * @apiPermission admin 
      * 
      */
-    editor: (req,res)=>{
+    editor: (req, res) => {
         // console.log(req.course);
         let splits = req.course.repo.split('/');
         // console.log(process.env.EDITOR_URI + splits[3] + '/' + splits[4]);
@@ -58,42 +57,39 @@ module.exports = {
      * @apiPermission admin 
      * 
      */
-    credentials: async (req,res)=>{
+    credentials: async (req, res) => {
         //given these credentials, allow them to edit the twitter credentials of the user linked to the course (as determined by the spec doc):
-        try
-        {
+        try {
             req.checkBody('account').notEmpty();
-            req.checkBody('service').notEmpty();            
+            req.checkBody('service').notEmpty();
             req.checkBody('credentials.key').notEmpty();
             req.checkBody('credentials.secret').notEmpty();
 
-            try
-            {
+            try {
                 let result = await req.getValidationResult();
                 result.throw();
             }
-            catch (e)
-            {
+            catch (e) {
                 return res.badRequest(e.mapped());
             }
 
-            let spec = await CacheEngine.getSpec(req,res);
+            let spec = await CacheEngine.getSpec(req, res);
             let valid_accounts = spec.accounts;
-          
-            if (!_.includes(valid_accounts,req.body.account))
+
+            if (!_.includes(valid_accounts, req.body.account))
                 return res.forbidden('The account provided is not the one associated with this course in the specification.');
-            
+
             let git = req.course.repo.split('/');
             let url = 'https://api.github.com/repos/' + git[3] + '/' + git[4];
 
             let me_user = await User.findOne({
-                id:req.session.passport.user.id
+                id: req.session.passport.user.id
             }).populate('admin');
 
             let perms = await request({
                 uri: url,
                 json: true,
-                qs:{
+                qs: {
                     access_token: me_user.owner.credentials.accessToken
                 },
                 headers: {
@@ -101,27 +97,24 @@ module.exports = {
                 },
             });
 
-            if (perms.permissions.push)
-            {
+            if (perms.permissions.push) {
                 let cred_user = await User.findOne({
                     account: req.body.account,
                     service: req.body.service
                 });
                 cred_user.account_credentials = req.body.credentials;
-                cred_user.save(function(err){
+                cred_user.save(function (err) {
                     if (err)
                         return res.serverError(err);
                     else
                         return res.ok('Updated Credentials');
                 });
             }
-            else
-            {
+            else {
                 return res.forbidden('You do not have editing permissions for this course.')
             }
         }
-        catch (e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     },
@@ -141,45 +134,41 @@ module.exports = {
      * @apiParam  {String} content Content slug
      * 
      */
-    content: async (req,res)=>{
-        try
-        {
+    content: async (req, res) => {
+        try {
             req.checkBody('class').optional().notEmpty();
             req.checkBody('content').optional().notEmpty();
 
-            try
-            {
+            try {
                 let result = await req.getValidationResult();
                 result.throw();
             }
-            catch (e)
-            {
+            catch (e) {
                 return res.badRequest(e.mapped());
             }
 
             //check they are either admin, or a teacher for this content:
             let isAdmin = await AuthCheck.isAdmin(req);
-            let isTeacher = await AuthCheck.isTeacher(req, req.course.domain, req.param('class'),req.param('content'));
+            let isTeacher = await AuthCheck.isTeacher(req, req.course.domain, req.param('class'), req.param('content'));
 
             if (!isAdmin && !isTeacher)
                 return res.forbidden();
 
             let submissions = await Submission.find({
                 course: req.course.domain,
-                class:req.param('class'),
+                class: req.param('class'),
                 content: req.param('content'),
                 cached: true
             }).populate('discussion');
 
-            let mapped = _.map(submissions,(sub)=>{
+            let mapped = _.map(submissions, (sub) => {
                 sub.messages = _.size(sub.discussion);
-                return _.omit(sub,'discussion');
+                return _.omit(sub, 'discussion');
             });
 
             return res.json(mapped);
         }
-        catch (e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     },
@@ -195,56 +184,51 @@ module.exports = {
      * @apiPermission owner
      * 
      */
-    makeadmin: async (req,res)=>{
-        try
-        {
+    makeadmin: async (req, res) => {
+        try {
             req.checkBody('user').notEmpty();
 
-            try
-            {
+            try {
                 let result = await req.getValidationResult();
                 result.throw();
             }
-            catch (e)
-            {
+            catch (e) {
                 return res.badRequest(e.mapped());
             }
 
-            let user = await User.findOne({id:req.body.user});
-            if (user)
-            {
+            let user = await User.findOne({ id: req.body.user });
+            if (user) {
                 if (!user.admin)
                     user.admin = [];
-                
-                if (_.includes(user.admin,req.course.domain))
+
+                if (_.includes(user.admin, req.course.domain))
                     _.pull(user.admin, req.course.domain);
                 else
                     user.admin.push(req.course.domain);
-                
-                user.save(function(err){
+
+                user.save(function (err) {
                     if (err)
                         return res.status(500).json(err);
-                    
+
                     res.json({
-                        msg:'Success'
+                        msg: 'Success'
                     });
                 });
             }
-            else
-            {
+            else {
                 return res.status(404).json({
                     msg: 'No user with that ID found'
                 });
             }
         }
-        catch(e){
+        catch (e) {
             return res.serverError(e);
         }
     },
 
     /**
      * 
-     * @api {get} /v1/admin/messages Messages
+     * @api {get} /v1/admin/messages/:class?/:user? Messages
      * @apiDescription List all messages for this course, if a teacher is logged in, only show ones from their classes.
      * @apiName admin_messages
      * @apiGroup Admin
@@ -253,10 +237,68 @@ module.exports = {
      * @apiPermission admin
      * @apiPermission teacher
      * 
+     * @apiParam {String} class (optional) Class slug
+     * @apiParam {String} user (optional) User ID 
+     * 
+     * 
      */
-    messages: async (req,res)=>{
+    messages: async (req, res) => {
+
+        try {
+
+            let klass = '*';
+            if (req.param('class'))
+                klass = req.param('class');
+
+            let user = '*';
+
+            if (req.param('user'))
+                user = req.param('user');
 
 
+            let messages = [];
+            
+            //if they are super admin, set all params appropriatly:
+            if (_.includes(req.session.passport.user.admin, req.course.domain)) {
+                messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, user)
+            }
+            else
+            {
+                //if they have any teacher codes:
+                let codes = await Classroom.find({
+                    course: req.course.domain,
+                    teacher: req.session.passport.user.id
+                });
+
+                //filter codes by class (if selected)
+                let filteredcodes = _.filter(codes,function(c){
+                    if (klass=='*' || c.class==klass)
+                        return true;
+                });
+                //get the student list for all classes:
+                //teach codes exist for this criteria:
+                if (_.size(filteredcodes))
+                {
+                    let studentlist = _.unique(_.flatten(_.map(filteredcodes,'students')));
+                    // messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, req.session.passport.user.id);
+                    messages = await GossipmillApi.listForUsers(req.course.domain, klass, req.session.passport.user, studentlist, false);
+                }
+                else
+                {
+                    //they are a user - only show them their own messages
+                    messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, req.session.passport.user.id);
+                }
+
+            }
+
+            //TODO: ignore replyto messages?
+
+            return res.json(messages);
+
+        }
+        catch (e) {
+            return res.serverError(e);
+        }
     },
 
     /**
@@ -271,24 +313,22 @@ module.exports = {
      * @apiPermission teacher
      * 
      */
-    classes: async (req,res)=>{
+    classes: async (req, res) => {
 
         //should mainly list from the spec:
         let lang = await LangService.lang(req);
-        var data = await CacheEngine.getSpec(req,res);
+        var data = await CacheEngine.getSpec(req, res);
         let promises = [];
 
         //get teacher codes (if you happen to be a teacher):
         let codes = null;
-        if (_.includes(req.session.passport.user.admin, req.course.domain))
-        {
+        if (_.includes(req.session.passport.user.admin, req.course.domain)) {
             //admin, so get all classrooms
             codes = await Classroom.find({
                 course: req.course.domain
             }).populate('teacher');
         }
-        else
-        {
+        else {
             //not admin, only get the ones I am intested in
             codes = await Classroom.find({
                 course: req.course.domain,
@@ -299,14 +339,11 @@ module.exports = {
         //course info:
         promises.push(CacheEngine.applyFrontMatter(data, req.course.url + '/course/content/' + lang + '/info.md'));
         //for each file in the spec, get the markdown and parse it:
-        for (let klass of data.classes)
-        {
+        for (let klass of data.classes) {
             promises.push(CacheEngine.applyFrontMatter(klass, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/info.md'));
-            for (let content of klass.content)
-            {
+            for (let content of klass.content) {
                 //apply likes:
-                if (content.url)
-                {
+                if (content.url) {
                     promises.push(CacheEngine.applyFrontMatter(content, req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url, req.course.domain, null, klass.slug, content.slug));
                 }
             }
@@ -316,7 +353,7 @@ module.exports = {
 
         await Promise.all(promises);
 
-        let mapped = _.map(data.classes,(s)=>{
+        let mapped = _.map(data.classes, (s) => {
             return {
                 title: s.title,
                 slug: s.slug,
@@ -340,90 +377,73 @@ module.exports = {
      * @apiPermission admin
      * 
      * @apiParam {String} class Class slug
-     * @apiParam {String} content Content slug 
      * 
      */
-    users: async (req,res)=>{
+    users: async (req, res) => {
 
-        //TODO: for each user --> get nice engagement stats about them (i.e)
-        
-        try
-        {
+        try {
             //list users from this class (or course)
             let users = [];
 
             //is admin
-            if (_.includes(req.session.passport.user.admin, req.course.domain))
-            {
+            if (_.includes(req.session.passport.user.admin, req.course.domain)) {
                 req.checkParams('class').isEmpty();
 
-                try
-                {
+                try {
                     let result = await req.getValidationResult();
                     result.throw();
                 }
-                catch (e)
-                {
+                catch (e) {
                     return res.badRequest(e.mapped());
                 }
 
                 //admin user list
                 let registrations = await Registration.find({ course: req.course.domain });
-                users = await User.find({id:_.map(registrations,'user')}).populate('submissions',{
-                    where:{
+                users = await User.find({ id: _.map(registrations, 'user') }).populate('submissions', {
+                    where: {
                         course: req.course.domain,
                         cached: true,
                     }
                 });
 
                 let promises = [];
-            
-                for (let user of users)
-                {
-                    promises.push(applyMessages(req,req.course.domain, user));
+
+                for (let user of users) {
+                    promises.push(applyMessages(req, req.course.domain, user));
                 }
 
                 await Promise.all(promises);
-                
-                users = _.map(users,(u)=>{
+
+                users = _.map(users, (u) => {
                     u.homework = _.size(u.submissions);
                     return _.omit(u, 'submissions');
                 });
             }
-            else
-            {
+            else {
                 //is a techer:
                 req.checkParams('class').notEmpty();
 
-                try
-                {
+                try {
                     let result = await req.getValidationResult();
                     result.throw();
                 }
-                catch (e)
-                {
+                catch (e) {
                     return res.badRequest(e.mapped());
                 }
-
-                // let isTeacher = await AuthCheck.isTeacher(req, req.course.domain, req.param('class'),req.param('content'));
-                // if (!isTeacher)
-                    // return res.forbidden();
-                
 
                 let criteria = {
                     course: req.course.domain,
                     teacher: req.session.passport.user.id,
                     class: req.param('class')
                 };
-                
+
                 //teacher:
                 let code = await Classroom.findOne(criteria);
-                users = await User.find({id:code.students});
+                users = await User.find({ id: code.students });
                 let promises = [];
-            
-                for (let user of users)
-                {
-                    promises.push(applyMessagesForClass(req,req.course.domain,req.param('class'),  req.param('content'), user));
+
+                for (let user of users) {
+                    promises.push(applyMessagesForClass(req, req.course.domain, req.param('class'), user));
                 }
 
                 await Promise.all(promises);
@@ -431,38 +451,35 @@ module.exports = {
 
             return res.json(users);
         }
-        catch (e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     }
 }
 
-let applyMessagesForClass = async function(req, course, klass, contentid, filteruser)
-{
-    let messages = await GossipmillApi.listForUserForClass(course, klass, req.session.passport.user.id, contentid, false, filteruser.id);
+let applyMessagesForClass = async function (req, course, klass, filteruser) {
+    let messages = await GossipmillApi.listForUserForClass(course, klass, req.session.passport.user, false, filteruser.id);
     filteruser.messages = _.size(messages);
 }
 
-let applyMessages = async function(req, course, filteruser)
-{
+let applyMessages = async function (req, course, filteruser) {
     let messages = await GossipmillApi.listForUser(course, req.session.passport.user, false, filteruser.id);
     filteruser.messages = _.size(messages);
 }
 
-let applyClassroom = async function(klass, codes)
-{
-    let codesforclass = _.filter(codes,{class:klass.slug});
-    let totalstudents = _.sum(_.map(codesforclass,function(r){
+let applyClassroom = async function (klass, codes) {
+    let codesforclass = _.filter(codes, { class: klass.slug });
+    let totalstudents = _.sum(_.map(codesforclass, function (r) {
         return _.size(r.students)
     }));
     klass.classes = _.size(codesforclass);
     klass.students = totalstudents;
-    klass.codes = _.map(codes,function(c){
+    klass.codes = _.map(codes, function (c) {
         return {
-            teacher:c.teacher,
-            code:c.code,
+            teacher: c.teacher,
+            code: c.code,
             students: _.size(c.students)
-        }}
+        }
+    }
     );
 }
