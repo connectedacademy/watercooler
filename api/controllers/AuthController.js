@@ -190,6 +190,13 @@ module.exports = {
                 }
             }
 
+            let codes = await Classroom.find({
+                teacher: req.session.passport.user.id,
+                course: req.course.domain
+            });
+            if (_.size(codes) > 0)
+                roles.push('teacher');
+
             if (req.isSocket)
             {
                 sails.log.verbose('Subscribed to WS for user',req.session.passport.user.id);

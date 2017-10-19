@@ -2,12 +2,11 @@ const request = require('request-promise-native');
 
 module.exports = {
 
-    isTeacher: async function (req, course, klass, content) {
+    isTeacher: async function (req, course, klass) {
         let codes = await Classroom.find({
             teacher: req.session.passport.user.id,
             course: req.course.domain,
-            class: klass,
-            content: content
+            class: klass
         });
         if (_.size(codes) > 0)
             return true;

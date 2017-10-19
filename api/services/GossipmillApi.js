@@ -258,10 +258,18 @@ module.exports = {
                 query: '*'
             },
             {
-                name: 'user',
-                query: userlist
+                name: 'replyto',
+                query: '*'
             }
         ];
+
+        for (let u of userlist)
+        {
+            query.push({
+                name:'user',
+                query: u
+            });
+        }
 
         let response = await request({
             url: baseURI + 'messages/list/' + user.service + '/' + user.account,
@@ -295,6 +303,10 @@ module.exports = {
             {
                 name: 'user',
                 query: filteruser
+            },
+            {
+                name: 'replyto',
+                query: '*'
             }
         ];
 
@@ -326,6 +338,10 @@ module.exports = {
             {
                 name: 'user',
                 query: filteruser
+            },
+            {
+                name: 'replyto',
+                query: '*'
             }
         ];
 
@@ -360,6 +376,10 @@ module.exports = {
             {
                 name: 'content',
                 query: contentid
+            },
+            {
+                name: 'replyto',
+                query: 'null'
             }
         ];
 
@@ -405,6 +425,10 @@ module.exports = {
             {
                 name: 'tag',
                 query: klass + '/' + contentid
+            },
+            {
+                name: 'replyto',
+                query: 'null'
             }
         ];
 

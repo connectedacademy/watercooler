@@ -121,7 +121,7 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/admin/content/:class/:content Submissions
+     * @api {get} /v1/admin/content/:class Submissions
      * @apiDescription List all submission content for a specific class and content segment
      * @apiName content
      * @apiGroup Admin
@@ -130,36 +130,74 @@ module.exports = {
      * @apiPermission admin 
      * @apiPermission teacher 
      * 
-     * @apiParam  {String} class Class slug
-     * @apiParam  {String} content Content slug
+     * @apiParam {String} class Class slug
+     * @apiParam {String} content Content slug
+     * @apiParam {String} teacher Only show teacher related things
      * 
      */
     content: async (req, res) => {
         try {
-            req.checkBody('class').optional().notEmpty();
-            req.checkBody('content').optional().notEmpty();
-
-            try {
-                let result = await req.getValidationResult();
-                result.throw();
-            }
-            catch (e) {
-                return res.badRequest(e.mapped());
-            }
 
             //check they are either admin, or a teacher for this content:
-            let isAdmin = await AuthCheck.isAdmin(req);
-            let isTeacher = await AuthCheck.isTeacher(req, req.course.domain, req.param('class'), req.param('content'));
+            let isAdmin = _.includes(req.session.passport.user.admin, req.course.domain);
 
-            if (!isAdmin && !isTeacher)
-                return res.forbidden();
-
-            let submissions = await Submission.find({
+            //find students and only use this list:
+            let classrooms = await Classroom.find({
                 course: req.course.domain,
-                class: req.param('class'),
-                content: req.param('content'),
-                cached: true
-            }).populate('discussion');
+                teacher: req.session.passport.user.id
+            });
+
+            let isTeacher = _.size(classrooms);
+            let forceTeacher = req.param('teacher');
+
+            let submissions = [];
+            if (isAdmin && !forceTeacher)
+            {
+                submissions = await Submission.find({
+                    course: req.course.domain,
+                    class: req.param('class'),
+                    cached: true
+                }).populate('discussion');
+            }
+            else if (isTeacher)
+            {
+                if (req.param('class'))
+                {
+                    //submissions from only this class
+                    let classroom = _.find(classrooms, (v)=>v.class==req.param('class'));
+                    if (classroom)
+                    {
+                        submissions = await Submission.find({
+                            course: req.course.domain,
+                            class: req.param('class'),
+                            user: _.map(classroom.students,(v)=>v.toString())
+                        }).populate('discussion');
+                    }
+                    else
+                        submissions = [];
+                }
+                else
+                {
+                    //submissions from all students from all classes:
+                    let students = _.unique(_.flatten(_.map(classrooms,function(c){
+                        return _.map(c.students,(v)=>v.toString())
+                    })));
+                        
+                    submissions = await Submission.find({
+                        course: req.course.domain,
+                        user: students
+                    }).populate('discussion');
+                }                
+            }
+            else
+            { 
+                //only my own:
+                submissions = await Submission.find({
+                    course: req.course.domain,
+                    class: req.param('class'),
+                    user: req.session.passport.user.id
+                }).populate('discussion');
+            }
 
             let mapped = _.map(submissions, (sub) => {
                 sub.messages = _.size(sub.discussion);
@@ -239,7 +277,7 @@ module.exports = {
      * 
      * @apiParam {String} class (optional) Class slug
      * @apiParam {String} user (optional) User ID 
-     * 
+     * @apiParam {String} teacher Only show teacher related things 
      * 
      */
     messages: async (req, res) => {
@@ -255,11 +293,12 @@ module.exports = {
             if (req.param('user'))
                 user = req.param('user');
 
+            let forceTeacher = req.param('teacher');
 
             let messages = [];
             
             //if they are super admin, set all params appropriatly:
-            if (_.includes(req.session.passport.user.admin, req.course.domain)) {
+            if (_.includes(req.session.passport.user.admin, req.course.domain) && !forceTeacher) {
                 messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, user)
             }
             else
@@ -279,7 +318,8 @@ module.exports = {
                 //teach codes exist for this criteria:
                 if (_.size(filteredcodes))
                 {
-                    let studentlist = _.unique(_.flatten(_.map(filteredcodes,'students')));
+                    let ss = _.map(filteredcodes,'students');
+                    let studentlist = _.compact(_.unique(_.flattenDeep(ss)));
                     // messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, req.session.passport.user.id);
                     messages = await GossipmillApi.listForUsers(req.course.domain, klass, req.session.passport.user, studentlist, false);
                 }
@@ -291,10 +331,7 @@ module.exports = {
 
             }
 
-            //TODO: ignore replyto messages?
-
             return res.json(messages);
-
         }
         catch (e) {
             return res.serverError(e);
@@ -377,6 +414,7 @@ module.exports = {
      * @apiPermission admin
      * 
      * @apiParam {String} class Class slug
+     * @apiParam {String} teacher Only show teacher related things
      * 
      */
     users: async (req, res) => {
@@ -385,8 +423,10 @@ module.exports = {
             //list users from this class (or course)
             let users = [];
 
+            let forceTeacher = req.param('teacher');
+
             //is admin
-            if (_.includes(req.session.passport.user.admin, req.course.domain)) {
+            if (_.includes(req.session.passport.user.admin, req.course.domain) && !forceTeacher) {
                 req.checkParams('class').isEmpty();
 
                 try {
@@ -439,14 +479,21 @@ module.exports = {
 
                 //teacher:
                 let code = await Classroom.findOne(criteria);
-                users = await User.find({ id: code.students });
-                let promises = [];
+                if (code)
+                {
+                    users = await User.find({ id: code.students });
+                    let promises = [];
 
-                for (let user of users) {
-                    promises.push(applyMessagesForClass(req, req.course.domain, req.param('class'), user));
+                    for (let user of users) {
+                        promises.push(applyMessagesForClass(req, req.course.domain, req.param('class'), user));
+                    }
+
+                    await Promise.all(promises);
                 }
-
-                await Promise.all(promises);
+                else
+                {
+                    users = [];
+                }
             }
 
             return res.json(users);
