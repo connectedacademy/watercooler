@@ -1,59 +1,6 @@
 define({ "api": [
   {
     "type": "get",
-    "url": "/v1/admin/messages/:class?/:user?",
-    "title": "Messages",
-    "description": "<p>List all messages for this course, if a teacher is logged in, only show ones from their classes.</p>",
-    "name": "admin_messages",
-    "group": "Admin",
-    "version": "1.0.0",
-    "permission": [
-      {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
-      },
-      {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
-      },
-      {
-        "name": "teacher",
-        "title": "Is a teacher (generated a code)",
-        "description": ""
-      }
-    ],
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "class",
-            "description": "<p>(optional) Class slug</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "user",
-            "description": "<p>(optional) User ID</p>"
-          }
-        ]
-      }
-    },
-    "filename": "./api/controllers/AdminController.js",
-    "groupTitle": "Admin",
-    "sampleRequest": [
-      {
-        "url": "https://api.connectedacademy.io/v1/admin/messages/:class?/:user?"
-      }
-    ]
-  },
-  {
-    "type": "get",
     "url": "/v1/admin/login",
     "title": "Login",
     "description": "<p>Login</p>",
@@ -86,39 +33,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/v1/admin/classes",
-    "title": "Classes",
-    "description": "<p>List all classes for this course, if a teacher is logged in, only show ones they taught.</p>",
-    "name": "classes",
-    "group": "Admin",
-    "version": "1.0.0",
-    "permission": [
-      {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
-      },
-      {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
-      },
-      {
-        "name": "teacher",
-        "title": "Is a teacher (generated a code)",
-        "description": ""
-      }
-    ],
-    "filename": "./api/controllers/AdminController.js",
-    "groupTitle": "Admin",
-    "sampleRequest": [
-      {
-        "url": "https://api.connectedacademy.io/v1/admin/classes"
-      }
-    ]
-  },
-  {
-    "type": "get",
     "url": "/clearcache",
     "title": "Clear Cache",
     "name": "clearcache",
@@ -134,7 +48,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/v1/admin/content/:class/:content",
+    "url": "/v1/profile/content/:class",
     "title": "Submissions",
     "description": "<p>List all submission content for a specific class and content segment</p>",
     "name": "content",
@@ -173,6 +87,13 @@ define({ "api": [
             "optional": false,
             "field": "content",
             "description": "<p>Content slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "teacher",
+            "description": "<p>Only show teacher related things</p>"
           }
         ]
       }
@@ -181,7 +102,7 @@ define({ "api": [
     "groupTitle": "Admin",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/admin/content/:class/:content"
+        "url": "https://api.connectedacademy.io/v1/profile/content/:class"
       }
     ]
   },
@@ -266,47 +187,6 @@ define({ "api": [
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/admin/makeadmin"
-      }
-    ]
-  },
-  {
-    "type": "get",
-    "url": "/v1/admin/users/:class?",
-    "title": "Users",
-    "description": "<p>List all users registered for this course</p>",
-    "name": "users",
-    "group": "Admin",
-    "version": "1.0.0",
-    "permission": [
-      {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
-      },
-      {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
-      }
-    ],
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "class",
-            "description": "<p>Class slug</p>"
-          }
-        ]
-      }
-    },
-    "filename": "./api/controllers/AdminController.js",
-    "groupTitle": "Admin",
-    "sampleRequest": [
-      {
-        "url": "https://api.connectedacademy.io/v1/admin/users/:class?"
       }
     ]
   },
@@ -1923,6 +1803,193 @@ define({ "api": [
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/messages/visualisation/:class/:content/:groupby"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/profile/messages/:class?/:user?",
+    "title": "Messages",
+    "description": "<p>List all messages for this course, if a teacher is logged in, only show ones from their classes.</p>",
+    "name": "admin_messages",
+    "group": "Profile",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "admin",
+        "title": "Authenticated as Admin",
+        "description": ""
+      },
+      {
+        "name": "teacher",
+        "title": "Is a teacher (generated a code)",
+        "description": ""
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>(optional) Class slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>(optional) User ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "teacher",
+            "description": "<p>Only show teacher related things</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./api/controllers/AdminController.js",
+    "groupTitle": "Profile",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/profile/messages/:class?/:user?"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/profile/mymessages/:class?",
+    "title": "Messages",
+    "description": "<p>List this users messages for this course.</p>",
+    "name": "admin_messages_own",
+    "group": "Profile",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "admin",
+        "title": "Authenticated as Admin",
+        "description": ""
+      },
+      {
+        "name": "teacher",
+        "title": "Is a teacher (generated a code)",
+        "description": ""
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>(optional) Class slug</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./api/controllers/AdminController.js",
+    "groupTitle": "Profile",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/profile/mymessages/:class?"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/profile/classes",
+    "title": "Classes",
+    "description": "<p>List all classes for this course, if a teacher is logged in, only show ones they taught.</p>",
+    "name": "classes",
+    "group": "Profile",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "admin",
+        "title": "Authenticated as Admin",
+        "description": ""
+      },
+      {
+        "name": "teacher",
+        "title": "Is a teacher (generated a code)",
+        "description": ""
+      }
+    ],
+    "filename": "./api/controllers/AdminController.js",
+    "groupTitle": "Profile",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/profile/classes"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/profile/users/:class?",
+    "title": "Users",
+    "description": "<p>List all users registered for this course</p>",
+    "name": "users",
+    "group": "Profile",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse",
+        "title": "Domain Dependent",
+        "description": ""
+      },
+      {
+        "name": "admin",
+        "title": "Authenticated as Admin",
+        "description": ""
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "teacher",
+            "description": "<p>Only show teacher related things</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./api/controllers/AdminController.js",
+    "groupTitle": "Profile",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/profile/users/:class?"
       }
     ]
   }

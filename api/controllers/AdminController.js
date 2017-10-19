@@ -121,7 +121,7 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/admin/content/:class Submissions
+     * @api {get} /v1/profile/content/:class Submissions
      * @apiDescription List all submission content for a specific class and content segment
      * @apiName content
      * @apiGroup Admin
@@ -266,10 +266,39 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/admin/messages/:class?/:user? Messages
+     * @api {get} /v1/profile/mymessages/:class? Messages
+     * @apiDescription List this users messages for this course.
+     * @apiName admin_messages_own
+     * @apiGroup Profile
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission admin
+     * @apiPermission teacher
+     * 
+     * @apiParam {String} class (optional) Class slug
+     * 
+     */
+    mymessages: async (req, res) => {
+        try {
+            let klass = '*';
+            if (req.param('class'))
+                klass = req.param('class');
+
+            let messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, req.session.passport.user.id);
+            return res.json(messages);
+        }
+        catch (e) {
+            return res.serverError(e);
+        }
+    },
+
+
+    /**
+     * 
+     * @api {get} /v1/profile/messages/:class?/:user? Messages
      * @apiDescription List all messages for this course, if a teacher is logged in, only show ones from their classes.
      * @apiName admin_messages
-     * @apiGroup Admin
+     * @apiGroup Profile
      * @apiVersion  1.0.0
      * @apiPermission domainparse
      * @apiPermission admin
@@ -323,11 +352,11 @@ module.exports = {
                     // messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, req.session.passport.user.id);
                     messages = await GossipmillApi.listForUsers(req.course.domain, klass, req.session.passport.user, studentlist, false);
                 }
-                else
-                {
-                    //they are a user - only show them their own messages
-                    messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, req.session.passport.user.id);
-                }
+                // else
+                // {
+                //     //they are a user - only show them their own messages
+                //     messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, req.session.passport.user.id);
+                // }
 
             }
 
@@ -340,10 +369,10 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/admin/classes Classes
+     * @api {get} /v1/profile/classes Classes
      * @apiDescription List all classes for this course, if a teacher is logged in, only show ones they taught.
      * @apiName classes
-     * @apiGroup Admin
+     * @apiGroup Profile
      * @apiVersion  1.0.0
      * @apiPermission domainparse
      * @apiPermission admin
@@ -355,11 +384,12 @@ module.exports = {
         //should mainly list from the spec:
         let lang = await LangService.lang(req);
         var data = await CacheEngine.getSpec(req, res);
+        let forceTeacher = req.param('teacher');
         let promises = [];
 
         //get teacher codes (if you happen to be a teacher):
         let codes = null;
-        if (_.includes(req.session.passport.user.admin, req.course.domain)) {
+        if (_.includes(req.session.passport.user.admin, req.course.domain) && !forceTeacher) {
             //admin, so get all classrooms
             codes = await Classroom.find({
                 course: req.course.domain
@@ -405,10 +435,10 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/admin/users/:class? Users
+     * @api {get} /v1/profile/users/:class? Users
      * @apiDescription List all users registered for this course
      * @apiName users
-     * @apiGroup Admin
+     * @apiGroup Profile
      * @apiVersion  1.0.0
      * @apiPermission domainparse
      * @apiPermission admin

@@ -45,19 +45,22 @@ module.exports.routes = {
   'GET /v1/admin/login':'AuthController.admin',
   'GET /v1/admin/editor':'AdminController.editor',
   'POST /v1/admin/credentials':'AdminController.credentials',
-  'GET /v1/admin/content/:class?':'AdminController.content',
-  'GET /v1/admin/users/:class?':'AdminController.users',
-  'GET /v1/admin/classes':'AdminController.classes',
-  'GET /v1/admin/messages/:class?/:user?':'AdminController.messages',
   'GET /v1/admin/dash':'AdminController.root',
   'POST /v1/admin/makeadmin':'AdminController.makeadmin',
+
+  'GET /v1/profile/content/:class?':'AdminController.content',
+  'GET /v1/profile/users/:class?':'AdminController.users',
+  'GET /v1/profile/classes':'AdminController.classes',
+  'GET /v1/profile/messages/:class?/:user?':'AdminController.messages',
+  'GET /v1/profile/mymessages/:class?':'AdminController.mymessages',
   
+
   'GET /v1/classroom/getclass/:class':'ClassroomController.getclass',  
   'GET /v1/classroom/mycode/:class':'ClassroomController.mycode',
   // 'GET /v1/classroom/users/:class/:content':'ClassroomController.users',
   'POST /v1/classroom/inclass':'ClassroomController.inclass',
   'GET /v1/classroom/rss/:code':'ClassroomController.rss',
-  
+
 
   'GET /v1/messages/visualisation/:class/:content/:groupby':'MessagesController.visualisation',
   'GET /v1/messages/likes/:class/:content':'MessagesController.likes',
