@@ -27,7 +27,10 @@ io.socket.on('reconnecting', function (num) {
     sails.log.error('Gossipmill API Socket reconnecting', num);
 });
 
-let request = require('request-promise-native');
+let requestBase = require('request-promise-native');
+let request = requestBase.defaults({
+    pool: {maxSockets: 1024}
+});
 
 let baseURI = process.env.GOSSIPMILL_URL;
 

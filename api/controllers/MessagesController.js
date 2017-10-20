@@ -141,7 +141,7 @@ module.exports = {
                 let result = await req.getValidationResult();
                 result.throw();
             }
-            catch (e) {
+            catch (e) { 
                 return res.badRequest(e.mapped());
             }
         }
