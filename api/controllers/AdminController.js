@@ -157,7 +157,7 @@ module.exports = {
                     course: req.course.domain,
                     class: req.param('class'),
                     cached: true
-                }).populate('discussion');
+                }).populate('discussion').populate('user');
             }
             else if (isTeacher)
             {
@@ -171,7 +171,7 @@ module.exports = {
                             course: req.course.domain,
                             class: req.param('class'),
                             user: _.map(classroom.students,(v)=>v.toString())
-                        }).populate('discussion');
+                        }).populate('discussion').populate('user');
                     }
                     else
                         submissions = [];
@@ -186,7 +186,7 @@ module.exports = {
                     submissions = await Submission.find({
                         course: req.course.domain,
                         user: students
-                    }).populate('discussion');
+                    }).populate('discussion').populate('user');
                 }                
             }
             else
@@ -196,7 +196,7 @@ module.exports = {
                     course: req.course.domain,
                     class: req.param('class'),
                     user: req.session.passport.user.id
-                }).populate('discussion');
+                }).populate('discussion').populate('user');
             }
 
             let mapped = _.map(submissions, (sub) => {
