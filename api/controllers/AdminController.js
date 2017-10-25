@@ -535,10 +535,15 @@ module.exports = {
                     class: req.param('class')
                 };
 
-                //teacher:
+                //is a teacher for this class:
                 let code = await Classroom.findOne(criteria);
                 if (code) {
-                    users = await User.find({ id: code.students });
+                    users = await User.find({ id: code.students }).populate('submissions', {
+                        where: {
+                            course: req.course.domain,
+                            cached: true,
+                        }
+                    });
                     let promises = [];
 
                     for (let user of users) {
@@ -548,6 +553,7 @@ module.exports = {
                     await Promise.all(promises);
                 }
                 else {
+                    //is just a user -- return nothing (bad request)
                     users = [];
                 }
             }
@@ -563,6 +569,9 @@ module.exports = {
 let applyMessagesForClass = async function (req, course, klass, filteruser) {
     let messages = await GossipmillApi.listForUserForClass(course, klass, req.session.passport.user, false, filteruser.id);
     filteruser.messages = _.size(messages);
+    filteruser.homework = _.size(filteruser.submissions);
+    filteruser.submissions = null;
+    // filteruser = _.omit(filteruser, 'submissions');
 }
 
 let applyMessages = async function (req, course, filteruser) {

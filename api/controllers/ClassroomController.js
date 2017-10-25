@@ -188,8 +188,8 @@ module.exports = {
                 slug: classroom.class
             });
             // console.log(klass);
-            let content = _.find(klass.content,{
-                content_type: 'liveclass'
+            let content = _.find(klass.content,function (s){
+                return s.schedule;
             });
             // console.log(content);
 
