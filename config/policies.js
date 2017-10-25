@@ -36,6 +36,7 @@ module.exports.policies = {
         'makeadmin':['verifyDomain','cors','isOwner'],
         'messages':['verifyDomain','cors','isUser'],
         'mymessages':['verifyDomain','cors','isUser'],
+        'mycontent':['verifyDomain','cors','isUser'],
         'clearcache':true
     },
     'messages':

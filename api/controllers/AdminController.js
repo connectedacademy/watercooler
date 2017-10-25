@@ -121,6 +121,43 @@ module.exports = {
 
     /**
      * 
+     * @api {get} /v1/profile/mycontent/:class My Submissions
+     * @apiDescription List all submission content for a specific class and this user
+     * @apiName content
+     * @apiGroup Admin
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission admin 
+     * @apiPermission teacher 
+     * 
+     * @apiParam {String} class Class slug
+     * 
+     */
+    mycontent: async (req, res) => {
+        try {
+            //only my own:
+            let submissions = await Submission.find({
+                course: req.course.domain,
+                class: req.param('class'),
+                user: req.session.passport.user.id,
+                cached:true
+            }).populate('discussion').populate('user');
+
+            let mapped = _.map(submissions, (sub) => {
+                sub.messages = _.size(sub.discussion);
+                return _.omit(sub, 'discussion');
+            });
+
+            return res.json(mapped);
+        }
+        catch (e) {
+            return res.serverError(e);
+        }
+    },
+
+
+    /**
+     * 
      * @api {get} /v1/profile/content/:class Submissions
      * @apiDescription List all submission content for a specific class and content segment
      * @apiName content
@@ -131,7 +168,6 @@ module.exports = {
      * @apiPermission teacher 
      * 
      * @apiParam {String} class Class slug
-     * @apiParam {String} content Content slug
      * @apiParam {String} teacher Only show teacher related things
      * 
      */
@@ -151,46 +187,40 @@ module.exports = {
             let forceTeacher = req.param('teacher');
 
             let submissions = [];
-            if (isAdmin && !forceTeacher)
-            {
+            if (isAdmin && !forceTeacher) {
                 submissions = await Submission.find({
                     course: req.course.domain,
                     class: req.param('class'),
                     cached: true
                 }).populate('discussion').populate('user');
             }
-            else if (isTeacher)
-            {
-                if (req.param('class'))
-                {
+            else if (isTeacher) {
+                if (req.param('class')) {
                     //submissions from only this class
-                    let classroom = _.find(classrooms, (v)=>v.class==req.param('class'));
-                    if (classroom)
-                    {
+                    let classroom = _.find(classrooms, (v) => v.class == req.param('class'));
+                    if (classroom) {
                         submissions = await Submission.find({
                             course: req.course.domain,
                             class: req.param('class'),
-                            user: _.map(classroom.students,(v)=>v.toString())
+                            user: _.map(classroom.students, (v) => v.toString())
                         }).populate('discussion').populate('user');
                     }
                     else
                         submissions = [];
                 }
-                else
-                {
+                else {
                     //submissions from all students from all classes:
-                    let students = _.unique(_.flatten(_.map(classrooms,function(c){
-                        return _.map(c.students,(v)=>v.toString())
+                    let students = _.unique(_.flatten(_.map(classrooms, function (c) {
+                        return _.map(c.students, (v) => v.toString())
                     })));
-                        
+
                     submissions = await Submission.find({
                         course: req.course.domain,
                         user: students
                     }).populate('discussion').populate('user');
-                }                
+                }
             }
-            else
-            { 
+            else {
                 //only my own:
                 submissions = await Submission.find({
                     course: req.course.domain,
@@ -325,13 +355,12 @@ module.exports = {
             let forceTeacher = req.param('teacher');
 
             let messages = [];
-            
+
             //if they are super admin, set all params appropriatly:
             if (_.includes(req.session.passport.user.admin, req.course.domain) && !forceTeacher) {
                 messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, user)
             }
-            else
-            {
+            else {
                 //if they have any teacher codes:
                 let codes = await Classroom.find({
                     course: req.course.domain,
@@ -339,15 +368,14 @@ module.exports = {
                 });
 
                 //filter codes by class (if selected)
-                let filteredcodes = _.filter(codes,function(c){
-                    if (klass=='*' || c.class==klass)
+                let filteredcodes = _.filter(codes, function (c) {
+                    if (klass == '*' || c.class == klass)
                         return true;
                 });
                 //get the student list for all classes:
                 //teach codes exist for this criteria:
-                if (_.size(filteredcodes))
-                {
-                    let ss = _.map(filteredcodes,'students');
+                if (_.size(filteredcodes)) {
+                    let ss = _.map(filteredcodes, 'students');
                     let studentlist = _.compact(_.unique(_.flattenDeep(ss)));
                     // messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, req.session.passport.user.id);
                     messages = await GossipmillApi.listForUsers(req.course.domain, klass, req.session.passport.user, studentlist, false);
@@ -509,8 +537,7 @@ module.exports = {
 
                 //teacher:
                 let code = await Classroom.findOne(criteria);
-                if (code)
-                {
+                if (code) {
                     users = await User.find({ id: code.students });
                     let promises = [];
 
@@ -520,8 +547,7 @@ module.exports = {
 
                     await Promise.all(promises);
                 }
-                else
-                {
+                else {
                     users = [];
                 }
             }

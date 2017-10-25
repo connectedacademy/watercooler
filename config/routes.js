@@ -53,6 +53,7 @@ module.exports.routes = {
   'GET /v1/profile/classes':'AdminController.classes',
   'GET /v1/profile/messages/:class?/:user?':'AdminController.messages',
   'GET /v1/profile/mymessages/:class?':'AdminController.mymessages',
+  'GET /v1/profile/mycontent/:class?':'AdminController.mycontent',
   
 
   'GET /v1/classroom/getclass/:class':'ClassroomController.getclass',  
