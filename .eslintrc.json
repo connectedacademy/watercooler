@@ -19,7 +19,8 @@
         "Notifications":true,
         "Classroom":true,
         "AuthCheck":true,
-        "LikeTag":true
+        "LikeTag":true,
+        "ResponseCache":true
     },
     "parserOptions": {
         "ecmaVersion": 8,

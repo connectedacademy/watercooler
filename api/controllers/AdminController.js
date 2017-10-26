@@ -568,7 +568,7 @@ module.exports = {
 
 let applyMessagesForClass = async function (req, course, klass, filteruser) {
     let messages = await GossipmillApi.listForUserForClass(course, klass, req.session.passport.user, false, filteruser.id);
-    filteruser.messages = _.size(messages);
+    filteruser.messages = _.size(messages.data);
     filteruser.homework = _.size(filteruser.submissions);
     filteruser.submissions = null;
     // filteruser = _.omit(filteruser, 'submissions');

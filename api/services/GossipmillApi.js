@@ -1,7 +1,8 @@
 // let sailsio = require('socket.io-client')(process.env.GOSSIPMILL_URL);
-var socketIOClient = require('socket.io-client');
-var sailsIOClient = require('sails.io.js');
-var io = sailsIOClient(socketIOClient);
+let md5 = require('md5');
+let socketIOClient = require('socket.io-client');
+let sailsIOClient = require('sails.io.js');
+let io = sailsIOClient(socketIOClient);
 io.sails.environment = 'production';
 io.sails.url = process.env.GOSSIPMILL_URL;
 io.sails.reconnection = true;
@@ -31,6 +32,15 @@ let requestBase = require('request-promise-native');
 let request = requestBase.defaults({
     pool: {maxSockets: 1024}
 });
+
+let redis = require('redis');
+let rediscache = redis.createClient({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    db:2
+});
+let Promise = require('bluebird');
+Promise.promisifyAll(redis.RedisClient.prototype);
 
 let baseURI = process.env.GOSSIPMILL_URL;
 
@@ -69,7 +79,38 @@ module.exports = {
             });
         }
 
-        let response = await request({
+        let processing = function(response){
+            
+            let min = 0;
+            let max = parseInt(_.max(response, 'segment').segment);
+
+            let ordered = {};
+
+            for (let i = min; i <= max; i++) {
+                let seg = _.find(response, { segment: i + '' });
+                let realindex = i / groupby | 0;
+                if (!ordered[realindex])
+                    ordered[realindex] = 0;
+
+                if (seg)
+                    ordered[realindex] += seg.count;
+            }
+
+            let max_val = _.max(_.values(ordered));
+
+            ordered = _.mapValues(ordered, (o) => {
+                return (o / max_val).toFixed(3);
+            });
+
+            let maxk = _.size(ordered) - 1;
+
+            let nordered = _.mapKeys(ordered, (v, k) => {
+                return k / maxk;
+            });
+            return nordered;
+        };
+
+        let params = {
             url: baseURI + 'messages/visualisation',
             method: 'POST',
             json: true,
@@ -77,36 +118,13 @@ module.exports = {
             qs: {
                 psk: process.env.GOSSIPMILL_PSK
             }
-        });
+        };
 
-        let min = 0;
-        let max = parseInt(_.max(response, 'segment').segment);
+        let key = `${md5(query)}`;
 
-        let ordered = {};
+        let results = await ResponseCache.cachedRequest('visualisation', key, params, 10, processing);
 
-        for (let i = min; i <= max; i++) {
-            let seg = _.find(response, { segment: i + '' });
-            let realindex = i / groupby | 0;
-            if (!ordered[realindex])
-                ordered[realindex] = 0;
-
-            if (seg)
-                ordered[realindex] += seg.count;
-        }
-
-        let max_val = _.max(_.values(ordered));
-
-        ordered = _.mapValues(ordered, (o) => {
-            return (o / max_val).toFixed(3);
-        });
-
-        let maxk = _.size(ordered) - 1;
-
-        let nordered = _.mapKeys(ordered, (v, k) => {
-            return k / maxk;
-        });
-
-        return nordered;
+        return results;
     },
 
     totals: async (course, klass, content, justmine) => {
@@ -134,7 +152,7 @@ module.exports = {
             });
         }
 
-        let response = await request({
+        let params = {
             url: baseURI + 'messages/totals',
             method: 'POST',
             json: true,
@@ -142,30 +160,43 @@ module.exports = {
             qs: {
                 psk: process.env.GOSSIPMILL_PSK
             }
-        });
+        };
+
+        let key = `${md5(query)}`;
+
+        let response = await ResponseCache.cachedRequest('totals',key, params, 10);
+
         return response;
     },
 
     allTotals: async (course) => {
-        let response = await request({
+
+        let query = {
+            group_by: {
+                name: 'tag'
+            },
+            filter_by: [
+                {
+                    name: 'course',
+                    query: course
+                }
+            ]
+        };
+
+        let params = {
             url: baseURI + 'messages/totals',
             method: 'POST',
             json: true,
-            body: {
-                group_by: {
-                    name: 'tag'
-                },
-                filter_by: [
-                    {
-                        name: 'course',
-                        query: course
-                    }
-                ]
-            },
+            body: query,
             qs: {
                 psk: process.env.GOSSIPMILL_PSK
             }
-        });
+        };
+
+        let key = `${md5(query)}`;
+
+        let response = await ResponseCache.cachedRequest('alltotals',key, params, 10);
+
         return response;
     },
 
@@ -197,7 +228,7 @@ module.exports = {
     },
 
     summary: async (course, klass, user, language, contentid, startsegment, endsegment, whitelist, justmine) => {
-        let query = [
+        let queryKey = [
             {
                 name: 'course',
                 query: course
@@ -212,6 +243,15 @@ module.exports = {
             }
         ];
 
+        for (let i = parseInt(startsegment); i <= parseInt(endsegment); i++) {
+            queryKey.push({
+                name: 'segment',
+                query: i
+            });
+        }
+
+        let query = _.clone(queryKey);
+
         if (justmine)
         {
             query.push({
@@ -220,16 +260,7 @@ module.exports = {
             })
         }
 
-        for (let i = parseInt(startsegment); i <= parseInt(endsegment); i++) {
-            query.push({
-                name: 'segment',
-                query: i
-            });
-        }
-
-        // sails.log.verbose('Requesting summary');
-
-        let response = await request({
+        let params = {
             url: baseURI + 'messages/summary/' + user.service + '/' + user.account,
             method: 'POST',
             json: true,
@@ -241,9 +272,43 @@ module.exports = {
             qs: {
                 psk: process.env.GOSSIPMILL_PSK
             }
-        });
+        };
 
-        return response;
+        let segments = _.pluck(_.filter(queryKey,{name:'segment'}),'query');
+
+        let userkey = `wc:summary:${course}:${klass}:${contentid}:|${segments.join('|')}|:${user.service}/${user.account}`;
+
+        
+        //get redis with this user spec key:
+
+
+
+        //if there is a key, then serve it
+        let usersubmittedinthisblock = await ResponseCache.getFromKey(userkey);
+        //if there is not a key, then serve the main response
+
+        //TODO:
+        // if this user has submitted a message in this block then their view will be different to everyone else's -- go get the real data (or a cached version)
+        if (usersubmittedinthisblock)
+        {
+            return usersubmittedinthisblock;
+        }
+        else
+        {
+            // use the existing cache (which will get invalidated when ANYONE posts to this block)
+            let key = `${course}:${klass}:${contentid}:|${segments.join('|')}|:${language}:${whitelist}`;
+
+            let response = await ResponseCache.cachedRequest('summary',key, params, 60);
+
+            //TODO:
+            if (response.data.message && response.data.message.ismine)
+            {
+                // set the user submitted key:
+                ResponseCache.setCache(userkey, response);
+            }
+
+            return response;
+        }
     },
 
     listForUsers: async (course, klass, user, userlist, whitelist) => {
@@ -658,6 +723,7 @@ module.exports = {
     },
 
     create: async (credentials, user, message) => {
+        
         let response = await request({
             url: baseURI + 'messages/create',
             method: 'POST',
@@ -678,6 +744,68 @@ module.exports = {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
+
+        //TODO:
+        // invalidate all redis cache which match the obtained criteria from this link:
+        let tokens = [
+            {
+                "name": "course",
+                "regex": "https:\/\/(.*\\.connectedacademy\\.io)\\.*",
+                "compositeindex":true
+            },
+            {
+                "name": "class",
+                "regex": "https:\/\/.*\\.connectedacademy\\.io\/#\/course\/(.*)\/.*\/.*$",
+                "compositeindex":true
+            },
+            {
+                "name": "content",
+                "regex": "https:\/\/.*\\.connectedacademy\\.io\/#\/course\/.*\/(.*)\/.*$",
+                "compositeindex":true
+            },
+            {
+                "name": "segment",
+                "regex": "https:\/\/.*\\.connectedacademy\\.io\/#\/course\/.*\/.*\/(.*)$",
+                "compositeindex":true
+            }
+        ];
+
+        let parsed = {};
+
+        for (let token of tokens)
+        {
+            // try find the token
+            let regex = new RegExp(token.regex.replace("\\\\", "\\"));
+    
+            let results = regex.exec(message.text);
+            if (results) {
+                let result = results[1];
+                // if the token is found, then find or create node for it
+                try {
+                    parsed[token.name] = result.replace('/', '\/');
+                    sails.log.verbose("Created Token Relationship", token.name, result);
+                }
+                catch (e) {
+                    sails.log.error(e);
+                }
+            }
+            else {
+                sails.log.silly('Regex not found in string', token.regex, message.text);
+            }
+        }
+
+        // console.log(parsed);
+        //caches which include this segment
+
+        //remove anything matching the summary endpoint which includes this segment
+        let pattern = `wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:*|${parsed.segment}|*:*`;
+        await ResponseCache.removeMatching(pattern);
+
+        //caches which are based on this specific user
+        //invalidate segment user cache let userkey = `${course}:${klass}:${contentid}:|${segments.join('|')}|:${user.service}/${user.account}`;
+        pattern = `wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:*|${parsed.segment}|*:${user.service}/${user.account}`;
+        await ResponseCache.removeMatching(pattern);
+
         return response;
     }
 }

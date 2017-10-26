@@ -42,7 +42,8 @@
     "lodash": "4.17.4",
     "rss":"1.2.2",
     "express-useragent": "1.0.8",
-    "winston-logzio":"1.0.3"
+    "winston-logzio":"1.0.3",
+    "md5":"2.2.1"
   },
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",
