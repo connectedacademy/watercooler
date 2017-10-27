@@ -33,15 +33,6 @@ let request = requestBase.defaults({
     pool: {maxSockets: 1024}
 });
 
-let redis = require('redis');
-let rediscache = redis.createClient({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    db:2
-});
-let Promise = require('bluebird');
-Promise.promisifyAll(redis.RedisClient.prototype);
-
 let baseURI = process.env.GOSSIPMILL_URL;
 
 let sockethandlers = {};
