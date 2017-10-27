@@ -288,7 +288,6 @@ module.exports = {
         let usersubmittedinthisblock = await ResponseCache.getFromKey(userkey);
         //if there is not a key, then serve the main response
 
-        //TODO:
         // if this user has submitted a message in this block then their view will be different to everyone else's -- go get the real data (or a cached version)
         if (usersubmittedinthisblock)
         {
@@ -301,7 +300,6 @@ module.exports = {
 
             let response = await ResponseCache.cachedRequest('summary',key, params, 60);
 
-            //TODO:
             if (response.data.message && response.data.message.ismine)
             {
                 // set the user submitted key:
