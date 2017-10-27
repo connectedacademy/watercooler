@@ -62,7 +62,7 @@ module.exports = {
 
                 //if succeeds, put in cache
                 rediscache.set(key, JSON.stringify(results));
-                rediscache.expire(key, 3600); //60 seconds
+                rediscache.expire(key, ttl); //60 seconds
                 return results;
             }
         }

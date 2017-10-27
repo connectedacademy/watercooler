@@ -276,6 +276,7 @@ module.exports = {
 
         let segments = _.pluck(_.filter(queryKey,{name:'segment'}),'query');
 
+        
         let userkey = `wc:summary:${course}:${klass}:${contentid}:|${segments.join('|')}|:${user.service}/${user.account}`;
 
         
@@ -745,7 +746,6 @@ module.exports = {
             }
         });
 
-        //TODO:
         // invalidate all redis cache which match the obtained criteria from this link:
         let tokens = [
             {

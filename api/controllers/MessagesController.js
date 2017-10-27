@@ -25,8 +25,20 @@ module.exports = {
         if (justmine && req.session.passport && req.session.passport.user)
             justmine = req.session.passport.user.id;
         let lang = await LangService.lang(req);
+        let user = null;
+
+        if (req.session.passport && req.session.passport.user)
+            user = req.session.passport.user;
+        else {
+            let spec = await CacheEngine.getSpec(req);
+            user = {
+                service: 'twitter',
+                account: _.first(spec.accounts)
+            };
+        }
+
         try {
-            let success = await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), whitelist, justmine);
+            let success = await GossipmillApi.subscribe(req, req.course.domain, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), whitelist, justmine);
             return res.json(success);
         }
         catch (e) {
@@ -71,8 +83,7 @@ module.exports = {
      */
     create: async (req, res) => {
 
-        if (!req.isSocket)
-        {
+        if (!req.isSocket) {
             req.checkBody('text').notEmpty();
             req.checkBody('replyto').optional().notEmpty();
 
@@ -129,8 +140,7 @@ module.exports = {
      */
     visualisation: async (req, res) => {
 
-        if (!req.isSocket)
-        {
+        if (!req.isSocket) {
             req.checkQuery('whitelist').optional().isBoolean();
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
@@ -141,7 +151,7 @@ module.exports = {
                 let result = await req.getValidationResult();
                 result.throw();
             }
-            catch (e) { 
+            catch (e) {
                 return res.badRequest(e.mapped());
             }
         }
@@ -184,8 +194,7 @@ module.exports = {
      * 
      */
     likes: async (req, res) => {
-        if (!req.isSocket)
-        {
+        if (!req.isSocket) {
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
             req.checkQuery('justmine').optional().notEmpty();
@@ -206,10 +215,9 @@ module.exports = {
 
         try {
             let data = await GossipmillApi.totals(req.course.domain, req.param('class'), req.param('content'), justmine);
-            if (_.isEmpty(data))
-            {
+            if (_.isEmpty(data)) {
                 data = {};
-                data[req.param('class') +'/'+ req.param('content')] = 0;
+                data[req.param('class') + '/' + req.param('content')] = 0;
             }
             return res.json(data);
         }
@@ -237,8 +245,7 @@ module.exports = {
      */
     summary: async (req, res) => {
 
-        if (!req.isSocket)
-        {
+        if (!req.isSocket) {
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
             req.checkParams('startsegment').notEmpty().isInt();
@@ -266,7 +273,7 @@ module.exports = {
             let justmine = req.param('justmine');
             if (justmine && req.session.passport && req.session.passport.user)
                 justmine = req.session.passport.user.id;
-            
+
             let course = req.course.domain;
             let user = {};
             let spec = null;
@@ -285,26 +292,23 @@ module.exports = {
             let data = dat.data;
 
 
-            if (_.isEmpty(data.message))
-            {
-                if (spec==null)
+            if (_.isEmpty(data.message)) {
+                if (spec == null)
                     spec = await CacheEngine.getSpec(req);
 
                 //get class spec
-                let klass = _.find(spec.classes,{slug:req.param('class')});
-                if (klass)
-                {
-                    let content = _.find(klass.content,{slug:req.param('content')});
+                let klass = _.find(spec.classes, { slug: req.param('class') });
+                if (klass) {
+                    let content = _.find(klass.content, { slug: req.param('content') });
                     //get file:
                     let file = await CacheEngine.getFrontmatter(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url);
-                    if (file.prompts)
-                    {
+                    if (file.prompts) {
                         //load prompts file:
                         let srt = await CacheEngine.getSubs(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + file.prompts);
 
                         let startseg = parseInt(req.param('startsegment'));
                         let endseg = parseInt(req.param('endsegment'));
-                        let sub = _.find(srt,function(s){
+                        let sub = _.find(srt, function (s) {
                             return Math.round(s.start) >= startseg && Math.round(s.start) <= endseg;
                         });
                         if (sub)
@@ -314,9 +318,8 @@ module.exports = {
                             }
                     }
                 }
-                else
-                {
-                    sails.log.error('No class found', 'messsages/summary',req.param('class'));
+                else {
+                    sails.log.error('No class found', 'messsages/summary', req.param('class'));
                 }
             }
 
@@ -357,13 +360,12 @@ module.exports = {
      */
     summarybatch: async (req, res) => {
 
-        if (!req.isSocket)
-        {
+        if (!req.isSocket) {
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
             req.checkParams('startsegment').notEmpty().isInt();
             req.checkParams('endsegment').notEmpty().isInt();
-            req.checkParams('groupsize').notEmpty().isInt();            
+            req.checkParams('groupsize').notEmpty().isInt();
             req.checkQuery('whitelist').isBoolean();
             req.checkQuery('justmine').optional().isBoolean();
 
@@ -389,7 +391,7 @@ module.exports = {
             if (req.session.passport && req.session.passport.user)
                 user = req.session.passport.user;
             else {
-                spec = await CacheEngine.getSpec(req);            
+                spec = await CacheEngine.getSpec(req);
                 user = {
                     service: 'twitter',
                     account: _.first(spec.accounts)
@@ -404,36 +406,31 @@ module.exports = {
                 justmine = req.session.passport.user.id;
 
             let promises = [];
-            for (let i=start;i<end;i=i+group)
-            {
-                promises.push(GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), i, (i+group)-1, req.param('whitelist'), justmine));
+            for (let i = start; i < end; i = i + group) {
+                promises.push(GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), i, (i + group) - 1, req.param('whitelist'), justmine));
             }
 
             let results = await Promise.all(promises);
 
 
-            if (_.any(results,(r)=>_.isEmpty(r.message)))
-            {
+            if (_.any(results, (r) => _.isEmpty(r.message))) {
                 //get file:
                 //get class spec
-                if (spec==null)
+                if (spec == null)
                     spec = await CacheEngine.getSpec(req);
 
-                let klass = _.find(spec.classes,{slug:req.param('class')});
-                let content = _.find(klass.content,{slug:req.param('content')});
+                let klass = _.find(spec.classes, { slug: req.param('class') });
+                let content = _.find(klass.content, { slug: req.param('content') });
                 let file = await CacheEngine.getFrontmatter(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url);
                 //load prompts file:
-                if (file.prompts)
-                {
+                if (file.prompts) {
                     let srt = await CacheEngine.getSubs(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + file.prompts);
 
-                    for (let result of results)
-                    {
-                        if (_.isEmpty(result.data.message))
-                        {
+                    for (let result of results) {
+                        if (_.isEmpty(result.data.message)) {
                             let startseg = parseInt(_.min(result.scope.query.segment));
                             let endseg = parseInt(_.max(result.scope.query.segment));
-                            let sub = _.find(srt,function(s){
+                            let sub = _.find(srt, function (s) {
                                 return Math.round(s.start) >= startseg && Math.round(s.start) <= endseg;
                             });
                             if (sub)
@@ -488,14 +485,13 @@ module.exports = {
      */
     list: async (req, res) => {
 
-        if (!req.isSocket)
-        {
+        if (!req.isSocket) {
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
             req.checkParams('startsegment').notEmpty().isInt();
             req.checkParams('endsegment').notEmpty().isInt();
             req.checkQuery('whitelist').isBoolean();
-            req.checkQuery('depth').optional().isInt();   
+            req.checkQuery('depth').optional().isInt();
             req.checkQuery('justmine').optional().isBoolean();
 
             try {
@@ -505,7 +501,7 @@ module.exports = {
             catch (e) {
                 return res.badRequest(e.mapped());
             }
-        }   
+        }
 
         try {
             let whitelist = req.param('whitelist');
@@ -563,9 +559,8 @@ module.exports = {
      * 
      */
     content: async (req, res) => {
-        
-        if (!req.isSocket)
-        {
+
+        if (!req.isSocket) {
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
             req.checkQuery('whitelist').isBoolean();
@@ -601,8 +596,7 @@ module.exports = {
                 };
             }
 
-            if (req.isSocket)
-            {
+            if (req.isSocket) {
                 try {
                     await GossipmillApi.subscribecontent(req, req.course.domain, req.param('class'), req.session.passport.user, lang, req.param('content'), whitelist, justmine);
                 }
