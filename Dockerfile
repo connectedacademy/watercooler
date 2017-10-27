@@ -13,6 +13,6 @@ RUN npm i --production --silent && npm cache clean
 
 COPY . /usr/src/app
 
-CMD node app.js
+CMD nodemon --exitcrash app.js
 
 EXPOSE 1337
