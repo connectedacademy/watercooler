@@ -39,7 +39,7 @@ let sockethandlers = {};
 
 module.exports = {
 
-    visualisation: async (course, klass, content, language, whitelist, groupby, justmine) => {
+    visualisation: async (course, klass, content, language, whitelist, groupby, justmine, clearcache = false) => {
         let query = {
             lang: language,
             whitelist: whitelist,
@@ -113,12 +113,12 @@ module.exports = {
 
         let key = `${md5(query)}`;
 
-        let results = await ResponseCache.cachedRequest('visualisation', key, params, 10, processing);
+        let results = await ResponseCache.cachedRequest('visualisation', key, params, 10, processing, clearcache);
 
         return results;
     },
 
-    totals: async (course, klass, content, justmine) => {
+    totals: async (course, klass, content, justmine, clearcache=false) => {
         let query = {
             group_by: {
                 name: 'tag'
@@ -155,7 +155,7 @@ module.exports = {
 
         let key = `${md5(query)}`;
 
-        let response = await ResponseCache.cachedRequest('totals',key, params, 10);
+        let response = await ResponseCache.cachedRequest('totals',key, params, 10, null, clearcache);
 
         return response;
     },

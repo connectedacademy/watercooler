@@ -136,6 +136,7 @@ module.exports = {
      * @apiParam  {String} content Content slug
      * @apiParam  {int} groupby Number of segments to group by
      * @apiParam  {Boolean} whitelist Limit to messages from registered users 
+     * @apiParam  {Boolean} clearcache Force non-cached version
      * 
      */
     visualisation: async (req, res) => {
@@ -146,6 +147,7 @@ module.exports = {
             req.checkParams('content').notEmpty();
             req.checkParams('groupby').notEmpty();
             req.checkQuery('justmine').optional().isBoolean();
+            req.checkQuery('clearcache').optional().isBoolean();
 
             try {
                 let result = await req.getValidationResult();
@@ -161,7 +163,7 @@ module.exports = {
             let justmine = req.param('justmine');
             if (justmine && req.session.passport && req.session.passport.user)
                 justmine = req.session.passport.user.id;
-            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'), justmine);
+            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'), justmine, req.param('clearcache'));
 
             return res.json({
                 scope: {
@@ -191,6 +193,7 @@ module.exports = {
      * 
      * @apiParam  {String} class Class slug
      * @apiParam  {String} content Content slug
+     * @apiParam  {Boolean} clearcache Force non-cached version
      * 
      */
     likes: async (req, res) => {
@@ -198,6 +201,7 @@ module.exports = {
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
             req.checkQuery('justmine').optional().notEmpty();
+            req.checkQuery('clearcache').optional().isBoolean();
 
             try {
                 let result = await req.getValidationResult();
@@ -214,7 +218,7 @@ module.exports = {
             justmine = req.session.passport.user.id;
 
         try {
-            let data = await GossipmillApi.totals(req.course.domain, req.param('class'), req.param('content'), justmine);
+            let data = await GossipmillApi.totals(req.course.domain, req.param('class'), req.param('content'), justmine, req.param('clearcache'));
             if (_.isEmpty(data)) {
                 data = {};
                 data[req.param('class') + '/' + req.param('content')] = 0;

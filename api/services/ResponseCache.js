@@ -41,34 +41,49 @@ module.exports = {
         }
     },
 
-    cachedRequest: async function (route, keyIn, params, ttl, processing = null) {
-        sails.log.silly('Attempting Redis Cache for', keyIn, params, ttl);
-
+    cachedRequest: async function (route, keyIn, params, ttl, processing = null, clearcache = false) {
+        
         let key = `wc:${route}:${keyIn}`;
 
-        try {
-            let resp = await rediscache.getAsync(key);
-            if (resp) {
-                sails.log.silly('Using redis cache for ' + key);
-                return JSON.parse(resp);
-            }
-            else {
-                sails.log.silly('Running query for ' + key);
+        if (clearcache) {
+            sails.log.silly('Forcing no cache for', keyIn, params, ttl);
+            let results = await request(params);
+            if (processing)
+                results = processing(results);
 
-                let results = await request(params);
-
-                if (processing)
-                    results = processing(results);
-
-                //if succeeds, put in cache
-                rediscache.set(key, JSON.stringify(results));
-                rediscache.expire(key, ttl); //60 seconds
-                return results;
-            }
+            //if succeeds, put in cache
+            rediscache.set(key, JSON.stringify(results));
+            rediscache.expire(key, ttl); //60 seconds
+            return results;
         }
-        catch (e) {
-            sails.log.error(e);
-            throw new Error("No live data or cache available for " + key);
+        else {
+
+            sails.log.silly('Attempting Redis Cache for', keyIn, params, ttl);
+
+            try {
+                let resp = await rediscache.getAsync(key);
+                if (resp) {
+                    sails.log.silly('Using redis cache for ' + key);
+                    return JSON.parse(resp);
+                }
+                else {
+                    sails.log.silly('Running query for ' + key);
+
+                    let results = await request(params);
+
+                    if (processing)
+                        results = processing(results);
+
+                    //if succeeds, put in cache
+                    rediscache.set(key, JSON.stringify(results));
+                    rediscache.expire(key, ttl); //60 seconds
+                    return results;
+                }
+            }
+            catch (e) {
+                sails.log.error(e);
+                throw new Error("No live data or cache available for " + key);
+            }
         }
     },
 
