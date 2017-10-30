@@ -1,6 +1,11 @@
-FROM node:7-alpine
+FROM node:7
 
-RUN apk --no-cache add git
+# RUN apk --no-cache add git make gcc g++ python
+
+# RUN apk add vips --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
+
+# RUN apt-get update && apt-get install git
+
 RUN npm i --silent -g nodemon
 
 RUN mkdir -p /usr/src/app

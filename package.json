@@ -43,14 +43,15 @@
     "rss": "1.2.2",
     "express-useragent": "1.0.8",
     "winston-logzio": "1.0.3",
-    "md5": "2.2.1"
+    "md5": "2.2.1",
+    "sharp":"0.18.4"
   },
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",
     "start": "node --harmony-async-await app.js",
     "test-speed": "mocha --harmony-async-await test/speed.test.js test/speed/**/*.test.js",
     "test": "nyc mocha --harmony-async-await test/bootstrap.test.js test/**/*.test.js",
-    "docs": "apidoc -o docs"
+    "docs": "apidoc -o docs -i api/"
   },
   "author": "Open Lab",
   "license": "MIT",

@@ -94,7 +94,10 @@ module.exports.routes = {
   'GET /v1/discussion/list/:class/:content':'DiscussionController.list',
   'POST /v1/discussion/read/:message':'DiscussionController.read',
   'GET /v1/discussion/user/:class/:content/:user':'Discussion.user',
-  'POST /v1/discussion/remove':'DiscussionController.remove',  
+  'GET /v1/discussion/thumbnail/:submission':'Discussion.thumbnail',  
+  'POST /v1/discussion/remove':'DiscussionController.remove',
+  'POST /v1/discussion/submit/:class/:content':'DiscussionController.submit',
+  'POST /v1/discussion/verify/:submission':'DiscussionController.verify', 
 
   'OPTIONS /*':{policy:'cors'}
 };

@@ -64,6 +64,7 @@ module.exports.policies = {
     },
     'discussion':{
         '*':['isUser','verifyDomain','jsononly','cors'],
-        'subscribe':['socketonly','isUser','verifyDomain','jsononly','cors']
+        'subscribe':['socketonly','isUser','verifyDomain','jsononly','cors'],
+        'thumbnail':true
     }
 };

@@ -6,8 +6,7 @@ module.exports = {
         user:{
             model:'User'
         },
-        url: 'string',
-        cached: 'boolean',
+        verified: 'boolean',
         original:'string',
         cachedat:'datetime',
         course: {

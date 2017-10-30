@@ -7,7 +7,7 @@
     "name": "adminlogin",
     "group": "Admin",
     "version": "1.0.0",
-    "filename": "./api/controllers/AuthController.js",
+    "filename": "api/controllers/AuthController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
       {
@@ -23,7 +23,7 @@
     "name": "adminlogout",
     "group": "Admin",
     "version": "1.0.0",
-    "filename": "./api/controllers/AuthController.js",
+    "filename": "api/controllers/AuthController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
       {
@@ -38,11 +38,51 @@
     "name": "clearcache",
     "group": "Admin",
     "version": "1.0.0",
-    "filename": "./api/controllers/AdminController.js",
+    "filename": "api/controllers/AdminController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/clearcache"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/profile/mycontent/:class",
+    "title": "My Submissions",
+    "description": "<p>List all submission content for a specific class and this user</p>",
+    "name": "content",
+    "group": "Admin",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "admin"
+      },
+      {
+        "name": "teacher"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class slug</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Admin",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/profile/mycontent/:class"
       }
     ]
   },
@@ -56,19 +96,13 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
+        "name": "admin"
       },
       {
-        "name": "teacher",
-        "title": "Is a teacher (generated a code)",
-        "description": ""
+        "name": "teacher"
       }
     ],
     "parameter": {
@@ -85,20 +119,13 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "content",
-            "description": "<p>Content slug</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "teacher",
             "description": "<p>Only show teacher related things</p>"
           }
         ]
       }
     },
-    "filename": "./api/controllers/AdminController.js",
+    "filename": "api/controllers/AdminController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
       {
@@ -116,17 +143,13 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
+        "name": "admin"
       }
     ],
-    "filename": "./api/controllers/AdminController.js",
+    "filename": "api/controllers/AdminController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
       {
@@ -144,17 +167,13 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
+        "name": "admin"
       }
     ],
-    "filename": "./api/controllers/AdminController.js",
+    "filename": "api/controllers/AdminController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
       {
@@ -172,17 +191,13 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "owner",
-        "title": "Authenticated as Owner of Course (Github Access)",
-        "description": ""
+        "name": "owner"
       }
     ],
-    "filename": "./api/controllers/AdminController.js",
+    "filename": "api/controllers/AdminController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
       {
@@ -200,17 +215,13 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
+        "name": "admin"
       }
     ],
-    "filename": "./api/controllers/AnalyticsController.js",
+    "filename": "api/controllers/AnalyticsController.js",
     "groupTitle": "Analytics",
     "sampleRequest": [
       {
@@ -228,12 +239,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       }
     ],
-    "filename": "./api/controllers/AnalyticsController.js",
+    "filename": "api/controllers/AnalyticsController.js",
     "groupTitle": "Analytics",
     "sampleRequest": [
       {
@@ -251,14 +260,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -281,7 +286,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/AnalyticsController.js",
+    "filename": "api/controllers/AnalyticsController.js",
     "groupTitle": "Analytics",
     "sampleRequest": [
       {
@@ -299,14 +304,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -343,7 +344,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/AnalyticsController.js",
+    "filename": "api/controllers/AnalyticsController.js",
     "groupTitle": "Analytics",
     "sampleRequest": [
       {
@@ -359,7 +360,7 @@
     "name": "login",
     "group": "Authentication",
     "version": "1.0.0",
-    "filename": "./api/controllers/AuthController.js",
+    "filename": "api/controllers/AuthController.js",
     "groupTitle": "Authentication",
     "sampleRequest": [
       {
@@ -375,7 +376,7 @@
     "name": "logout",
     "group": "Authentication",
     "version": "1.0.0",
-    "filename": "./api/controllers/AuthController.js",
+    "filename": "api/controllers/AuthController.js",
     "groupTitle": "Authentication",
     "sampleRequest": [
       {
@@ -393,12 +394,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       }
     ],
-    "filename": "./api/controllers/AuthController.js",
+    "filename": "api/controllers/AuthController.js",
     "groupTitle": "Authentication",
     "sampleRequest": [
       {
@@ -416,14 +415,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -453,7 +448,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/AuthController.js",
+    "filename": "api/controllers/AuthController.js",
     "groupTitle": "Authentication",
     "sampleRequest": [
       {
@@ -471,14 +466,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -529,7 +520,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/AuthController.js",
+    "filename": "api/controllers/AuthController.js",
     "groupTitle": "Authentication",
     "sampleRequest": [
       {
@@ -547,17 +538,13 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
-    "filename": "./api/controllers/AuthController.js",
+    "filename": "api/controllers/AuthController.js",
     "groupTitle": "Authentication",
     "sampleRequest": [
       {
@@ -575,14 +562,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -605,7 +588,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/ClassroomController.js",
+    "filename": "api/controllers/ClassroomController.js",
     "groupTitle": "Classroom",
     "sampleRequest": [
       {
@@ -623,14 +606,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -646,7 +625,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/ClassroomController.js",
+    "filename": "api/controllers/ClassroomController.js",
     "groupTitle": "Classroom",
     "sampleRequest": [
       {
@@ -664,14 +643,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -687,7 +662,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/ClassroomController.js",
+    "filename": "api/controllers/ClassroomController.js",
     "groupTitle": "Classroom",
     "sampleRequest": [
       {
@@ -716,7 +691,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/ClassroomController.js",
+    "filename": "api/controllers/ClassroomController.js",
     "groupTitle": "Classroom",
     "sampleRequest": [
       {
@@ -734,12 +709,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       }
     ],
-    "filename": "./api/controllers/CourseController.js",
+    "filename": "api/controllers/CourseController.js",
     "groupTitle": "Course",
     "sampleRequest": [
       {
@@ -757,12 +730,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       }
     ],
-    "filename": "./api/controllers/CourseController.js",
+    "filename": "api/controllers/CourseController.js",
     "groupTitle": "Course",
     "sampleRequest": [
       {
@@ -780,12 +751,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       }
     ],
-    "filename": "./api/controllers/CourseController.js",
+    "filename": "api/controllers/CourseController.js",
     "groupTitle": "Course",
     "sampleRequest": [
       {
@@ -803,9 +772,7 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       }
     ],
     "parameter": {
@@ -821,7 +788,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/CourseController.js",
+    "filename": "api/controllers/CourseController.js",
     "groupTitle": "Course",
     "sampleRequest": [
       {
@@ -839,9 +806,7 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       }
     ],
     "parameter": {
@@ -864,7 +829,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/CourseController.js",
+    "filename": "api/controllers/CourseController.js",
     "groupTitle": "Course",
     "sampleRequest": [
       {
@@ -882,46 +847,16 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       }
     ],
-    "filename": "./api/controllers/CourseController.js",
+    "filename": "api/controllers/CourseController.js",
     "groupTitle": "Course",
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/course/unlike/:class/:content"
       }
     ]
-  },
-  {
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "optional": false,
-            "field": "varname1",
-            "description": "<p>No type.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "varname2",
-            "description": "<p>With type.</p>"
-          }
-        ]
-      }
-    },
-    "type": "",
-    "url": "",
-    "version": "0.0.0",
-    "filename": "./docs/main.js",
-    "group": "D__Research_connectedacademy_watercooler_docs_main_js",
-    "groupTitle": "D__Research_connectedacademy_watercooler_docs_main_js",
-    "name": ""
   },
   {
     "type": "post",
@@ -933,14 +868,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -963,7 +894,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/DiscussionController.js",
+    "filename": "api/controllers/DiscussionController.js",
     "groupTitle": "Discussion",
     "sampleRequest": [
       {
@@ -981,14 +912,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1011,7 +938,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/DiscussionController.js",
+    "filename": "api/controllers/DiscussionController.js",
     "groupTitle": "Discussion",
     "sampleRequest": [
       {
@@ -1029,14 +956,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1059,7 +982,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/DiscussionController.js",
+    "filename": "api/controllers/DiscussionController.js",
     "groupTitle": "Discussion",
     "sampleRequest": [
       {
@@ -1077,14 +1000,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1100,7 +1019,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/DiscussionController.js",
+    "filename": "api/controllers/DiscussionController.js",
     "groupTitle": "Discussion",
     "sampleRequest": [
       {
@@ -1118,14 +1037,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1141,7 +1056,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/DiscussionController.js",
+    "filename": "api/controllers/DiscussionController.js",
     "groupTitle": "Discussion",
     "sampleRequest": [
       {
@@ -1159,14 +1074,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1182,7 +1093,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/DiscussionController.js",
+    "filename": "api/controllers/DiscussionController.js",
     "groupTitle": "Discussion",
     "sampleRequest": [
       {
@@ -1200,14 +1111,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1237,7 +1144,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/DiscussionController.js",
+    "filename": "api/controllers/DiscussionController.js",
     "groupTitle": "Discussion",
     "sampleRequest": [
       {
@@ -1255,21 +1162,134 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
-    "filename": "./api/controllers/DiscussionController.js",
+    "filename": "api/controllers/DiscussionController.js",
     "groupTitle": "Discussion",
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/discussion/remove"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/discussion/thumbnail/:submission",
+    "title": "Submission Thumbnail",
+    "description": "<p>Thumbnail for submission</p>",
+    "name": "submissionthumbnail",
+    "group": "Discussion",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "submission",
+            "description": "<p>Submission ID</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/DiscussionController.js",
+    "groupTitle": "Discussion",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/discussion/thumbnail/:submission"
+      }
+    ]
+  },
+  {
+    "type": "post",
+    "url": "/v1/discussion/submit/:class/:content",
+    "title": "Submit New Submission",
+    "description": "<p>Submit a url to some content which will be scraped and returned</p>",
+    "name": "submit",
+    "group": "Discussion",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "user"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class Slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "content",
+            "description": "<p>Content Slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "body.url",
+            "description": "<p>URL to scrape</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/DiscussionController.js",
+    "groupTitle": "Discussion",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/discussion/submit/:class/:content"
+      }
+    ]
+  },
+  {
+    "type": "post",
+    "url": "/v1/discussion/verify/:submission",
+    "title": "Verify Submission",
+    "description": "<p>Verify that this submission is the correct one for this homework and add to discussion pool</p>",
+    "name": "verify",
+    "group": "Discussion",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "user"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "submission",
+            "description": "<p>Submission ID</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/DiscussionController.js",
+    "groupTitle": "Discussion",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/discussion/verify/:submission"
       }
     ]
   },
@@ -1283,9 +1303,7 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       }
     ],
     "parameter": {
@@ -1322,7 +1340,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/MessagesController.js",
+    "filename": "api/controllers/MessagesController.js",
     "groupTitle": "Messages",
     "sampleRequest": [
       {
@@ -1340,14 +1358,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1370,7 +1384,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/MessagesController.js",
+    "filename": "api/controllers/MessagesController.js",
     "groupTitle": "Messages",
     "sampleRequest": [
       {
@@ -1388,14 +1402,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1414,11 +1424,18 @@
             "optional": false,
             "field": "content",
             "description": "<p>Content slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "clearcache",
+            "description": "<p>Force non-cached version</p>"
           }
         ]
       }
     },
-    "filename": "./api/controllers/MessagesController.js",
+    "filename": "api/controllers/MessagesController.js",
     "groupTitle": "Messages",
     "sampleRequest": [
       {
@@ -1436,14 +1453,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1494,7 +1507,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/MessagesController.js",
+    "filename": "api/controllers/MessagesController.js",
     "groupTitle": "Messages",
     "sampleRequest": [
       {
@@ -1512,14 +1525,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1563,7 +1572,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/MessagesController.js",
+    "filename": "api/controllers/MessagesController.js",
     "groupTitle": "Messages",
     "sampleRequest": [
       {
@@ -1581,14 +1590,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1632,7 +1637,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/MessagesController.js",
+    "filename": "api/controllers/MessagesController.js",
     "groupTitle": "Messages",
     "sampleRequest": [
       {
@@ -1650,14 +1655,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1708,7 +1709,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/MessagesController.js",
+    "filename": "api/controllers/MessagesController.js",
     "groupTitle": "Messages",
     "sampleRequest": [
       {
@@ -1726,17 +1727,13 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
-    "filename": "./api/controllers/MessagesController.js",
+    "filename": "api/controllers/MessagesController.js",
     "groupTitle": "Messages",
     "sampleRequest": [
       {
@@ -1746,7 +1743,7 @@
   },
   {
     "type": "get",
-    "url": "/v1/messages/visualisation/:class/:content/:groupby",
+    "url": "/v1/messages/visualisation/:class/:content/:groupby/:limit",
     "title": "Visualisation",
     "description": "<p>Visualisation of message activity for each segment</p>",
     "name": "message_visualisation",
@@ -1754,14 +1751,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "user",
-        "title": "Authenticated as Student on the Course",
-        "description": ""
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1790,19 +1783,33 @@
           },
           {
             "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>Upper block number by which to normalise results</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "Boolean",
             "optional": false,
             "field": "whitelist",
             "description": "<p>Limit to messages from registered users</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "clearcache",
+            "description": "<p>Force non-cached version</p>"
           }
         ]
       }
     },
-    "filename": "./api/controllers/MessagesController.js",
+    "filename": "api/controllers/MessagesController.js",
     "groupTitle": "Messages",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/messages/visualisation/:class/:content/:groupby"
+        "url": "https://api.connectedacademy.io/v1/messages/visualisation/:class/:content/:groupby/:limit"
       }
     ]
   },
@@ -1816,19 +1823,13 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
+        "name": "admin"
       },
       {
-        "name": "teacher",
-        "title": "Is a teacher (generated a code)",
-        "description": ""
+        "name": "teacher"
       }
     ],
     "parameter": {
@@ -1858,7 +1859,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/AdminController.js",
+    "filename": "api/controllers/AdminController.js",
     "groupTitle": "Profile",
     "sampleRequest": [
       {
@@ -1876,19 +1877,13 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
+        "name": "admin"
       },
       {
-        "name": "teacher",
-        "title": "Is a teacher (generated a code)",
-        "description": ""
+        "name": "teacher"
       }
     ],
     "parameter": {
@@ -1904,7 +1899,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/AdminController.js",
+    "filename": "api/controllers/AdminController.js",
     "groupTitle": "Profile",
     "sampleRequest": [
       {
@@ -1922,22 +1917,16 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
+        "name": "admin"
       },
       {
-        "name": "teacher",
-        "title": "Is a teacher (generated a code)",
-        "description": ""
+        "name": "teacher"
       }
     ],
-    "filename": "./api/controllers/AdminController.js",
+    "filename": "api/controllers/AdminController.js",
     "groupTitle": "Profile",
     "sampleRequest": [
       {
@@ -1955,14 +1944,10 @@
     "version": "1.0.0",
     "permission": [
       {
-        "name": "domainparse",
-        "title": "Domain Dependent",
-        "description": ""
+        "name": "domainparse"
       },
       {
-        "name": "admin",
-        "title": "Authenticated as Admin",
-        "description": ""
+        "name": "admin"
       }
     ],
     "parameter": {
@@ -1985,7 +1970,7 @@
         ]
       }
     },
-    "filename": "./api/controllers/AdminController.js",
+    "filename": "api/controllers/AdminController.js",
     "groupTitle": "Profile",
     "sampleRequest": [
       {

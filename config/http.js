@@ -33,6 +33,16 @@ module.exports.http = {
         let user = null;
         if (req.session && req.session.passport && req.session.passport.user)
            user = req.session.passport.user.id;
+           
+        let params = null;
+        try{
+          params = req.params.all();
+        }
+        catch (e)
+        {
+          
+        }
+
         sails.log.verbose('Endpoint',{
           url: req.method + ' ' + req.path,
           session: req.session.id,
@@ -40,7 +50,7 @@ module.exports.http = {
           user: user,
           agent: _.pick(req.useragent, _.identity),
           query: req.query,
-          params: req.params.all(),
+          params: params,
           time: res.get('X-Response-Time')
         });
       });

@@ -20,7 +20,8 @@
         "Classroom":true,
         "AuthCheck":true,
         "LikeTag":true,
-        "ResponseCache":true
+        "ResponseCache":true,
+        "SubmissionScraper":true
     },
     "parserOptions": {
         "ecmaVersion": 8,
