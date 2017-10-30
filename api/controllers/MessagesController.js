@@ -124,7 +124,7 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/messages/visualisation/:class/:content/:groupby Visualisation
+     * @api {get} /v1/messages/visualisation/:class/:content/:groupby/:limit Visualisation
      * @apiDescription Visualisation of message activity for each segment
      * @apiName message_visualisation
      * @apiGroup Messages
@@ -135,6 +135,7 @@ module.exports = {
      * @apiParam  {String} class Content slug
      * @apiParam  {String} content Content slug
      * @apiParam  {int} groupby Number of segments to group by
+     * @apiParam  {int} limit Upper block number by which to normalise results
      * @apiParam  {Boolean} whitelist Limit to messages from registered users 
      * @apiParam  {Boolean} clearcache Force non-cached version
      * 
@@ -145,7 +146,8 @@ module.exports = {
             req.checkQuery('whitelist').optional().isBoolean();
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
-            req.checkParams('groupby').notEmpty();
+            req.checkParams('groupby').isInt();
+            req.checkParams('limit').optional().isInt();            
             req.checkQuery('justmine').optional().isBoolean();
             req.checkQuery('clearcache').optional().isBoolean();
 
@@ -163,7 +165,7 @@ module.exports = {
             let justmine = req.param('justmine');
             if (justmine && req.session.passport && req.session.passport.user)
                 justmine = req.session.passport.user.id;
-            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'), justmine, req.param('clearcache'));
+            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'),  req.param('limit'), justmine, req.param('clearcache'));
 
             return res.json({
                 scope: {
@@ -171,6 +173,7 @@ module.exports = {
                     content: req.param('content'),
                     groupby: req.param('groupby'),
                     whitelist: req.param('whitelist'),
+                    limit: req.param('limit'),
                     justmine: req.param('justmine')
                 },
                 data: data

@@ -63,7 +63,7 @@ module.exports.routes = {
   'GET /v1/classroom/rss/:code':'ClassroomController.rss',
 
 
-  'GET /v1/messages/visualisation/:class/:content/:groupby':'MessagesController.visualisation',
+  'GET /v1/messages/visualisation/:class/:content/:groupby/:limit?':'MessagesController.visualisation',
   'GET /v1/messages/likes/:class/:content':'MessagesController.likes',
   'GET /v1/messages/list/:class/:content/:startsegment/:endsegment':'MessagesController.list',
   'GET /v1/messages/content/:class/:content':'MessagesController.content',  

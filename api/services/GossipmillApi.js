@@ -39,7 +39,7 @@ let sockethandlers = {};
 
 module.exports = {
 
-    visualisation: async (course, klass, content, language, whitelist, groupby, justmine, clearcache = false) => {
+    visualisation: async (course, klass, content, language, whitelist, groupby, limit, justmine, clearcache = false) => {
         let query = {
             lang: language,
             whitelist: whitelist,
@@ -73,7 +73,11 @@ module.exports = {
         let processing = function(response){
             
             let min = 0;
-            let max = parseInt(_.max(response, 'segment').segment);
+            let max = 0;
+            if (limit)
+                max = limit;
+            else
+                max = parseInt(_.max(response, 'segment').segment);
 
             let ordered = {};
 
@@ -111,7 +115,7 @@ module.exports = {
             }
         };
 
-        let key = `${md5(query)}`;
+        let key = `${md5(_.extend(query,{limit:limit}))}`;
 
         let results = await ResponseCache.cachedRequest('visualisation', key, params, 10, processing, clearcache);
 
