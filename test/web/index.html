@@ -38,6 +38,9 @@
         io.socket.on('message',function(msg){
             console.log(msg);
         });
+        io.socket.on('message',function(msg){
+            console.log(msg);
+        });
         io.socket.on('user',function(msg){
             console.log(msg);
         });
@@ -89,7 +92,7 @@
                     console.log(data);
                 });
 
-                io.socket.get('/v1/messages/subscribe/interpretation/liveclass/20/100',function(data,res){
+                io.socket.get('/v1/messages/subscribe/interpretation/liveclass/20/40',function(data,res){
                     console.log(data);
                 });
 

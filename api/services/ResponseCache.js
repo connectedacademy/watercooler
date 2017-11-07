@@ -107,19 +107,5 @@ module.exports = {
                 resolve();
             });
         });
-
-
-        // return new Promise((resolve, reject) => {
-        //     redisIO.keys(`${keyPattern}:*`).then(function (keys) {
-        //         // Use pipeline instead of sending
-        //         // one command each time to improve the
-        //         // performance.
-        //         var pipeline = redisIO.pipeline();
-        //         keys.forEach(function (key) {
-        //             pipeline.del(key);
-        //         });
-        //         resolve(pipeline.exec());
-        //     });
-        // });
     }
 }
