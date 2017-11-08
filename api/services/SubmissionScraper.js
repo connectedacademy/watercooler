@@ -41,7 +41,7 @@ let putFileToS3 = async function (folder, name, url, thumbnail=false, content) {
         {
             let thumbnail_name = `submission/${folder}/${name}/thumb/medium.jpg`;
             // console.log("making thumb",url, thumbnail_name);
-            let newimg = await sharp(content).resize(800,600).jpeg().toBuffer();
+            let newimg = await sharp(content).resize(800,800).jpeg().toBuffer();
             s3.upload({
                 Body: newimg,
                 Bucket: process.env.AWS_S3_BUCKET,
