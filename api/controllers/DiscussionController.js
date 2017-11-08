@@ -534,9 +534,9 @@ module.exports = {
                 course: req.course.domain,
                 class: req.param('class'),
                 content: req.param('content'),
-                matched: true
+                verified: true
             })
-                .populate('discussion').populate('user');
+            .populate('discussion').populate('user');
 
             let [participated, own] = await Promise.all([p, o]);
 

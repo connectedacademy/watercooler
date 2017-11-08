@@ -46,7 +46,8 @@ module.exports = {
                 course: course,
                 class: klass,
                 content: content,
-                user: user
+                user: user,
+                verified: true
             });
             data.submissions = submissions;
         }
