@@ -28,8 +28,15 @@ let get = async (uri) => {
 module.exports = {
 
     applyFrontMatter: async (data, uri, course, user, klass, content) => {
-        let courseinfo = await CacheEngine.getFrontmatter(uri,true);
+        let courseinfo = await CacheEngine.getFrontmatter(uri, true);
+
+        // console.log(courseinfo.attributes);
+
         _.extend(data, courseinfo.attributes);
+
+        // console.log("CONTENT_TYPE");
+        // console.log(data.content_type);
+
         data.hasContent = courseinfo.body != '';
         delete data.published;
         if (data.video)
@@ -46,13 +53,19 @@ module.exports = {
     },
 
     getSegmentWithHub: function (segment, hub) {
-        let hubinfo = _.find(segment.schedule, { hub_id: hub });
-        if (!hubinfo && _.size(segment.schedule) > 1)
-            hubinfo = _.find(segment.schedule, { leadhub: true });
-        else
-            hubinfo = _.first(segment.schedule);
-
-        return moment(hubinfo.release_at);
+        if (segment && segment.schedule) {
+            let hubinfo = _.find(segment.schedule, { hub_id: hub });
+            if (!hubinfo && _.size(segment.schedule) > 1) {
+                return moment(_.find(segment.schedule, { leadhub: true }).release_at);
+            }
+            else {
+                let hubinfo = _.first(segment.schedule);
+                return moment(hubinfo.release_at);
+            }
+        }
+        else {
+            return moment();
+        }
     },
 
     getLiveSegment: function (klass) {
@@ -123,18 +136,15 @@ module.exports = {
     getYaml: async (url) => {
         sails.log.silly('Getting ' + url);
 
-        try
-        {
+        try {
             let resp = await rediscache.getAsync("ymlcache:" + url);
-            if (resp)
-            {
+            if (resp) {
                 sails.log.silly('Using redis cache for ' + url);
                 return JSON.parse(resp);
             }
-            else
-            {
+            else {
                 sails.log.silly('Getting original file ' + url);
-                
+
                 let raw = await get(url);
                 //try load yaml
                 let yml = yaml.safeLoad(raw);

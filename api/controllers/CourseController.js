@@ -244,14 +244,13 @@ module.exports = {
             var data = await CacheEngine.getSpec(req,res);
 
             let promises = [];
-            
+
             let totals = await LikeTag.getLikesGrouped(req.course.domain, k);
             let totals_user = null;
 
             if (req.session.passport && req.session.passport.user)
             {
                 totals_user = await LikeTag.getUserLiked(req.course.domain, k, req.session.passport.user.id);
-                //totals_user = await GossipmillApi.allTotalsForUser(req.course.domain, req.session.passport.user.id);
             }
 
             //for each file in the spec, get the markdown and parse it:
@@ -274,6 +273,8 @@ module.exports = {
                 }
 
                 await Promise.all(promises);
+
+                console.log(_.pluck(klass.content,'content_type'));
 
                 //current time / faketime
                 let NOW = moment(req.query.time) || moment();
@@ -307,7 +308,7 @@ module.exports = {
                 let webinarsegmentindex = _.indexOf(klass.content,webinarsegment);
 
                 let live_segment_start = CacheEngine.getSegmentWithHub(livesegment,myhub);
-                let webinar_segment_start = CacheEngine.getSegmentWithHub(webinarsegment,myhub);                
+                let webinar_segment_start = CacheEngine.getSegmentWithHub(webinarsegment,myhub);
 
                 let weekstart = live_segment_start.clone().subtract(2,'days');
                 if (NOW.isBefore(weekstart))
@@ -339,12 +340,20 @@ module.exports = {
                 let classreleased = false;
                 let webinareleased = false;
 
+                
                 if (NOW.isAfter(live_segment_start)) classreleased = true;
                 if (NOW.isAfter(webinar_segment_start)) webinareleased = true;
+                
+                console.log('liveclass start');
+                console.log(classreleased);
 
+                console.log('webinar start');
+                console.log(webinareleased);
                 klass.content.forEach(function(content,i)
                 {
                     content.status = 'FUTURE';
+
+                    console.log(content.content_type);
 
                     switch (content.content_type)
                     {
@@ -375,6 +384,11 @@ module.exports = {
                                 content.status = 'RELEASED'
                             break;
                             
+
+                        case 'nextclass':
+                            if (webinareleased)
+                                content.status = 'RELEASED'
+                            break;
 
                         case 'webinar':
                             if (webinareleased)
@@ -599,8 +613,46 @@ module.exports = {
     hubs: async (req,res) =>{
         try
         {
-            var data = await CacheEngine.getHubs(req,res);
-            return res.json(data);
+            let [hubs,spec] = await Promise.all([CacheEngine.getHubs(req,res), CacheEngine.getSpec(req,res)]);
+            //get all liveclasses:
+            
+            let NOW = moment()
+
+            // console.log("NOW "+ NOW);
+
+            let liveclasses = _.compact(_.flattenDeep(_.map(spec.classes,function(klass){
+
+                //first one:
+                let first = _.find(klass.content,(g)=>g.schedule);
+                return (first)?first.schedule:null;
+            })));
+
+            for (let hub of hubs)
+            {
+                let forhub = _.filter(liveclasses,(ff)=>{
+                    return ff.hub_id == hub.id;
+                });
+
+                // console.log(forhub);
+                var closest = moment().add(5000,'years');
+                let isset = false;
+
+                for (let sched of forhub)
+                {
+                    var date = moment(sched.release_at);
+                    // console.log("date " + date);
+                    if (date.isAfter(NOW) && date.isBefore(closest)) {
+                        // console.log('setting to '+ date);
+                       closest = date;
+                       isset = true;
+                    }
+                }
+
+                if (isset)
+                    hub.liveclass_release = closest;
+            }
+
+            return res.json(hubs);
         }
         catch (e)
         {

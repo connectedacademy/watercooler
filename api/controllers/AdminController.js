@@ -14,18 +14,30 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /clearcache Clear Cache
+     * @api {get} /clearcache/:domain? Clear Cache
      * @apiName clearcache
      * @apiGroup Admin
      * @apiVersion  1.0.0 
      * 
      */
-    clearcache: (req, res) => {
-        //clear redis cache:
-        rediscache.flushdb(function (msg) {
-            sails.log.verbose('Redis cached cleared', msg);
+    clearcache: async (req, res) => {
+        if (req.param('domain'))
+        {
+            sails.log.verbose('ClearingCache',req.param('domain'));
+            await ResponseCache.removeMatching(`wc:rest:${req.param('domain')}:*`);
+            await ResponseCache.removeMatching(`wc:yaml:${req.param('domain')}:*`);
             return res.ok('Cached cleared');
-        });
+        }
+        else
+        {
+            //no domain set -- clear all
+
+            //clear redis cache:
+            rediscache.flushdb(function (msg) {
+                sails.log.verbose('Redis cached cleared', msg);
+                return res.ok('Cached cleared');
+            });
+        }
     },
 
     /**
