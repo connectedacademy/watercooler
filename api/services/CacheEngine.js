@@ -133,11 +133,11 @@ module.exports = {
         };
     },
 
-    getYaml: async (url) => {
+    getYaml: async (domain,url) => {
         sails.log.silly('Getting ' + url);
 
         try {
-            let resp = await rediscache.getAsync("ymlcache:" + url);
+            let resp = await rediscache.getAsync(`wc:yaml:${domain}:${url}`);
             if (resp) {
                 sails.log.silly('Using redis cache for ' + url);
                 return JSON.parse(resp);
@@ -149,7 +149,7 @@ module.exports = {
                 //try load yaml
                 let yml = yaml.safeLoad(raw);
                 //if succeeds, put in cache
-                rediscache.set("ymlcache:" + url, JSON.stringify(yml));
+                rediscache.set(`wc:yaml:${domain}:${url}`, JSON.stringify(yml));
                 return yml;
             }
         }
@@ -161,7 +161,7 @@ module.exports = {
 
     getHubs: async (req) => {
         if (process.env.LIVE_DATA == 'true') {
-            return CacheEngine.getYaml(req.course.url + '/course/config/hubs.yaml');
+            return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/hubs.yaml');
         }
         else {
             sails.log.silly('Should be getting ' + req.course.url + '/course/config/hubs.yaml, actually serving examples/hubs.yaml');
@@ -172,7 +172,7 @@ module.exports = {
 
     getSpec: async (req) => {
         if (process.env.LIVE_DATA == 'true') {
-            return CacheEngine.getYaml(req.course.url + '/course/config/spec.yaml');
+            return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/spec.yaml');
         }
         else {
             sails.log.silly('Should be getting ' + req.course.url + '/course/config/spec.yaml, actually serving examples/spec.yaml');
@@ -184,7 +184,7 @@ module.exports = {
     getQuestions: async (req) => {
         let lang = await LangService.lang(req);
         if (process.env.LIVE_DATA == 'true') {
-            return CacheEngine.getYaml(req.course.url + '/course/config/questions/' + lang + '.yaml');
+            return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/questions/' + lang + '.yaml');
         }
         else {
             // console.log(req.course);

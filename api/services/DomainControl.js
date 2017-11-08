@@ -28,7 +28,7 @@ module.exports = {
     },
 
     getWhitelist: async ()=>{
-        let whitelist = await CacheEngine.getYaml(master_config);
+        let whitelist = await CacheEngine.getYaml('connectedacademy.io', master_config);
         return whitelist;
     }
 

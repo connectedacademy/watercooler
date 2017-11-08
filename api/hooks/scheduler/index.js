@@ -116,7 +116,7 @@ module.exports = function (sails) {
                     // console.log(course);
                     sails.log.verbose('Processing notifications for ' + whitelist.courses[c].domain);
                     let course = whitelist.courses[c];
-                    let spec = await CacheEngine.getYaml(whitelist.courses[c].url + '/course/config/spec.yaml');
+                    let spec = await CacheEngine.getYaml(whitelist.courses[c].domain, whitelist.courses[c].url + '/course/config/spec.yaml');
                     let startdate = moment(spec.starts);
                     let enddate = moment(spec.ends);
 

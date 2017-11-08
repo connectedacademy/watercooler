@@ -1,8 +1,8 @@
 let redis = require('redis');
 let RedisIO = require('ioredis');
 let redisIO = new RedisIO(process.env.REDIS_PORT, process.env.REDIS_HOST, {
-    db: 2
-}); //new Redis(6379, '192.168.1.1')
+    db: 0
+});
 
 let rediscache = redis.createClient({
     host: process.env.REDIS_HOST,

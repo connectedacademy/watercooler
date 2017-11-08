@@ -24,7 +24,7 @@ module.exports = {
         if (req.param('domain'))
         {
             sails.log.verbose('ClearingCache',req.param('domain'));
-            await ResponseCache.removeMatching(`wc:rest:${req.param('domain')}:*`);
+            await ResponseCache.removeMatching(`https://${req.param('domain')}/*`);
             await ResponseCache.removeMatching(`wc:yaml:${req.param('domain')}:*`);
             return res.ok('Cached cleared');
         }
