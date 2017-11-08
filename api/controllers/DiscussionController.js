@@ -280,7 +280,7 @@ module.exports = {
     /**
      * 
      * @api {post} /v1/discussion/submit/:class/:content Submit New Submission
-     * @apiDescription Submit a url to some content which will be scraped and returned
+     * @apiDescription Submit a url to some content which will be scraped and returned. Accepts with or without protocol.
      * @apiName submit
      * @apiGroup Discussion
      * @apiVersion  1.0.0
@@ -305,10 +305,14 @@ module.exports = {
             return res.badRequest(e.mapped());
         }
 
+        let url = req.body.url;
+        if (!_.startsWith(url, 'http'))
+            url = `https://${url}`;
+
         try {
-            let data = await SubmissionScraper.scrapeForSubmission(req, req.param('class'), req.param('content'), req.body.url);
+            let data = await SubmissionScraper.scrapeForSubmission(req, req.param('class'), req.param('content'), url);
             return res.json({
-                url: req.body.url,
+                url: url,
                 submissions: data
             });
         }
