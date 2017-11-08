@@ -17,7 +17,7 @@ module.exports = {
         let spec = await CacheEngine.getSubs(`https://${req.course.domain}/course/config/submission.json`);
 
         //process each of these as a submission
-        let submissions = await putToS3(spec.submission, req.session.passport.user.id, url, req.course.domain, klass, content);
+        let submissions = await putToS3(spec, req.session.passport.user.id, url, req.course.domain, klass, content);
 
         // return these submissions (as un-selected)
         return submissions;
