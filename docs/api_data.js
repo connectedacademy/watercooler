@@ -33,7 +33,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/clearcache",
+    "url": "/clearcache/:domain?",
     "title": "Clear Cache",
     "name": "clearcache",
     "group": "Admin",
@@ -42,7 +42,7 @@ define({ "api": [
     "groupTitle": "Admin",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/clearcache"
+        "url": "https://api.connectedacademy.io/clearcache/:domain?"
       }
     ]
   },

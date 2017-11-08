@@ -332,7 +332,6 @@ module.exports = {
      * 
      */
     thumbnail: async (req, res) => {
-        // console.log(`https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/submission/${req.param('submission').replace('#','%23').replace(':','%3A')}/content/thumb/medium.jpg`);
         return res.redirect(`https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/submission/${req.param('submission').replace('#','%23').replace(':','%3A')}/content/thumb/medium.jpg`);
     },
 
