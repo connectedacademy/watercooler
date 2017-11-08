@@ -23,14 +23,14 @@ if (!process.env.CI && process.env.NODE_ENV=='production')
   });
   customLogger.add(logzioWinstonTransport,loggerOptions);
     
-  // let winstonAwsCloudWatch = require('winston-cloudwatch');
-  // customLogger.add(winstonAwsCloudWatch, {
-  //   logGroupName: 'ConnectedAcademyAPI',
-  //   logStreamName:'watercooler',
-  //   awsRegion: process.env.AWS_DEFAULT_REGION,
-  //   jsonMessage: true,
-  //   level:'verbose'
-  // });
+  let winstonAwsCloudWatch = require('winston-cloudwatch');
+  customLogger.add(winstonAwsCloudWatch, {
+    logGroupName: 'ConnectedAcademyAPI',
+    logStreamName:'watercooler',
+    awsRegion: process.env.AWS_DEFAULT_REGION,
+    jsonMessage: true,
+    level:'verbose'
+  });
 }
 
 module.exports.log = {
