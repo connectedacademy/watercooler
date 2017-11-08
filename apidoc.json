@@ -8,5 +8,9 @@
   "template":{
       "withGenerator":false,
       "withCompare":false
+  },
+  "header": {
+    "title": "Watercooler API",
+    "filename": "header.md"
   }
 }
