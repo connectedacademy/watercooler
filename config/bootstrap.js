@@ -130,7 +130,7 @@ module.exports.bootstrap = function (cb) {
               });
             }
             else {
-              return cb(new Error("No rights to administer this course", req.session.passport.user));
+              return cb(null, false, "No rights to administer this course");
             }
           });
         });

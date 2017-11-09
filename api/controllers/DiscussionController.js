@@ -393,7 +393,7 @@ module.exports = {
                     }
                 });
 
-                console.log(result);
+                // console.log(result);
 
                 return res.json({
                     msg: 'Submission removed!'

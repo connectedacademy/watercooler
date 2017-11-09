@@ -179,15 +179,15 @@ module.exports = {
             user = _.omit(user,'registrations');
 
             let roles = ['user'];
+
+            //normal admin
             if (_.includes(user.admin,req.course.domain))
                 roles.push('admin');
-            else
+
+            //owner
+            if (user.owner && req.session.passport.allowedrepos && _.includes(req.session.passport.allowedrepos,req.course.repo))
             {
-                if (req.session.passport.allowedrepos && _.includes(req.session.passport.allowedrepos,req.course.repo))
-                {
-                    roles.push('admin');
-                    roles.push('owner');
-                }
+                roles.push('owner');
             }
 
             let codes = await Classroom.find({
