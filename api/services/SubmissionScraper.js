@@ -189,6 +189,7 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
                     thumbnail: preview,
                     user: user,
                     course: course,
+                    original: url,
                     class: klass,
                     content: cnt,
                     verified: false
