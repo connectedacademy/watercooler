@@ -48,46 +48,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/v1/profile/mycontent/:class",
-    "title": "My Submissions",
-    "description": "<p>List all submission content for a specific class and this user</p>",
-    "name": "content",
-    "group": "Admin",
-    "version": "1.0.0",
-    "permission": [
-      {
-        "name": "domainparse"
-      },
-      {
-        "name": "admin"
-      },
-      {
-        "name": "teacher"
-      }
-    ],
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "class",
-            "description": "<p>Class slug</p>"
-          }
-        ]
-      }
-    },
-    "filename": "api/controllers/AdminController.js",
-    "groupTitle": "Admin",
-    "sampleRequest": [
-      {
-        "url": "https://api.connectedacademy.io/v1/profile/mycontent/:class"
-      }
-    ]
-  },
-  {
-    "type": "get",
     "url": "/v1/profile/content/:class",
     "title": "Submissions",
     "description": "<p>List all submission content for a specific class and content segment</p>",
@@ -130,6 +90,46 @@ define({ "api": [
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/profile/content/:class"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/profile/mycontent/:class",
+    "title": "My Submissions",
+    "description": "<p>List all submission content for a specific class and this user</p>",
+    "name": "content",
+    "group": "Admin",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "admin"
+      },
+      {
+        "name": "teacher"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class slug</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Admin",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/profile/mycontent/:class"
       }
     ]
   },
@@ -252,9 +252,33 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/v1/analytics/question/:class/:content",
+    "url": "/v1/auth/postquestions",
+    "title": "End of Course Questions",
+    "description": "<p>Get list of questions to ask at the end of the course</p>",
+    "name": "postquestions",
+    "group": "Analytics",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "user"
+      }
+    ],
+    "filename": "api/controllers/AnalyticsController.js",
+    "groupTitle": "Analytics",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/auth/postquestions"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/analytics/question/:key",
     "title": "Get Question",
-    "description": "<p>Get a single question relevant to this section of content</p>",
+    "description": "<p>Get a single question relevant to this action</p>",
     "name": "question",
     "group": "Analytics",
     "version": "1.0.0",
@@ -273,15 +297,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "class",
+            "field": "key",
             "description": "<p>Class slug</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "content",
-            "description": "<p>Content slug</p>"
           }
         ]
       }
@@ -290,7 +307,7 @@ define({ "api": [
     "groupTitle": "Analytics",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/analytics/question/:class/:content"
+        "url": "https://api.connectedacademy.io/v1/analytics/question/:key"
       }
     ]
   },
@@ -1209,7 +1226,7 @@ define({ "api": [
     "type": "post",
     "url": "/v1/discussion/submit/:class/:content",
     "title": "Submit New Submission",
-    "description": "<p>Submit a url to some content which will be scraped and returned</p>",
+    "description": "<p>Submit a url to some content which will be scraped and returned. Accepts with or without protocol.</p>",
     "name": "submit",
     "group": "Discussion",
     "version": "1.0.0",

@@ -75,7 +75,8 @@ module.exports.routes = {
 
   'POST /v1/analytics/answer/response':'AnalyticsController.submit',
   'GET /v1/analytics/answers':'AnalyticsController.answers',
-  'GET /v1/analytics/question/:class/:content':'AnalyticsController.question',
+  'GET /v1/analytics/question/:key':'AnalyticsController.question',
+  'GET /v1/analytics/postquestions':'AnalyticsController.postquestions',
 
   'POST /v1/analytics/log':'AnalyticsController.log',
 

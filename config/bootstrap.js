@@ -126,6 +126,12 @@ module.exports.bootstrap = function (cb) {
               //save my account with admin appended
               me_user.save(function (err) {
                 req.session.passport.user.owner = user;
+                if (!req.session.passport.admin)
+                  req.session.passport.admin = [];
+
+                if (!_.includes(req.session.passport.user.admin,req.course.domain))
+                  req.session.passport.user.admin.push(req.course.domain);
+                  
                 return cb(err, req.session.passport.user);
               });
             }

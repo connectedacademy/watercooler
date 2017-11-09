@@ -4,41 +4,84 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/analytics/question/:class/:content Get Question
-     * @apiDescription Get a single question relevant to this section of content
+     * @api {get} /v1/auth/postquestions End of Course Questions
+     * @apiDescription Get list of questions to ask at the end of the course
+     * @apiName postquestions
+     * @apiGroup Analytics
+     * @apiVersion  1.0.0
+     * @apiPermission domainparse
+     * @apiPermission user
+     * 
+     */
+    postquestions: async (req,res)=>{
+        try
+        {
+            let questions = await CacheEngine.getQuestions(req,res);
+
+            let myanswers = await Answer.find({
+                user: req.session.passport.user.id,
+                course: req.course.domain,
+                question_id: _.first(questions.post).id
+            });
+
+            if (_.size(myanswers)>0)
+            {
+                return res.json({
+                    answeredat: _.first(myanswers).createdAt,
+                    alreadyanswered:true
+                })
+            }
+            else
+            {
+                return res.json(questions.post);
+            }
+        }
+        catch (e)
+        {
+            return res.serverError(e);
+        }
+    },
+
+    /**
+     * 
+     * @api {get} /v1/analytics/question/:key Get Question
+     * @apiDescription Get a single question relevant to this action
      * @apiName question
      * @apiGroup Analytics
      * @apiVersion  1.0.0
      * @apiPermission domainparse
      * @apiPermission user
      * 
-     * @apiParam  {String} class Class slug
-     * @apiParam  {String} content Content slug
+     * @apiParam  {String} key Class slug
      */
     question: async (req,res)=>{
-        //TODO: select questions by other parameters, not just random:
-        let klass = req.param('class');
-        let content = req.param('content');
+        let key = req.param('key');
 
-        let myanswers = await Answer.find({
-            user: req.session.passport.user.id,
-            course: req.course.domain,
-            class: klass,
-            content: content
-        });
-        if (_.size(myanswers)>0)
+        let questions = await CacheEngine.getQuestions(req,res);
+        if (questions.during[key])
         {
-            return res.json({
-                answeredat: _.first(myanswers).createdAt,
-                alreadyanswered:true
-            })
+            let myanswers = await Answer.find({
+                user: req.session.passport.user.id,
+                course: req.course.domain,
+                question_id:_.first(questions.during[key]).id
+            });
+
+            if (_.size(myanswers)>0)
+            {
+                return res.json({
+                    answeredat: _.first(myanswers).createdAt,
+                    alreadyanswered:true
+                })
+            }
+            else
+            {
+                let question = questions.during[key];
+                return res.json(question);
+            }
         }
         else
         {
-            let questions = await CacheEngine.getQuestions(req,res);
-            //randomly pick a question:
-            let question = _.sample(questions.during);
-            return res.json(question);
+            return res.json([]);
         }
     },
 
@@ -105,46 +148,72 @@ module.exports = {
      */
     answers: async (req,res)=>{
         //get the questions:
-        let questions = await CacheEngine.getQuestions(req,res);
+        let [questions,answers,registrations] = await Promise.all([CacheEngine.getQuestions(req,res), Answer.find({course:req.course.domain}), Registration.find({course:req.course.domain})]);
+
         
-        let answers = await Answer.find({course:req.course.domain});
+        let allresults = [];
 
-        let result = {};
-
-        for (let qtype in questions)
+        for (let qtype of questions.registration)
         {
-            if (qtype!='release')
+            let results = _.pluck(registrations,'registration_info.answers['+qtype.id+']');
+
+            qtype.answers = results;
+
+            qtype.type = 'registration';
+            allresults.push(qtype);
+        }
+
+        for (let qtype of questions.post)
+        {
+            let answ = _.pluck(_.filter(answers,{question_id:qtype.id}),'answer');
+
+            qtype.answers = answ;
+            qtype.type = 'post';
+            allresults.push(qtype);
+        }
+
+        for (let key in questions.during)
+        {
+            for (let qtype of questions.during[key])
             {
-                // console.log(qtype);
-                let results = _.map(questions[qtype],(q)=>{   
-                    let answ = _.filter(answers,{question_id:q.id});
-                    
-                    if (q.response_type=='text')
-                        return {
-                            question: q,
-                            answers: answ
-                        }
-
-                    if (q.response_type=='boolean')
-                        return {
-                            question: q,
-                            totals: lodash.countBy(answ,'answer')
-                        }
-
-                    if (q.response_type=='scale')
-                        return {
-                            question: q,
-                            mean: lodash.meanBy(answ,'answer'),
-                            min: lodash.minBy(answ,'answer'),
-                            max: lodash.maxBy(answ,'answer')
-                        }
-                });
-
-                result[qtype] = results;
+                let answ = _.pluck(_.filter(answers,{question_id:qtype.id}),'answer');
+                qtype.answers = answ;
+                qtype.type = 'during';
+                qtype.subtype = key;
+                allresults.push(qtype);
             }
         }
 
-        return res.json(result);
+        let allanswers = _.map(allresults,function(q){
+            if (q.response_type=='text')
+                return _.merge(q,{
+                    answers: q.answers
+                });
+
+            if (q.response_type=='boolean')
+                return _.merge(q,{
+                    answers: lodash.countBy(q.answers)
+                });
+
+            if (q.response_type=='scale')
+            {
+                let ints = _.map(q.answers,(o)=>parseInt(o));
+                return _.merge(q,{
+                    answers:{
+                        mean: lodash.mean(ints),
+                        min: lodash.min(ints),
+                        max: lodash.max(ints)
+                    }
+                });
+            }
+
+            if (q.response_type=='multi')
+                return _.merge(q,{
+                    answers: lodash.countBy(q.answers)
+                });
+        });
+
+        return res.json(allanswers);
     },
 
     /**
