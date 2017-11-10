@@ -7,7 +7,7 @@ module.exports = {
     {
         model: 'User'
     },
-    question_id: 'integer',
+    question_id: 'string',
     class: 'string',
     content: 'string',
     answer: 'string',
