@@ -48,12 +48,22 @@ module.exports.routes = {
   'GET /v1/admin/dash':'AdminController.root',
   'POST /v1/admin/makeadmin':'AdminController.makeadmin',
 
-  'GET /v1/profile/content/:class?':'AdminController.content',
-  'GET /v1/profile/users/:class?':'AdminController.users',
-  'GET /v1/profile/classes':'AdminController.classes',
-  'GET /v1/profile/messages/:class?/:user?':'AdminController.messages',
-  'GET /v1/profile/mymessages/:class?':'AdminController.mymessages',
-  'GET /v1/profile/mycontent/:class?':'AdminController.mycontent',
+  // 'GET /v1/profile/content/:class?':'AdminController.content',
+  // 'GET /v1/profile/users/:class?':'AdminController.users',
+  // 'GET /v1/profile/classes':'AdminController.classes',
+  // 'GET /v1/profile/messages/:class?/:user?':'AdminController.messages',
+  'GET /v1/profile/messages/:class?':'AdminController.mymessages',
+  'GET /v1/teacher/messages/:class?/:user?':'AdminController.classmessages',
+  'GET /v1/admin/messages/:class?/:user?':'AdminController.messages',
+
+  'GET /v1/profile/homework/:class?':'AdminController.mycontent',
+  'GET /v1/teacher/homework/:class?':'AdminController.classcontent',
+  'GET /v1/admin/homework/:class?':'AdminController.content',  
+  
+  'GET /v1/teacher/classrooms/:class?':'AdminController.classes',
+  'GET /v1/admin/classrooms/:class?':'AdminController.allclasses',
+  'GET /v1/admin/students/:class?':'AdminController.users',
+  'GET /v1/teacher/students/:class?':'AdminController.classusers',
   
 
   'GET /v1/classroom/getclass/:class':'ClassroomController.getclass',  

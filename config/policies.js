@@ -31,13 +31,18 @@ module.exports.policies = {
         'root':['verifyDomain','isAdmin','cors'],
         'classes':['verifyDomain','cors','isRegistered','isUser'],
         'users':['verifyDomain','cors','isUser'],
+        'classusers':['verifyDomain','cors','isAdmin'],
         'content':['verifyDomain','cors','isUser'],
         'credentials':['verifyDomain','cors','isOwner'],
         'makeadmin':['verifyDomain','cors','isOwner'],
-        'messages':['verifyDomain','cors','isUser'],
+        'messages':['verifyDomain','cors','isAdmin'],
+        'classmessages':['verifyDomain','cors','isUser'],
         'mymessages':['verifyDomain','cors','isUser'],
         'mycontent':['verifyDomain','cors','isUser'],
-        'clearcache':true
+        'clearcache':true,
+        'allclasses':['verifyDomain','cors','isAdmin'],
+        'content':['verifyDomain','cors','isAdmin'],
+        'classcontent':['verifyDomain','cors','isUser']
     },
     'messages':
     {

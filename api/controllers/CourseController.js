@@ -336,6 +336,8 @@ module.exports = {
                     }
                 }
 
+                klass.release_at = weekstart;
+
 
                 let classreleased = false;
                 let webinareleased = false;
@@ -344,16 +346,16 @@ module.exports = {
                 if (NOW.isAfter(live_segment_start)) classreleased = true;
                 if (NOW.isAfter(webinar_segment_start)) webinareleased = true;
                 
-                console.log('liveclass start');
-                console.log(classreleased);
+                // console.log('liveclass start');
+                // console.log(classreleased);
 
-                console.log('webinar start');
-                console.log(webinareleased);
+                // console.log('webinar start');
+                // console.log(webinareleased);
                 klass.content.forEach(function(content,i)
                 {
                     content.status = 'FUTURE';
 
-                    console.log(content.content_type);
+                    // console.log(content.content_type);
 
                     switch (content.content_type)
                     {

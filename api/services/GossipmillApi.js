@@ -369,6 +369,10 @@ module.exports = {
             {
                 name: 'replyto',
                 query: '*'
+            },
+            {
+                name: 'segment',
+                query: '*'
             }
         ];
 
