@@ -48,8 +48,8 @@
   },
   {
     "type": "get",
-    "url": "/v1/profile/content/:class",
-    "title": "Submissions",
+    "url": "/v1/teacher/homework/:class",
+    "title": "Class Homework",
     "description": "<p>List all submission content for a specific class and content segment</p>",
     "name": "content",
     "group": "Admin",
@@ -89,15 +89,15 @@
     "groupTitle": "Admin",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/profile/content/:class"
+        "url": "https://api.connectedacademy.io/v1/teacher/homework/:class"
       }
     ]
   },
   {
     "type": "get",
-    "url": "/v1/profile/mycontent/:class",
-    "title": "My Submissions",
-    "description": "<p>List all submission content for a specific class and this user</p>",
+    "url": "/v1/teacher/homework/:class",
+    "title": "Class Homework",
+    "description": "<p>List all submission content for a specific class and content segment</p>",
     "name": "content",
     "group": "Admin",
     "version": "1.0.0",
@@ -121,6 +121,13 @@
             "optional": false,
             "field": "class",
             "description": "<p>Class slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "teacher",
+            "description": "<p>Only show teacher related things</p>"
           }
         ]
       }
@@ -129,7 +136,44 @@
     "groupTitle": "Admin",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/profile/mycontent/:class"
+        "url": "https://api.connectedacademy.io/v1/teacher/homework/:class"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/profile/homework/:class",
+    "title": "My Homework",
+    "description": "<p>List all submission content for a specific class and this user</p>",
+    "name": "content",
+    "group": "Admin",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "user"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class slug</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Admin",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/profile/homework/:class"
       }
     ]
   },
@@ -197,6 +241,19 @@
         "name": "owner"
       }
     ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>User ID to toggle a user being an admin</p>"
+          }
+        ]
+      }
+    },
     "filename": "api/controllers/AdminController.js",
     "groupTitle": "Admin",
     "sampleRequest": [
@@ -1832,8 +1889,8 @@
   },
   {
     "type": "get",
-    "url": "/v1/profile/messages/:class?/:user?",
-    "title": "Messages",
+    "url": "/v1/teacher/messages/:class?/:user?",
+    "title": "Class Messages",
     "description": "<p>List all messages for this course, if a teacher is logged in, only show ones from their classes.</p>",
     "name": "admin_messages",
     "group": "Profile",
@@ -1841,9 +1898,6 @@
     "permission": [
       {
         "name": "domainparse"
-      },
-      {
-        "name": "admin"
       },
       {
         "name": "teacher"
@@ -1865,13 +1919,6 @@
             "optional": false,
             "field": "user",
             "description": "<p>(optional) User ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "teacher",
-            "description": "<p>Only show teacher related things</p>"
           }
         ]
       }
@@ -1880,13 +1927,57 @@
     "groupTitle": "Profile",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/profile/messages/:class?/:user?"
+        "url": "https://api.connectedacademy.io/v1/teacher/messages/:class?/:user?"
       }
     ]
   },
   {
     "type": "get",
-    "url": "/v1/profile/mymessages/:class?",
+    "url": "/v1/admin/messages/:class?/:user?",
+    "title": "All Messages",
+    "description": "<p>List all messages for this course, only show ones from their classes.</p>",
+    "name": "admin_messages",
+    "group": "Profile",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "admin"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>(optional) Class slug</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>(optional) User ID</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Profile",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/admin/messages/:class?/:user?"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/profile/messages/:class?",
     "title": "Messages",
     "description": "<p>List this users messages for this course.</p>",
     "name": "admin_messages_own",
@@ -1897,10 +1988,7 @@
         "name": "domainparse"
       },
       {
-        "name": "admin"
-      },
-      {
-        "name": "teacher"
+        "name": "user"
       }
     ],
     "parameter": {
@@ -1920,14 +2008,38 @@
     "groupTitle": "Profile",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/profile/mymessages/:class?"
+        "url": "https://api.connectedacademy.io/v1/profile/messages/:class?"
       }
     ]
   },
   {
     "type": "get",
-    "url": "/v1/profile/classes",
-    "title": "Classes",
+    "url": "/v1/teacher/classrooms/:class?",
+    "title": "Teacher Classrooms",
+    "description": "<p>List all classes for this course, if a teacher is logged in, only show ones they taught.</p>",
+    "name": "classes",
+    "group": "Profile",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "teacher"
+      }
+    ],
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Profile",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/teacher/classrooms/:class?"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/admin/classrooms/:class?",
+    "title": "All Classrooms",
     "description": "<p>List all classes for this course, if a teacher is logged in, only show ones they taught.</p>",
     "name": "classes",
     "group": "Profile",
@@ -1938,23 +2050,20 @@
       },
       {
         "name": "admin"
-      },
-      {
-        "name": "teacher"
       }
     ],
     "filename": "api/controllers/AdminController.js",
     "groupTitle": "Profile",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/profile/classes"
+        "url": "https://api.connectedacademy.io/v1/admin/classrooms/:class?"
       }
     ]
   },
   {
     "type": "get",
-    "url": "/v1/profile/users/:class?",
-    "title": "Users",
+    "url": "/v1/admin/students/:class?",
+    "title": "All Users",
     "description": "<p>List all users registered for this course</p>",
     "name": "users",
     "group": "Profile",
@@ -1976,13 +2085,6 @@
             "optional": false,
             "field": "class",
             "description": "<p>Class slug</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "teacher",
-            "description": "<p>Only show teacher related things</p>"
           }
         ]
       }
@@ -1991,7 +2093,44 @@
     "groupTitle": "Profile",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/profile/users/:class?"
+        "url": "https://api.connectedacademy.io/v1/admin/students/:class?"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/teacher/students/:class?",
+    "title": "Users for Class",
+    "description": "<p>List all users for this class</p>",
+    "name": "users",
+    "group": "Profile",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "teacher"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "class",
+            "description": "<p>Class slug</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Profile",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/teacher/students/:class?"
       }
     ]
   }
