@@ -552,27 +552,33 @@ module.exports = {
             // console.log(data.room);
             //subscribe to this roomname
             sails.sockets.join(req.socket,data.room);
-            // io.socket.off(data.room, function(){
-            if (!sockethandlers[data.room])
-            {
-                sockethandlers[data.room] = async function(msg){
-                    let classroom = klass2;
 
-                    let wrapped = {
-                        msgtype: 'message',
-                        msg: msg
-                    };
-                    wrapped.msg.author = wrapped.msg.user;
-                    // check if this user is in the classroom:
-                    let klassroom = await Classroom.findOne({code:classroom});
-                    if (_.includes(klassroom.students, wrapped.msg.author.id))
-                    {
-                        sails.log.silly("Broadcasting Socket message into classroom with " + msg.message_id);
-                        sails.sockets.broadcast(data.room, wrapped);
-                    }
+            if (sockethandlers[data.room])
+                io.socket.off(data.room,sockethandlers[data.room]);
+
+            // io.socket.off(data.room, function(){
+
+            sockethandlers[data.room] = async function(msg){
+                let classroom = klass2;
+
+                let wrapped = {
+                    msgtype: 'message',
+                    msg: msg
                 };
-                io.socket.on(data.room,sockethandlers[data.room]);
-            }
+                wrapped.msg.author = wrapped.msg.user;
+                // check if this user is in the classroom:
+                let klassroom = await Classroom.findOne({code:classroom});
+                if (_.includes(klassroom.students, wrapped.msg.author.id))
+                {
+                    sails.log.silly("Broadcasting Socket message into classroom with " + msg.message_id);
+                    sails.sockets.broadcast(data.room, wrapped);
+                }
+            };
+
+            // if (!sockethandlers[data.room])
+            // {
+            io.socket.on(data.room,sockethandlers[data.room]);
+            // }
         });
         // });
 

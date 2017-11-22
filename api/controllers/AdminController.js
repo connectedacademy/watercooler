@@ -563,7 +563,7 @@ module.exports = {
                 slug: s.class,
                 code: s.code,
                 students: _.size(s.students),
-                teacher: s.teacher
+                teacher: _.omit(s.teacher,['account_credentials'])
             };
         });
         return res.json(mapped);

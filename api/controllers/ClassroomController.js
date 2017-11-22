@@ -40,6 +40,7 @@ module.exports = {
             //if socket connection -- subscribe to updates:
             if (req.isSocket)
             {
+                sails.log.verbose('Classroom subscription', result.id);
                 Classroom.subscribe(req, result.id);
                 //req, course, klass, user, language,contentid, classroom
                 GossipmillApi.subscribeToClass(req, course, klass, req.session.passport.user, lang, result.code);
@@ -130,7 +131,7 @@ module.exports = {
                     //publish update via message:
                     let wrapped = {
                         msgtype: 'classroom',
-                        msg: req.session.passport.user.id
+                        msg: req.session.passport.user
                     };
 
                     Classroom.message(classroom.id, wrapped, req);
