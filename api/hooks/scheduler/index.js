@@ -306,9 +306,12 @@ module.exports = function (sails) {
 
                         //for each user who has not submitted, send a reminder
                         for (let user of notsubmitted) {
-                            NotificationEngine.submitWork(course, currentClass, _.find(registered, (r) => {
+                            let oneuser = _.find(registered, (r) => {
                                 return r.user.id == user
-                            }));
+                            });
+
+                            if (oneuser)
+                                NotificationEngine.submitWork(course, currentClass, oneuser);
                         }
                     }
                 }
