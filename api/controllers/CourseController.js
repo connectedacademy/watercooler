@@ -361,7 +361,8 @@ module.exports = {
                     switch (content.content_type)
                     {
                         case 'pre':
-                            content.status = 'RELEASED';
+                            if (i==0 || classreleased)
+                                content.status = 'RELEASED';
                             break;
                         
                         case 'question':

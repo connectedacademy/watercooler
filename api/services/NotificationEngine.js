@@ -201,8 +201,8 @@ module.exports = {
                 if (reg)
                 {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'joindiscussion');
-                    email = email.replace('{{class}}',currentClass);
-                    email = email.replace('{{content}}',content);                    
+                    email.body = email.replace('{{class}}',currentClass).body;
+                    email.body = email.replace('{{content}}',content).body;
                     sendEmail(reg.user, email.subject, email.body);
                 }
                 await markSent(course.domain, 'submitfeedback', currentClass+'-'+content, user.id);
@@ -317,6 +317,8 @@ module.exports = {
             // for (let user of users) {
             // if (user.id != req.session.passport.user.id) {
             email.body = email.body.replace('{{id}}', message.relates_to.replace('#','%23'));
+            email.body = email.replace('{{class}}',message.relates_to.class);
+            email.body = email.replace('{{content}}',message.relates_to.content);
             sendEmail(user, email.subject, email.body);
             // }
             // }
