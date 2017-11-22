@@ -130,6 +130,8 @@ module.exports = {
 
 
                     msg.relates_to = msg.relates_to.id;
+                    msg.content = msg.relates_to.content;
+                    msg.class = msg.relates_to.class;
                     delete msg.readAt;
 
                     //to any user in this conversation:
