@@ -274,7 +274,7 @@ module.exports = {
 
                 await Promise.all(promises);
 
-                console.log(_.pluck(klass.content,'content_type'));
+                // console.log(_.pluck(klass.content,'content_type'));
 
                 //current time / faketime
                 let NOW = moment(req.query.time) || moment();
@@ -351,8 +351,9 @@ module.exports = {
 
                 // console.log('webinar start');
                 // console.log(webinareleased);
-                klass.content.forEach(function(content,i)
+                for (let i in klass.content) //content,i)
                 {
+                    let content = klass.content[i];
                     content.status = 'FUTURE';
 
                     // console.log(content.content_type);
@@ -404,9 +405,35 @@ module.exports = {
                             if (webinareleased)
                                 content.status = 'RELEASED'
                             break;
+
+                        case 'survey':
+                            //find out if completed summary:
+                            content.completed = false;                            
+                            if (req.session.passport && req.session.passport.user)
+                            {
+                                let questions = await CacheEngine.getQuestions(req,res);
+
+                                console.log(questions);
+                                
+                                let myanswers = await Answer.findOne({
+                                    user: req.session.passport.user.id,
+                                    course: req.course.domain,
+                                    question_id: _.first(questions.post).id
+                                });
+                    
+                                console.log(myanswers);
+
+                                if (myanswers)
+                                {
+                                    console.log("*******");
+                                    content.completedat = myanswers.createdAt;
+                                    content.completed = true;
+                                }
+                            }
+                            break;
                             
                     }
-                });
+                }
 
                 return res.json({
                     user: (me)?_.omit(me.user,'account_credentials'):null,
