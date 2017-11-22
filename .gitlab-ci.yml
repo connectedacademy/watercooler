@@ -54,7 +54,7 @@ before_script:
 build:
   stage: build
   tags:
-    - local
+    - docker
   script:
     - docker build -t $CONTAINER_TEST_IMAGE .
     - docker push $CONTAINER_TEST_IMAGE
@@ -75,7 +75,7 @@ build:
 dockerhub:
   stage: release
   tags:
-    - local
+    - docker
   script:
     - docker pull $CONTAINER_TEST_IMAGE
     - docker login -u $DOCKER_USERNAME -p "$DOCKER_PASSWORD"
