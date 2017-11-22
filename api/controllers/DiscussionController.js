@@ -128,10 +128,9 @@ module.exports = {
                     let submission = msg.relates_to;
                     users = _.uniq(users);
 
-
-                    msg.relates_to = msg.relates_to.id;
                     msg.content = msg.relates_to.content;
                     msg.class = msg.relates_to.class;
+                    msg.relates_to = msg.relates_to.id;
                     delete msg.readAt;
 
                     //to any user in this conversation:
