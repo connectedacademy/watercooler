@@ -300,10 +300,11 @@ module.exports = {
             }
             else
             {
-                if (user.account == response.data.message.author.account && user.service == response.data.message.author.account)
-                    response.data.message.ismine = 1;
-                else
-                    response.data.message.ismine = 0;
+                if (response.data.message)
+                    if (user.id == response.data.message.author.id)
+                        response.data.message.ismine = 1;
+                    else
+                        response.data.message.ismine = 0;
             }
 
 
