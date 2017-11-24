@@ -298,6 +298,14 @@ module.exports = {
                 if (response.data.message)
                     response.data.message.ismine = 0;
             }
+            else
+            {
+                if (user.account == response.data.message.author.account && user.service == response.data.message.author.account)
+                    response.data.message.ismine = 1;
+                else
+                    response.data.message.ismine = 0;
+            }
+
 
             if (response.data.message && response.data.message.ismine && loggedin)
             {
