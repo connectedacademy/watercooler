@@ -298,14 +298,15 @@ module.exports = {
                 if (response.data.message)
                     response.data.message.ismine = 0;
             }
-            else
-            {
-                if (response.data.message)
-                    if (user.id == response.data.message.author.id)
-                        response.data.message.ismine = 1;
-                    else
-                        response.data.message.ismine = 0;
-            }
+            //TODO: fix this logic
+            // else
+            // {
+            //     if (response.data.message)
+            //         if (user.id == response.data.message.author.id)
+            //             response.data.message.ismine = 1;
+            //         else
+            //             response.data.message.ismine = 0;
+            // }
 
 
             if (response.data.message && response.data.message.ismine && loggedin)
