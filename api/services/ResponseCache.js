@@ -7,7 +7,7 @@ let redisIO = new RedisIO(process.env.REDIS_PORT, process.env.REDIS_HOST, {
 let rediscache = redis.createClient({
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-    db: 2
+    db: 0
 });
 let Promise = require('bluebird');
 Promise.promisifyAll(redis.RedisClient.prototype);

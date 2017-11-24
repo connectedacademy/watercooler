@@ -222,7 +222,7 @@ module.exports = {
         return response;
     },
 
-    summary: async (course, klass, user, language, contentid, startsegment, endsegment, whitelist, justmine) => {
+    summary: async (course, klass, user, language, contentid, startsegment, endsegment, whitelist, justmine, loggedin) => {
         let queryKey = [
             {
                 name: 'course',
@@ -277,8 +277,6 @@ module.exports = {
         
         //get redis with this user spec key:
 
-
-
         //if there is a key, then serve it
         let usersubmittedinthisblock = await ResponseCache.getFromKey(userkey);
         //if there is not a key, then serve the main response
@@ -295,7 +293,13 @@ module.exports = {
 
             let response = await ResponseCache.cachedRequest('summary',key, params, 60);
 
-            if (response.data.message && response.data.message.ismine)
+            if (!loggedin)
+            {
+                if (response.data.message)
+                    response.data.message.ismine = 0;
+            }
+
+            if (response.data.message && response.data.message.ismine && loggedin)
             {
                 // set the user submitted key:
                 ResponseCache.setCache(userkey, response);

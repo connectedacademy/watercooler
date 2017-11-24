@@ -295,7 +295,7 @@ module.exports = {
                 };
             }
 
-            let dat = await GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), req.param('whitelist'), justmine);
+            let dat = await GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), req.param('whitelist'), justmine,(req.session.passport)?true:false);
             let data = dat.data;
 
 
@@ -414,7 +414,7 @@ module.exports = {
 
             let promises = [];
             for (let i = start; i < end; i = i + group) {
-                promises.push(GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), i, (i + group) - 1, req.param('whitelist'), justmine));
+                promises.push(GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), i, (i + group) - 1, req.param('whitelist'), justmine, (req.session.passport)?true:false));
             }
 
             let results = await Promise.all(promises);

@@ -26,12 +26,14 @@ module.exports = {
             sails.log.verbose('ClearingCache',req.param('domain'));
             await ResponseCache.removeMatching(`https://${req.param('domain')}/*`);
             await ResponseCache.removeMatching(`wc:yaml:${req.param('domain')}:*`);
+            await ResponseCache.removeMatching(`wc:summary:*`);
             return res.ok('Cached cleared');
         }
         else
         {
             //no domain set -- clear all
-
+            await ResponseCache.removeMatching(`wc:summary:*`);
+            
             //clear redis cache:
             rediscache.flushdb(function (msg) {
                 sails.log.verbose('Redis cached cleared', msg);
