@@ -4,6 +4,8 @@
 
 Backend JSON REST and Websocket API for Connected Academy providing endpoints for auth, data access and message posting.
 
+> Remember to use `npm version` before any push in order to get the Dockerfile to build.
+
 ## Development
 
 This app depends on:
