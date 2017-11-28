@@ -1,0 +1,2513 @@
+{
+	"info": {
+		"name": "Watercooler",
+		"_postman_id": "565a213d-09a9-3a08-32af-6af613ac0a78",
+		"description": "An API to manage Connected Academy courses.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "admin",
+			"description": "Folder for admin",
+			"item": [
+				{
+					"name": "/v1/admin/content",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/admin/homework/:class",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"homework",
+								":class"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/admin/login",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/admin/login",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"login"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/admin/credentials",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/v1/admin/credentials",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"credentials"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/admin/makeadmin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\":\"25:0\"\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/admin/makeadmin",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"makeadmin"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/admin/users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/admin/users/:class",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"users",
+								":class"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "interpretation"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/admin/editor",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/admin/editor",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"editor"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/admin/logout",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/admin/logout",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"logout"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/admin/messages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/admin/messages/:class?/:user?",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"messages",
+								":class"
+							],
+							"query": [
+								{
+									"key": "/:user?",
+									"value": "",
+									"equals": false
+								}
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/profile/messages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/profile/messages/:class?",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"profile",
+								"messages",
+								":class"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "evidence"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/profile/content",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/profile/homework/:class?",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"profile",
+								"homework",
+								":class"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "interpretation"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/profile/classes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/profile/classes",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"profile",
+								"classes"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/teacher/classrooms",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/teacher/classes",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"teacher",
+								"classes"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/admin/classrooms",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/admin/classrooms",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"classrooms"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/teacher/messages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/teacher/messages/:class?/:user?",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"teacher",
+								"messages",
+								":class"
+							],
+							"query": [
+								{
+									"key": "/:user?",
+									"value": "",
+									"equals": false
+								}
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "evidence"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/teacher/content",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/teacher/classes",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"teacher",
+								"classes"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "analytics",
+			"description": "Folder for analytics",
+			"item": [
+				{
+					"name": "/v1/analytics/question/:key",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/analytics/question/:key",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"analytics",
+								"question",
+								":key"
+							],
+							"variable": [
+								{
+									"key": "key",
+									"value": "firstpost"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/analytics/answer/reponse",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"class\":\"interpretation\",\n  \"content\":\"dummy\",\n  \"answer\":false,\n  \"question_id\":16\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/analytics/answer/response",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"analytics",
+								"answer",
+								"response"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/analytics/postquestions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/analytics/postquestions",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"analytics",
+								"postquestions"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/analytics/answers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/analytics/answers",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"analytics",
+								"answers"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/analytics/log",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"testthing\":{\n    \"asdads\":4,\n    \"asdasdasddasd\":6\n  }\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/analytics/log",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"analytics",
+								"log"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"description": "Folder for auth",
+			"item": [
+				{
+					"name": "/v1/auth/logout",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/auth/logout",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"logout"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/auth/register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\":\"tom@bartindale.com\",\n  \"lang\":\"en\",\n  \"hub_id\":\"ncl\",\n  \"registration_info\":{},\n  \"consent\":true\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/auth/register",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"register"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/auth/login",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/auth/login",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"login"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/auth/me",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/auth/me",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"me"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/auth/registrationquestions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/auth/registrationquestions",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"registrationquestions"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/auth/profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/v1/auth/profile",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"profile"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "classroom",
+			"description": "Folder for classroom",
+			"item": [
+				{
+					"name": "/v1/classroom/mycode/:hub/:class",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/classroom/mycode/:class",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"classroom",
+								"mycode",
+								":class"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/classroom/rss/:code",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/classroom/rss/:code",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"classroom",
+								"rss",
+								":code"
+							],
+							"variable": [
+								{
+									"key": "code",
+									"value": "ABCD"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/classroom/users/:hub/:class",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/classroom/users/:hub/:class",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"classroom",
+								"users",
+								":hub",
+								":class"
+							],
+							"variable": [
+								{
+									"key": "hub",
+									"value": "{{hub}}"
+								},
+								{
+									"key": "class",
+									"value": "{{class}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/classroom/inclass/:hub/:class",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\":{{classroomcode}}\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/classroom/inclass",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"classroom",
+								"inclass"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/classroom/getclass/:hub/:class",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/classroom/getclass/:class",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"classroom",
+								"getclass",
+								":class"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/classroom/rss",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/classroom/rss/:code",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"classroom",
+								"rss",
+								":code"
+							],
+							"variable": [
+								{
+									"key": "code",
+									"value": "{{classroomcode}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "course",
+			"description": "Folder for course",
+			"item": [
+				{
+					"name": "/v1/course/spec",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/course/spec/:class",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"course",
+								"spec",
+								":class"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/course/specpreload",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/course/specpreload/:class/:blocks",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"course",
+								"specpreload",
+								":class",
+								":blocks"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "blocks",
+									"value": "2"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/course/like",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/v1/course/like/:class/:content",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"course",
+								"like",
+								":class",
+								":content"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/course/unlike",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/course/unlike/:class/:content",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"course",
+								"unlike",
+								":class",
+								":content"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/course/hubs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/course/hubs",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"course",
+								"hubs"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/course/schedule",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/course/spec",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"course",
+								"spec"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "discussion",
+			"description": "Folder for discussion",
+			"item": [
+				{
+					"name": "/v1/discussion/available/:class/:schedule",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/discussion/available/:class/:content",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"available",
+								":class",
+								":content"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/discussion/create/:submission",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"create",
+								":submission"
+							],
+							"variable": [
+								{
+									"key": "submission",
+									"value": "{{submission}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/remove",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\":\"{{submission}}\"\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/discussion/remove",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"remove"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/messages/:submission",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/discussion/messages/:submission",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"messages",
+								":submission"
+							],
+							"variable": [
+								{
+									"key": "submission",
+									"value": "{{submission}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/submission/:submission",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/discussion/submission/:submission",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"submission",
+								":submission"
+							],
+							"variable": [
+								{
+									"key": "submission",
+									"value": "{{submission}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/list/:class/:content",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/discussion/list/:class/:content",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"list",
+								":class",
+								":content"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/read/:message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/v1/discussion/read/:message",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"read",
+								":message"
+							],
+							"variable": [
+								{
+									"key": "message",
+									"value": "{{message}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/verify/:submission",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/v1/discussion/verify/:submission",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"verify",
+								":submission"
+							],
+							"variable": [
+								{
+									"key": "submission",
+									"value": "{{submission}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/submit/:class/:content",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"url\":\"https://demo.fourcorners.io/\"\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/discussion/submit/:class/:content",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"submit",
+								":class",
+								":content"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/thumbnail/:submission",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/discussion/messages/:submission",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"messages",
+								":submission"
+							],
+							"variable": [
+								{
+									"key": "submission",
+									"value": "{{submission}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/discussion/user/:class/:content/:user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/discussion/user/:class/:content/:user",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"discussion",
+								"user",
+								":class",
+								":content",
+								":user"
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								},
+								{
+									"key": "user",
+									"value": "{{user}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "messages",
+			"description": "Folder for messages",
+			"item": [
+				{
+					"name": "/v1/messages/likes/:class/:content",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/messages/likes/:class/:content?whitelist=true",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"messages",
+								"likes",
+								":class",
+								":content"
+							],
+							"query": [
+								{
+									"key": "whitelist",
+									"value": "true",
+									"equals": true
+								}
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/messages/create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"text\":\"This is a text message\"\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/messages/create",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"messages",
+								"create"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/messages/list/:class/:start-segment/:end-segment",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/messages/list/:class/:content/:start-segment/:end-segment?whitelist=true&depth=1",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"messages",
+								"list",
+								":class",
+								":content",
+								":start-segment",
+								":end-segment"
+							],
+							"query": [
+								{
+									"key": "whitelist",
+									"value": "true",
+									"equals": true
+								},
+								{
+									"key": "depth",
+									"value": "1",
+									"equals": true
+								}
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								},
+								{
+									"key": "start-segment",
+									"value": "0"
+								},
+								{
+									"key": "end-segment",
+									"value": "10"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/messages/content/:class/:content",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/messages/content/:class/:content/?whitelist=true&limit={{limit}}",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"messages",
+								"content",
+								":class",
+								":content",
+								""
+							],
+							"query": [
+								{
+									"key": "whitelist",
+									"value": "true",
+									"equals": true
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}",
+									"equals": true
+								}
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/messages/visualisation/:class/:content/:groupby/:limit",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/messages/visualisation/:class/:content/:groupby/:limit?whitelist=true",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"messages",
+								"visualisation",
+								":class",
+								":content",
+								":groupby",
+								":limit"
+							],
+							"query": [
+								{
+									"key": "whitelist",
+									"value": "true",
+									"equals": true
+								}
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								},
+								{
+									"key": "groupby",
+									"value": "50"
+								},
+								{
+									"key": "limit",
+									"value": "3000"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/messages/summary/:class/:start-segment/:end-segment",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/messages/summary/:class/:content/:start-segment/:end-segment?whitelist=true&depth={{limit}}",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"messages",
+								"summary",
+								":class",
+								":content",
+								":start-segment",
+								":end-segment"
+							],
+							"query": [
+								{
+									"key": "whitelist",
+									"value": "true",
+									"equals": true
+								},
+								{
+									"key": "depth",
+									"value": "{{limit}}",
+									"equals": true
+								}
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								},
+								{
+									"key": "start-segment",
+									"value": "0"
+								},
+								{
+									"key": "end-segment",
+									"value": "10"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/messages/summarybatch/:class/:content/:start-segment/:end-segment/:groupsize",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/messages/summarybatch/:class/:content/:start-segment/:end-segment/:groupsize?whitelist=true&depth={{limit}}",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"messages",
+								"summarybatch",
+								":class",
+								":content",
+								":start-segment",
+								":end-segment",
+								":groupsize"
+							],
+							"query": [
+								{
+									"key": "whitelist",
+									"value": "true",
+									"equals": true
+								},
+								{
+									"key": "depth",
+									"value": "{{limit}}",
+									"equals": true
+								}
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								},
+								{
+									"key": "start-segment",
+									"value": "0"
+								},
+								{
+									"key": "end-segment",
+									"value": "10"
+								},
+								{
+									"key": "groupsize",
+									"value": "5"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/messages/subscribe/:class/:content/:start-segment/:end-segment?whitelist=true",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/messages/subscribe/:class/:content/:start-segment/:end-segment?whitelist=true",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"messages",
+								"subscribe",
+								":class",
+								":content",
+								":start-segment",
+								":end-segment"
+							],
+							"query": [
+								{
+									"key": "whitelist",
+									"value": "true",
+									"equals": true
+								}
+							],
+							"variable": [
+								{
+									"key": "class",
+									"value": "{{class}}"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}"
+								},
+								{
+									"key": "start-segment",
+									"value": "1"
+								},
+								{
+									"key": "end-segment",
+									"value": "2"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "/v1/messages/unsubscribe",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Referer",
+								"value": "{{Referer}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{server}}/v1/messages/unsubscribe",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"messages",
+								"unsubscribe"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{server}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

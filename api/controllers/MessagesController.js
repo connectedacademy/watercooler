@@ -498,7 +498,7 @@ module.exports = {
             req.checkParams('startsegment').notEmpty().isInt();
             req.checkParams('endsegment').notEmpty().isInt();
             req.checkQuery('whitelist').isBoolean();
-            req.checkQuery('depth').optional().isInt();
+            req.checkQuery('depth').optional().isInt({gt: 0});
             req.checkQuery('justmine').optional().isBoolean();
 
             try {

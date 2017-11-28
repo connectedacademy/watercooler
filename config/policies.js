@@ -53,7 +53,8 @@ module.exports.policies = {
         'summary':['cors','verifyDomain','jsononly'],
         'summarybatch':['cors','verifyDomain','jsononly'],
         'subscribe':['cors','verifyDomain','jsononly','socketonly'],
-        'unsubscribe':['cors','verifyDomain','jsononly','socketonly']            
+        'unsubscribe':['cors','verifyDomain','jsononly','socketonly'],
+        'content':['cors','verifyDomain','jsononly']
     },
     'classroom':
     {
