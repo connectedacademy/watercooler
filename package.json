@@ -1,6 +1,6 @@
 {
   "name": "watercooler",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "API for Connected Academy",
   "main": "app.js",
   "repository": {
@@ -44,7 +44,7 @@
     "express-useragent": "1.0.8",
     "winston-logzio": "1.0.3",
     "md5": "2.2.1",
-    "sharp":"0.18.4"
+    "sharp": "0.18.4"
   },
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",
