@@ -9,10 +9,17 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.http.html
  */
 
+let package_info = require('../package.json');
 
 module.exports.http = {
 
   middleware: {
+
+    version: function(req,res,next)
+    {
+      res.set('api-version', package_info.version);
+      next();
+    },
 
     validator: require('express-validator')({
       customValidators: {}
@@ -71,6 +78,7 @@ module.exports.http = {
       'compress',
       'methodOverride',
       'poweredBy',
+      'version',
       '$custom',
       'router',
       'www',
