@@ -54,7 +54,7 @@ module.exports.http = {
           url: req.method + ' ' + req.path,
           session: req.session.id,
           referrer: req.get('referer') || req.get('origin'),
-          'elevator-version': req.headers['elevator-version'],
+          elevatorversion: req.headers['elevator-version'],
           user: user,
           agent: _.pick(req.useragent, _.identity),
           query: req.query,

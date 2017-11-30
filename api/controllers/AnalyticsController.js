@@ -236,6 +236,7 @@ module.exports = {
         sails.log.verbose('ClientLog',{
             url: req.method + ' ' + req.path,
             session: req.session.id,
+            elevatorversion: req.headers['elevator-version'],
             referrer: req.get('referer') || req.get('origin'),
             user: user,
             agent: _.pick(req.useragent, _.identity),
