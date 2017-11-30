@@ -1,4 +1,6 @@
 let lodash = require('lodash');
+let package_info = require('../../package.json');
+
 
 module.exports = {
 
@@ -237,6 +239,7 @@ module.exports = {
             url: req.method + ' ' + req.path,
             session: req.session.id,
             elevatorversion: req.headers['elevator-version'],
+            watercoolerversion: package_info.version,
             referrer: req.get('referer') || req.get('origin'),
             user: user,
             agent: _.pick(req.useragent, _.identity),
