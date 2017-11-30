@@ -55,6 +55,7 @@ module.exports.http = {
           session: req.session.id,
           referrer: req.get('referer') || req.get('origin'),
           elevatorversion: req.headers['elevator-version'],
+          watercoolerversion: package_info.version,
           user: user,
           agent: _.pick(req.useragent, _.identity),
           query: req.query,
