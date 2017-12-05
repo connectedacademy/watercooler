@@ -1,6 +1,6 @@
 {
   "name": "watercooler",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "API for Connected Academy",
   "main": "app.js",
   "repository": {
@@ -40,7 +40,7 @@
     "randomstring": "1.1.5",
     "ioredis": "3.1.1",
     "lodash": "4.17.4",
-    "lodash-math":"0.0.7",
+    "lodash-math": "0.0.7",
     "rss": "1.2.2",
     "express-useragent": "1.0.8",
     "winston-logzio": "1.0.3",
