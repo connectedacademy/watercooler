@@ -80,7 +80,9 @@ module.exports = {
 
                     //if succeeds, put in cache
                     rediscache.set(key, JSON.stringify(results));
-                    rediscache.expire(key, ttl); //60 seconds
+                    if (ttl>0)
+                        rediscache.expire(key, ttl); //60 seconds
+
                     return results;
                 }
             }

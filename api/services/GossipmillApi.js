@@ -327,6 +327,7 @@ module.exports = {
         // use the existing cache (which will get invalidated when ANYONE posts to this block)
 
         let response = await ResponseCache.cachedRequest('summary',key, params, -1);
+        // console.log("from cache");
 
         if (response.data.message)
         {
