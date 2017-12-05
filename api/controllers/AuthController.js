@@ -176,7 +176,7 @@ module.exports = {
             });
 
             user.registration = _.first(user.registrations);
-            user = _.omit(user,'registrations');
+            user = _.omit(user,'registrations','account_credentials');
 
             let roles = ['user'];
 
