@@ -37,6 +37,7 @@ module.exports = {
     {
       let obj = this.toObject();
       delete obj.credentials;
+      delete obj.account_credentials;
       delete obj._raw;
       delete obj['@type'];
       delete obj['@class'];

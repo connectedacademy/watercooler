@@ -13,7 +13,11 @@ module.exports = {
       model: 'User',
       index: true
     },
-
+    moderation: 'array',
+    moderationstate: {
+        type: 'string',
+        enum: ['default','pending', 'approved', 'denied']
+    },
     toJSON :function()
     {
       let obj = this.toObject();

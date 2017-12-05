@@ -1,3 +1,5 @@
+const omitDeep = require('omit-deep');
+
 module.exports = {
 
     /**
@@ -19,17 +21,17 @@ module.exports = {
 
         try {
             let query = "SELECT *, $discussion.size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = $parent.current) \
-            WHERE verified=true AND course=:course AND class=:class AND content=:content AND user <> :user\
+            WHERE verified=true AND course=:course AND class=:class AND content=:content AND user <> :user AND moderationstate <> 'denied'\
             AND $discussion CONTAINSALL (fromuser <> :user)\
             ORDER BY discussion ASC LIMIT 9 FETCHPLAN user:1";
             let data = await Submission.query(query, {
                 params:
-                {
-                    course: req.course.domain,
-                    class: req.param('class'),
-                    content: req.param('content'),
-                    user: req.session.passport.user.id
-                }
+                    {
+                        course: req.course.domain,
+                        class: req.param('class'),
+                        content: req.param('content'),
+                        user: req.session.passport.user.id
+                    }
             });
 
             return res.json({
@@ -38,7 +40,7 @@ module.exports = {
                     class: req.param('class'),
                     content: req.param('content')
                 },
-                data: _.map(Submission.removeCircularReferences(data), (f) => _.omit(f, ['@type', '@class', '@version']))
+                data: _.map(Submission.removeCircularReferences(data), (f) => omitDeep(f, ['@type', '@class', '@version', '_raw', 'credentials', 'account_credentials']))
             });
         }
         catch (e) {
@@ -69,7 +71,8 @@ module.exports = {
             class: req.param('class'),
             content: req.param('content'),
             course: req.course.domain,
-            verified: true
+            verified: true,
+            moderationstate: { '!': 'denied' }
         }).populate('user');
         return res.json(submissions);
     },
@@ -157,11 +160,11 @@ module.exports = {
                                 AND relates_to.content=:content";
                                 let author_messages = await DiscussionMessage.query(query, {
                                     params:
-                                    {
-                                        course: req.course.domain,
-                                        class: submission.class,
-                                        content: submission.content
-                                    }
+                                        {
+                                            course: req.course.domain,
+                                            class: submission.class,
+                                            content: submission.content
+                                        }
                                 });
 
                                 //if there are messages for this author
@@ -178,6 +181,8 @@ module.exports = {
                         else {
                             msg.canview = true;
                         }
+
+                        msg.user = _.omit(msg.user);
 
                         // Notify ALL users via websocket
                         sails.log.verbose('PeerMessage', { user: user.toString(), msg: msg.id });
@@ -335,7 +340,7 @@ module.exports = {
      * 
      */
     thumbnail: async (req, res) => {
-        return res.redirect(`https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/submission/${req.param('submission').replace('#','%23').replace(':','%3A')}/content/thumb/medium.jpg`);
+        return res.redirect(`https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/submission/${req.param('submission').replace('#', '%23').replace(':', '%3A')}/content/thumb/medium.jpg`);
     },
 
     /**
@@ -352,9 +357,15 @@ module.exports = {
      * 
      */
     submission: async (req, res) => {
-        let submission = await Submission.findOne(req.param('submission')).populate('user');
-        if (submission)
+        let submission = await Submission.findOne({
+            id: req.param('submission'),
+            moderationstate: { '!': 'denied' }
+        }).populate('user');
+
+        if (submission) {
+            submission.user = _.omit(submission.user, ['account_credentials']);
             return res.json(submission);
+        }
         else
             return res.notFound();
     },
@@ -423,16 +434,33 @@ module.exports = {
     messages: async (req, res) => {
 
         //list all messages for this submission
-        let submission = await Submission.findOne(req.param('submission'));
-        let data = await DiscussionMessage.find({ relates_to: req.param('submission') }).populate('fromuser');
-        let msg = data;
+        let submission = await Submission.findOne({
+            id: req.param('submission'),
+            moderationstate: { '!': 'denied' }
+        });
 
-        //if its my submission, 
-        if (submission.user == req.session.passport.user.id) {
+        if (submission) {
 
-            let authors = _.uniq(_.map(msg, (m) => { return m.fromuser.id }));
-            //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
-            let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
+            let data = await DiscussionMessage.find({
+                relates_to: req.param('submission'),
+                or:[
+                    {
+                        moderationstate: { '!': 'denied' }
+                    },
+                    {
+                        moderationstate: null
+                    }
+                ]
+            }).populate('fromuser');
+
+            let msg = data;
+
+            //if its my submission, 
+            if (submission.user == req.session.passport.user.id) {
+
+                let authors = _.uniq(_.map(msg, (m) => { return m.fromuser.id }));
+                //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
+                let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
             WHERE relates_to.user IN ["+ authors.join(',') + "] \
             AND relates_to.course=:course \
             AND relates_to.class=:class \
@@ -440,56 +468,60 @@ module.exports = {
             AND relates_to.verified=true \
             GROUP BY relates_to.user";
 
-            // console.log(query);
-            let author_messages = await Submission.query(query, {
-                params:
-                {
-                    course: req.course.domain,
-                    class: submission.class,
-                    content: submission.content
-                }
-            });
+                // console.log(query);
+                let author_messages = await Submission.query(query, {
+                    params:
+                        {
+                            course: req.course.domain,
+                            class: submission.class,
+                            content: submission.content
+                        }
+                });
 
-            for (let m of msg) {
-                // its mine
-                if (m.fromuser.id == req.session.passport.user.id)
-                    m.canview = true;
-                else {
-                    // list of messages related to submissions by this author
-                    let forthisauthor = _.find(author_messages, { author: m.fromuser.id });
-                    //if there are messages for this author
-                    if (forthisauthor) {
-                        //if I have made a message to this author for a related submission
-                        m.canview = _.includes(forthisauthor.messagesfrom, req.session.passport.user.id);
-                    }
+                for (let m of msg) {
+                    // its mine
+                    if (m.fromuser.id == req.session.passport.user.id)
+                        m.canview = true;
                     else {
-                        //author has no messages, particularly not from me
-                        m.canview = false;
+                        // list of messages related to submissions by this author
+                        let forthisauthor = _.find(author_messages, { author: m.fromuser.id });
+                        //if there are messages for this author
+                        if (forthisauthor) {
+                            //if I have made a message to this author for a related submission
+                            m.canview = _.includes(forthisauthor.messagesfrom, req.session.passport.user.id);
+                        }
+                        else {
+                            //author has no messages, particularly not from me
+                            m.canview = false;
+                        }
                     }
-                }
 
-                delete m.readAt;
+                    delete m.readAt;
+                }
             }
+            else {
+                for (let m of msg) {
+                    m.canview = true;
+                }
+            }
+
+            //only made read the ones that I can actually read...
+            let read = {
+                user: req.session.passport.user.id + '',
+                date: (new Date()).toISOString()
+            };
+
+            let q = "UPDATE discussionmessage ADD readAt = " + JSON.stringify(read) + " WHERE @rid IN [" + _.pluck(_.filter(msg, { canview: true }), 'id').join(',') + '] AND readAt CONTAINSALL (user <> "' + req.session.passport.user.id + '")';
+            // console.log(q);
+            await DiscussionMessage.query(q);
+
+            Submission.removeCircularReferences(msg);
+
+            return res.json(msg);
         }
         else {
-            for (let m of msg) {
-                m.canview = true;
-            }
+            return res.notFound();
         }
-
-        //only made read the ones that I can actually read...
-        let read = {
-            user: req.session.passport.user.id + '',
-            date: (new Date()).toISOString()
-        };
-
-        let q = "UPDATE discussionmessage ADD readAt = " + JSON.stringify(read) + " WHERE @rid IN [" + _.pluck(_.filter(msg, { canview: true }), 'id').join(',') + '] AND readAt CONTAINSALL (user <> "' + req.session.passport.user.id + '")';
-        // console.log(q);
-        await DiscussionMessage.query(q);
-
-        Submission.removeCircularReferences(msg);
-
-        return res.json(msg);
     },
 
     /**
@@ -516,6 +548,7 @@ module.exports = {
                 AND relates_to.class=:class \
                 AND relates_to.content=:content \
                 AND relates_to.verified=true\
+                AND moderationstate <> 'denied' \
                 GROUP BY relates_to FETCHPLAN submission:2 discussion:1";
 
             let p = Submission.query(query, {
@@ -535,7 +568,7 @@ module.exports = {
                 content: req.param('content'),
                 verified: true
             })
-            .populate('discussion').populate('user');
+                .populate('discussion').populate('user');
 
             let [participated, own] = await Promise.all([p, o]);
 

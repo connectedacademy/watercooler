@@ -62,6 +62,7 @@ module.exports.routes = {
   
   'GET /v1/teacher/classrooms/:class?':'AdminController.classes',
   'GET /v1/admin/classrooms/:class?':'AdminController.allclasses',
+  
   'GET /v1/admin/students/:class?':'AdminController.users',
   'GET /v1/teacher/students/:class?':'AdminController.classusers',
   
@@ -111,5 +112,12 @@ module.exports.routes = {
   'POST /v1/discussion/submit/:class/:content':'DiscussionController.submit',
   'POST /v1/discussion/verify/:submission':'DiscussionController.verify', 
 
+  //MODERATION
+  'GET /v1/moderation/pending':'ModerationController.pending',
+  'POST /v1/moderation/change/:item':'ModerationController.change',
+  'POST /v1/moderation/report/:item':'ModerationController.report',
+  
+
+  //GLOBAL
   'OPTIONS /*':{policy:'cors'}
 };

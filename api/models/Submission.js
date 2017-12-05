@@ -27,7 +27,11 @@ module.exports = {
             collection:'DiscussionMessage',
             via: 'relates_to'
         },
-
+        moderation: 'array',
+        moderationstate: {
+            type: 'string',
+            enum: ['default','pending', 'approved', 'denied']
+        },
         toJSON :function()
         {
             let obj = this.toObject();

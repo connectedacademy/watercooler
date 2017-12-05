@@ -95,9 +95,9 @@
   },
   {
     "type": "get",
-    "url": "/v1/teacher/homework/:class",
-    "title": "Class Homework",
-    "description": "<p>List all submission content for a specific class and content segment</p>",
+    "url": "/v1/admin/homework/:class",
+    "title": "All Class Homework",
+    "description": "<p>List all submission content for a specific class</p>",
     "name": "content",
     "group": "Admin",
     "version": "1.0.0",
@@ -136,7 +136,7 @@
     "groupTitle": "Admin",
     "sampleRequest": [
       {
-        "url": "https://api.connectedacademy.io/v1/teacher/homework/:class"
+        "url": "https://api.connectedacademy.io/v1/admin/homework/:class"
       }
     ]
   },
@@ -1316,8 +1316,8 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "body.url",
-            "description": "<p>URL to scrape</p>"
+            "field": "url",
+            "description": "<p>URL to scrape or the HTML contents (or text) that should be parsed for a submission</p>"
           }
         ]
       }
@@ -1888,6 +1888,111 @@
     ]
   },
   {
+    "type": "post",
+    "url": "/v1/moderate/change/:item",
+    "title": "Change Moderation Status",
+    "description": "<p>Change status for any item getting moderated</p>",
+    "name": "moderationchange",
+    "group": "Moderation",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "admin"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "item",
+            "description": "<p>Item ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "moderationstate",
+            "description": "<p>One of 'approved','denied'</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/ModerationController.js",
+    "groupTitle": "Moderation",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/moderate/change/:item"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/moderate/pending",
+    "title": "Pending Moderation",
+    "description": "<p>Get a list of items pending moderation</p>",
+    "name": "moderationlist",
+    "group": "Moderation",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "admin"
+      }
+    ],
+    "filename": "api/controllers/ModerationController.js",
+    "groupTitle": "Moderation",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/moderate/pending"
+      }
+    ]
+  },
+  {
+    "type": "post",
+    "url": "/v1/moderate/report/:item",
+    "title": "Report For Moderation",
+    "description": "<p>Report any item for moderation</p>",
+    "name": "moderationreport",
+    "group": "Moderation",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "admin"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "item",
+            "description": "<p>Item ID</p>"
+          }
+        ]
+      }
+    },
+    "filename": "api/controllers/ModerationController.js",
+    "groupTitle": "Moderation",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/moderate/report/:item"
+      }
+    ]
+  },
+  {
     "type": "get",
     "url": "/v1/teacher/messages/:class?/:user?",
     "title": "Class Messages",
@@ -2014,30 +2119,6 @@
   },
   {
     "type": "get",
-    "url": "/v1/teacher/classrooms/:class?",
-    "title": "Teacher Classrooms",
-    "description": "<p>List all classes for this course, if a teacher is logged in, only show ones they taught.</p>",
-    "name": "classes",
-    "group": "Profile",
-    "version": "1.0.0",
-    "permission": [
-      {
-        "name": "domainparse"
-      },
-      {
-        "name": "teacher"
-      }
-    ],
-    "filename": "api/controllers/AdminController.js",
-    "groupTitle": "Profile",
-    "sampleRequest": [
-      {
-        "url": "https://api.connectedacademy.io/v1/teacher/classrooms/:class?"
-      }
-    ]
-  },
-  {
-    "type": "get",
     "url": "/v1/admin/classrooms/:class?",
     "title": "All Classrooms",
     "description": "<p>List all classes for this course, if a teacher is logged in, only show ones they taught.</p>",
@@ -2057,6 +2138,30 @@
     "sampleRequest": [
       {
         "url": "https://api.connectedacademy.io/v1/admin/classrooms/:class?"
+      }
+    ]
+  },
+  {
+    "type": "get",
+    "url": "/v1/teacher/classrooms/:class?",
+    "title": "Teacher Classrooms",
+    "description": "<p>List all classes for this course, if a teacher is logged in, only show ones they taught.</p>",
+    "name": "classes",
+    "group": "Profile",
+    "version": "1.0.0",
+    "permission": [
+      {
+        "name": "domainparse"
+      },
+      {
+        "name": "teacher"
+      }
+    ],
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Profile",
+    "sampleRequest": [
+      {
+        "url": "https://api.connectedacademy.io/v1/teacher/classrooms/:class?"
       }
     ]
   },

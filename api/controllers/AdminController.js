@@ -21,19 +21,17 @@ module.exports = {
      * 
      */
     clearcache: async (req, res) => {
-        if (req.param('domain'))
-        {
-            sails.log.verbose('ClearingCache',req.param('domain'));
+        if (req.param('domain')) {
+            sails.log.verbose('ClearingCache', req.param('domain'));
             await ResponseCache.removeMatching(`https://${req.param('domain')}/*`);
             await ResponseCache.removeMatching(`wc:yaml:${req.param('domain')}:*`);
             await ResponseCache.removeMatching(`wc:summary:*`);
             return res.ok('Cached cleared');
         }
-        else
-        {
+        else {
             //no domain set -- clear all
             await ResponseCache.removeMatching(`wc:summary:*`);
-            
+
             //clear redis cache:
             rediscache.flushdb(function (msg) {
                 sails.log.verbose('Redis cached cleared', msg);
@@ -153,7 +151,8 @@ module.exports = {
                 course: req.course.domain,
                 class: req.param('class'),
                 user: req.session.passport.user.id,
-                verified:true
+                verified: true,
+                moderationstate: { '!': ['denied'] }
             }).populate('discussion').populate('user');
 
             let mapped = _.map(submissions, (sub) => {
@@ -200,13 +199,7 @@ module.exports = {
             // let forceTeacher = req.param('teacher');
 
             let submissions = [];
-            // if (isAdmin && !forceTeacher) {
-            //     submissions = await Submission.find({
-            //         course: req.course.domain,
-            //         class: req.param('class'),
-            //         cached: true
-            //     }).populate('discussion').populate('user');
-            // }
+
             if (isTeacher) {
                 if (req.param('class')) {
                     //submissions from only this class
@@ -216,6 +209,7 @@ module.exports = {
                             course: req.course.domain,
                             class: req.param('class'),
                             verified: true,
+                            moderationstate: { '!': ['denied'] },
                             user: _.map(classroom.students, (v) => v.toString())
                         }).populate('discussion').populate('user');
                     }
@@ -235,20 +229,11 @@ module.exports = {
                     }).populate('discussion').populate('user');
                 }
             }
-            else
-            {
+            else {
                 return res.status(403).json({
                     msg: 'Not a teacher for this class'
                 });
             }
-            // else {
-            //     //only my own:
-            //     submissions = await Submission.find({
-            //         course: req.course.domain,
-            //         class: req.param('class'),
-            //         user: req.session.passport.user.id
-            //     }).populate('discussion').populate('user');
-            // }
 
             let mapped = _.map(submissions, (sub) => {
                 sub.messages = _.size(sub.discussion);
@@ -264,8 +249,8 @@ module.exports = {
 
     /**
      * 
-     * @api {get} /v1/teacher/homework/:class Class Homework
-     * @apiDescription List all submission content for a specific class and content segment
+     * @api {get} /v1/admin/homework/:class All Class Homework
+     * @apiDescription List all submission content for a specific class
      * @apiName content
      * @apiGroup Admin
      * @apiVersion  1.0.0
@@ -279,18 +264,7 @@ module.exports = {
      */
     content: async (req, res) => {
         try {
-
-            //check they are either admin, or a teacher for this content:
-            // let isAdmin = _.includes(req.session.passport.user.admin, req.course.domain);
-
             //find students and only use this list:
-            let classrooms = await Classroom.find({
-                course: req.course.domain
-                // teacher: req.session.passport.user.id
-            });
-
-            // let isTeacher = _.size(classrooms);
-            // let forceTeacher = req.param('teacher');
 
             let submissions = [];
             // if (isAdmin && !forceTeacher) {
@@ -299,41 +273,6 @@ module.exports = {
                 class: req.param('class'),
                 verified: true
             }).populate('discussion').populate('user');
-            // }
-            // else if (isTeacher) {
-            //     if (req.param('class')) {
-            //         //submissions from only this class
-            //         let classroom = _.find(classrooms, (v) => v.class == req.param('class'));
-            //         if (classroom) {
-            //             submissions = await Submission.find({
-            //                 course: req.course.domain,
-            //                 class: req.param('class'),
-            //                 user: _.map(classroom.students, (v) => v.toString())
-            //             }).populate('discussion').populate('user');
-            //         }
-            //         else
-            //             submissions = [];
-            //     }
-            //     else {
-            //         //submissions from all students from all classes:
-            //         let students = _.unique(_.flatten(_.map(classrooms, function (c) {
-            //             return _.map(c.students, (v) => v.toString())
-            //         })));
-
-            //         submissions = await Submission.find({
-            //             course: req.course.domain,
-            //             user: students
-            //         }).populate('discussion').populate('user');
-            //     }
-            // }
-            // else {
-            //     //only my own:
-            //     submissions = await Submission.find({
-            //         course: req.course.domain,
-            //         class: req.param('class'),
-            //         user: req.session.passport.user.id
-            //     }).populate('discussion').populate('user');
-            // }
 
             let mapped = _.map(submissions, (sub) => {
                 sub.messages = _.size(sub.discussion);
@@ -458,7 +397,7 @@ module.exports = {
 
             let messages = [];
 
-           
+
             //if they have any teacher codes:
             let codes = await Classroom.find({
                 course: req.course.domain,
@@ -501,7 +440,7 @@ module.exports = {
      * 
      */
     messages: async (req, res) => {
-        
+
         try {
 
             let klass = '*';
@@ -538,22 +477,20 @@ module.exports = {
      * 
      */
     allclasses: async (req, res) => {
-        
+
         //should mainly list from the spec:
 
         //get teacher codes (if you happen to be a teacher):
         let codes = null;
-        
-        if (req.param('class'))
-        {
+
+        if (req.param('class')) {
             //admin, so get all classrooms
             codes = await Classroom.find({
                 course: req.course.domain,
                 class: req.param('class')
             }).populate('teacher');
         }
-        else
-        {
+        else {
             //admin, so get all classrooms
             codes = await Classroom.find({
                 course: req.course.domain
@@ -565,11 +502,11 @@ module.exports = {
                 slug: s.class,
                 code: s.code,
                 students: _.size(s.students),
-                teacher: _.omit(s.teacher,['account_credentials'])
+                teacher: _.omit(s.teacher, ['account_credentials'])
             };
         });
         return res.json(mapped);
-        
+
     },
 
     /**
@@ -587,18 +524,16 @@ module.exports = {
 
         //get teacher codes (if you happen to be a teacher):
         let codes = null;
-        
+
         //not admin, only get the ones I am intested in
-        if (req.param('class'))
-        {
+        if (req.param('class')) {
             codes = await Classroom.find({
                 course: req.course.domain,
                 teacher: req.session.passport.user.id,
                 class: req.param('class')
             });
         }
-        else
-        {
+        else {
             codes = await Classroom.find({
                 course: req.course.domain,
                 teacher: req.session.passport.user.id
@@ -616,60 +551,47 @@ module.exports = {
         return res.json(mapped);
     },
 
-     /**
-     * 
-     * @api {get} /v1/admin/students/:class? All Users
-     * @apiDescription List all users registered for this course
-     * @apiName users
-     * @apiGroup Profile
-     * @apiVersion  1.0.0
-     * @apiPermission domainparse
-     * @apiPermission admin
-     * 
-     * @apiParam {String} class Class slug
-     * 
-     */
+    /**
+    * 
+    * @api {get} /v1/admin/students/:class? All Users
+    * @apiDescription List all users registered for this course
+    * @apiName users
+    * @apiGroup Profile
+    * @apiVersion  1.0.0
+    * @apiPermission domainparse
+    * @apiPermission admin
+    * 
+    * @apiParam {String} class Class slug
+    * 
+    */
     users: async (req, res) => {
-        
+
         try {
             //list users from this class (or course)
             let users = [];
 
-            // let forceTeacher = req.param('teacher');
 
-            //is admin
-            // if (_.includes(req.session.passport.user.admin, req.course.domain) && !forceTeacher) {
-                // req.checkParams('class').isEmpty();
-
-                // try {
-                //     let result = await req.getValidationResult();
-                //     result.throw();
-                // }
-                // catch (e) {
-                //     return res.badRequest(e.mapped());
-                // }
-
-                //admin user list
-                let registrations = await Registration.find({ course: req.course.domain });
-                users = await User.find({ id: _.map(registrations, 'user') }).populate('submissions', {
-                    where: {
-                        course: req.course.domain,
-                        cached: true,
-                    }
-                });
-
-                let promises = [];
-
-                for (let user of users) {
-                    promises.push(applyMessages(req, req.course.domain, user));
+            //admin user list
+            let registrations = await Registration.find({ course: req.course.domain });
+            users = await User.find({ id: _.map(registrations, 'user') }).populate('submissions', {
+                where: {
+                    course: req.course.domain,
+                    cached: true,
                 }
+            });
 
-                await Promise.all(promises);
+            let promises = [];
 
-                users = _.map(users, (u) => {
-                    u.homework = _.size(u.submissions);
-                    return _.omit(u, 'submissions');
-                });
+            for (let user of users) {
+                promises.push(applyMessages(req, req.course.domain, user));
+            }
+
+            await Promise.all(promises);
+
+            users = _.map(users, (u) => {
+                u.homework = _.size(u.submissions);
+                return _.omit(u, 'submissions');
+            });
             // }
 
             return res.json(users);

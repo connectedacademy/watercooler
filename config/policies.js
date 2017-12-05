@@ -72,5 +72,9 @@ module.exports.policies = {
         '*':['isUser','verifyDomain','jsononly','cors'],
         'subscribe':['socketonly','isUser','verifyDomain','jsononly','cors'],
         'thumbnail':true
+    },
+    'moderation':{
+        '*':['jsononly','cors','verifyDomain','isAdmin'],
+        'report':['jsononly','cors','verifyDomain','isUser'],
     }
 };
