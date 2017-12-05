@@ -275,48 +275,72 @@ module.exports = {
         let userkey = `wc:summary:${course}:${klass}:${contentid}:|${segments.join('|')}|:${user.service}/${user.account}`;
 
         
+        // console.log(userkey);
         //get redis with this user spec key:
 
         //if there is a key, then serve it
-        let usersubmittedinthisblock = await ResponseCache.getFromKey(userkey);
-        //if there is not a key, then serve the main response
 
-        // if this user has submitted a message in this block then their view will be different to everyone else's -- go get the real data (or a cached version)
-        if (usersubmittedinthisblock)
+        //if logged in:
+        if (loggedin)
         {
-            return usersubmittedinthisblock;
-        }
-        else
-        {
-            // use the existing cache (which will get invalidated when ANYONE posts to this block)
-            let key = `${course}:${klass}:${contentid}:|${segments.join('|')}|:${language}:${whitelist}`;
-
-            let response = await ResponseCache.cachedRequest('summary',key, params, 60);
-
-            if (!loggedin)
+            //if there is a cache of the user submitting into this block:
+            let userblockcache = await ResponseCache.getFromKey(userkey);
+            if (userblockcache)
             {
-                if (response.data.message)
+                console.log('user in block cache - ' + user.account);
+                return userblockcache;
+            }
+            else
+            {
+                //lookup if this user has submitted int this block range (from redis, never invalidates) -- this gets pregenerates on boot, and updated on message submit
+
+                let commands = [];
+                for (let segment = parseInt(startsegment); segment <= parseInt(endsegment); segment++) 
+                {
+                    // console.log(`wc:lookup:${course}:${klass}:${contentid}:${segment}:${user.id}`);
+                    commands.push(['get',`wc:lookup:${course}:${klass}:${contentid}:${segment}:${user.id}`]);
+                }
+
+                let possibles = await ResponseCache.pipeline(commands);
+        
+                // console.log(possibles);
+
+                // lookup says that this user has submitted into this block
+                if (_.includes(_.flatten(possibles),'true'))
+                {
+                    // console.log('is in lookup');
+                    //if the user has submitted, then do query without cache:
+                    let response = await ResponseCache.cachedRequest('summary',userkey, params, -1, null, true);
+                    //if this message belongs to me -- set this cache for the next time:
+                    // if (response.data.message && response.data.message.ismine)
+                    // {
+                        // set the user submitted key:
+                    ResponseCache.setCache(userkey, response);
+                    return response;
+                    // }
+                }
+            }
+        }
+        //if there is not a key, then serve the main response
+        
+        let key = `${course}:${klass}:${contentid}:|${segments.join('|')}|:${language}:${whitelist}`;
+        // use the existing cache (which will get invalidated when ANYONE posts to this block)
+
+        let response = await ResponseCache.cachedRequest('summary',key, params, -1);
+
+        if (response.data.message)
+        {
+            response.data.message.ismine = 0;
+            if (response.data.message.author)
+            {
+                if (user.id == response.data.message.author.id)
+                    response.data.message.ismine = 1;
+                else
                     response.data.message.ismine = 0;
             }
-            //TODO: fix this logic
-            // else
-            // {
-            //     if (response.data.message)
-            //         if (user.id == response.data.message.author.id)
-            //             response.data.message.ismine = 1;
-            //         else
-            //             response.data.message.ismine = 0;
-            // }
-
-
-            if (response.data.message && response.data.message.ismine && loggedin)
-            {
-                // set the user submitted key:
-                ResponseCache.setCache(userkey, response);
-            }
-
-            return response;
         }
+
+        return response;
     },
 
     listForUsers: async (course, klass, user, userlist, whitelist) => {
@@ -822,6 +846,10 @@ module.exports = {
         //invalidate segment user cache let userkey = `${course}:${klass}:${contentid}:|${segments.join('|')}|:${user.service}/${user.account}`;
         pattern = `wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:*|${parsed.segment}|*:${user.service}/${user.account}`;
         await ResponseCache.removeMatching(pattern);
+
+        //create lookup for this user:
+        let lookupkey = `wc:lookup:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${user.id}`;
+        ResponseCache.setCache(lookupkey,true);
 
         return response;
     }

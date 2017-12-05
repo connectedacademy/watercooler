@@ -1,3 +1,5 @@
+const omitDeep = require('omit-deep-lodash');
+
 module.exports = {
 
     /**
@@ -99,12 +101,16 @@ module.exports = {
 
         queries.push(Submission.find({moderationstate:'pending'}));
         queries.push(DiscussionMessage.find({moderationstate:'pending'}));
-
+        queries.push(Message.find({moderationstate:'pending'}));
+        
         let pending = await Promise.all(queries);
+
+        let msgs = omitDeep( pending[2],['rid','@version','@type','_raw','@class','credentials','account_credentials','replyto','user_from','out_reply','in','replytolink','admin','user','user2']);
 
         let output = {
             submissions: pending[0],
-            discussion: pending[1]
+            discussion: pending[1],
+            messages: msgs
         }
 
         return res.json(output);

@@ -21,7 +21,8 @@
         "AuthCheck":true,
         "LikeTag":true,
         "ResponseCache":true,
-        "SubmissionScraper":true
+        "SubmissionScraper":true,
+        "Message":true
     },
     "parserOptions": {
         "ecmaVersion": 8,

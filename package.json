@@ -46,7 +46,7 @@
     "winston-logzio": "1.0.3",
     "md5": "2.2.1",
     "sharp": "0.18.4",
-    "omit-deep": "0.3.0"
+    "omit-deep-lodash": "1.0.0"
   },
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",

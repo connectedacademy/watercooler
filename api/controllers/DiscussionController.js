@@ -1,4 +1,4 @@
-const omitDeep = require('omit-deep');
+const omitDeep = require('omit-deep-lodash');
 
 module.exports = {
 

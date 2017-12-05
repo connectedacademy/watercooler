@@ -31,6 +31,10 @@ module.exports = {
         }
     },
 
+    pipeline: async function(commands){
+        return redisIO.pipeline(commands).exec();
+    },
+
     setCache: async function (key, data) {
         try {
             rediscache.set(key, JSON.stringify(data));
