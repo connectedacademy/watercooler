@@ -290,13 +290,13 @@ module.exports = {
      * 
      * @apiParam  {String} class Class Slug
      * @apiParam  {String} content Content Slug
-     * @apiParam  {String} body.url URL to scrape
+     * @apiParam  {String} url URL to scrape or the HTML contents (or text) that should be parsed for a submission
      * 
      * 
      */
     submit: async (req, res) => {
 
-        req.checkBody('url').notEmpty().isURL();
+        req.checkBody('url').notEmpty();
 
         try {
             let result = await req.getValidationResult();
@@ -307,8 +307,6 @@ module.exports = {
         }
 
         let url = req.body.url;
-        if (!_.startsWith(url, 'http'))
-            url = `https://${url}`;
 
         try {
             let data = await SubmissionScraper.scrapeForSubmission(req, req.param('class'), req.param('content'), url);

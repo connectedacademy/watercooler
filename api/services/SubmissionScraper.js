@@ -71,7 +71,26 @@ let putFileToS3 = async function (folder, name, url, thumbnail=false, content) {
 let putToS3 = async function (settings, user, url, course, klass, cnt) {
     sails.log.verbose('Getting url', url, user);
     // get the target content
-    let content = await request(url);
+
+    let content = '';
+    try
+    {
+        let tmpurl = url;
+        if (!_.startsWith(tmpurl, 'http'))
+            tmpurl = `https://${tmpurl}`;
+
+        //attempt to get contents of this url
+        content = await request(tmpurl);
+    }
+    catch (exception)
+    {
+        //assume that the content is not a url, but the actual content
+        content = url;
+    }
+
+
+
+
 
     // //DEBUG:
     // settings = {
