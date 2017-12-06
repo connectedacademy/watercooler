@@ -4,32 +4,10 @@ let URL = require('url').URL;
 
 module.exports = {
 
-
-    // testadminlogin: (req,res)=>
-    // {
-    //     req.session.redirecturi = req.get('origin') || req.get('referer');
-    //     if (process.env.CI || req.query.psk == process.env.TESTKEY)
-    //     {
-    //         let testuser = require('../../spec/examples/adminuser.json');
-
-    //         User.create(testuser).exec((err,user)=>{
-
-    //             req.login(user, (err)=>
-    //             {
-    //                 // console.log(err);
-    //                 return res.redirect(req.session.redirecturi + '/#/admin');
-    //             });
-
-    //         });
-    //     }
-    //     else
-    //     {
-    //         return res.forbidden('NOT IN CI OR TEST MODE');
-    //     }
-    // },
-
     testuserlogin: (req,res)=>{
-        req.session.redirecturi = req.get('origin') || req.get('referer');
+        
+        req.session.redirecturi = req.query.callback || req.get('origin') || req.get('referer');
+
         if (process.env.CI || req.query.psk == process.env.TESTKEY)
         {
             let testuser = require('../../spec/examples/normaluser.json');
@@ -38,8 +16,6 @@ module.exports = {
                 // console.log()
                 req.login(user, (err)=>
                 {
-                    // console.log(err);
-
                     return res.redirect(req.session.redirecturi + '/#/');
                 });
             });
