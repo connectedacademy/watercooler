@@ -21,6 +21,8 @@ module.exports = {
       delete obj['@type'];
       delete obj['@class'];
       delete obj['@version'];
+      if (obj.registration_info)
+        delete obj.registration_info['@type'];
       return obj;
     }
   }

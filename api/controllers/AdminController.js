@@ -594,7 +594,7 @@ module.exports = {
             });
             // }
 
-            return res.json(users);
+            return res.json(User.removeCircularReferences(users));
         }
         catch (e) {
             return res.serverError(e);
