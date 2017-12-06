@@ -20,8 +20,8 @@ module.exports.policies = {
         'profile':['isUser','verifyDomain','jsononly','cors'],
         'register':['isUser','verifyDomain','jsononly','cors'],
         'registrationquestions':['isUser','verifyDomain','jsononly','cors'],
-        'testuserlogin':['verifyDomain'],
-        'loginexistinguser':['verifyDomain']
+        'testuserlogin':true,
+        'loginexistinguser':true
     },
     'admin':
     {
