@@ -21,7 +21,7 @@ module.exports = {
             }).exec((err,user)=>{
                 req.login(user, (err)=>
                 {
-                    return res.redirect(req.session.redirecturi + '/#/');
+                    return res.redirect(req.session.redirecturi + '/#/registration');
                 });
             });
         }
