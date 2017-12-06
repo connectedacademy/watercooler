@@ -21,7 +21,8 @@ module.exports.policies = {
         'register':['isUser','verifyDomain','jsononly','cors'],
         'registrationquestions':['isUser','verifyDomain','jsononly','cors'],
         'testuserlogin':true,
-        'loginexistinguser':true
+        'loginexistinguser':true,
+        'cleartestaccount':true
     },
     'admin':
     {

@@ -4,58 +4,71 @@ let URL = require('url').URL;
 
 module.exports = {
 
-    testuserlogin: (req,res)=>{
+    testuserlogin: (req, res) => {
 
         req.session.redirecturi = req.query.callback || req.get('origin') || req.get('referer');
 
-        if (process.env.CI || req.query.psk == process.env.TESTKEY)
-        {
+        if (process.env.CI || req.query.psk == process.env.TESTKEY) {
             User.create({
-                service:'twitter',
-                account:'Test Account',
+                service: 'twitter',
+                account: 'Test Account',
                 name: "Test Account",
                 lang: "en",
                 profile: "http://lorempixel.com/60/60/people",
                 link: "http://bbc.co.uk",
-                email:"test@connectedacademy.io"
-            }).exec((err,user)=>{
-                req.login(user, (err)=>
-                {
+                email: "test@connectedacademy.io"
+            }).exec((err, user) => {
+                req.login(user, (err) => {
                     return res.redirect(req.session.redirecturi + '/#/registration');
                 });
             });
         }
-        else
-        {
-             return res.forbidden('NOT IN CI OR TEST MODE');
+        else {
+            return res.forbidden('NOT IN CI OR TEST MODE');
         }
     },
 
-    loginexistinguser: async (req,res)=>{
+    cleartestaccount: (req, res) => {
+
         req.session.redirecturi = req.query.callback || req.get('origin') || req.get('referer');
 
-        if (process.env.CI || req.query.psk == process.env.TESTKEY)
-        {
+        if (process.env.CI || req.query.psk == process.env.TESTKEY) {
+            if (req.session.passport && req.session.passport.user) {
+                Answer.destroy({ user: req.session.passport.user.id }, function (err) {
+                    return res.redirect(req.session.redirecturi + '/#/');
+                });
+            }
+            else {
+                return res.forbidden('INVALIDUSER');
+
+            }
+
+        }
+        else
+            return res.forbidden('NOT IN CI OR TEST MODE');
+    },
+
+    loginexistinguser: async (req, res) => {
+        req.session.redirecturi = req.query.callback || req.get('origin') || req.get('referer');
+
+        if (process.env.CI || req.query.psk == process.env.TESTKEY) {
 
             let user = await User.findOne({
                 account: req.query.account
             });
 
-            req.login(user, (err)=>
-            {
+            req.login(user, (err) => {
                 return res.redirect(req.session.redirecturi + '/#/');
             });
         }
-        else
-        {
-             return res.forbidden('NOT IN CI OR TEST MODE');
+        else {
+            return res.forbidden('NOT IN CI OR TEST MODE');
         }
     },
 
-	root: async (req,res) =>
-    {
+    root: async (req, res) => {
         return res.json({
-            msg:'Watercooler Running',
+            msg: 'Watercooler Running',
             version: pjson.version,
             host: os.hostname(),
             uptime: process.uptime()
@@ -76,10 +89,10 @@ module.exports = {
         return res.ok('Logged out successfully.');
     },
 
-    twitter_callback: (req,res,next)=>{
-        let success = (req.session.redirecturi + '/#/registration').replace('//#','/#');
-        let fail = (req.session.redirecturi + '/#/loginfail').replace('//#','/#');
-        sails.passport.authenticate('twitter',{successRedirect: success, failureRedirect: fail})(req,res,next);
+    twitter_callback: (req, res, next) => {
+        let success = (req.session.redirecturi + '/#/registration').replace('//#', '/#');
+        let fail = (req.session.redirecturi + '/#/loginfail').replace('//#', '/#');
+        sails.passport.authenticate('twitter', { successRedirect: success, failureRedirect: fail })(req, res, next);
     },
 
     /**
@@ -91,13 +104,13 @@ module.exports = {
      * @apiVersion  1.0.0
      * 
      */
-    login: (req,res,next) =>{
+    login: (req, res, next) => {
         //verify referer / origin, if valid, then allow and save into session
         // console.log(req.get('origin') || req.get('referer'));
         let url = new URL(req.get('origin') || req.get('referer'))
         // console.log(url.origin);
         req.session.redirecturi = url;
-        sails.passport.authenticate('twitter')(req,res,next);
+        sails.passport.authenticate('twitter')(req, res, next);
     },
 
     /**
@@ -109,12 +122,12 @@ module.exports = {
      * @apiVersion  1.0.0
      * 
      */
-    admin: (req,res,next)=>{
+    admin: (req, res, next) => {
         //verify referer / origin, if valid, then allow and save into session
         let url = new URL(req.get('origin') || req.get('referer'))
         req.session.redirecturi = url;
         // req.session.redirecturi = req.get('origin') || req.get('referer');
-        sails.passport.authenticate('github')(req,res,next);
+        sails.passport.authenticate('github')(req, res, next);
     },
 
     /**
@@ -126,15 +139,15 @@ module.exports = {
      * @apiVersion  1.0.0
      * 
      */
-    admin_logout: (req,res)=>{
+    admin_logout: (req, res) => {
         req.logout();
         return res.ok('Logged out successfully.');
     },
 
-    github_callback: (req,res,next)=>{
-        let success = (req.session.redirecturi + '/#/admin').replace('//#','/#');
-        let fail = (req.session.redirecturi + '/#/loginfail').replace('//#','/#');
-        sails.passport.authenticate('github',{successRedirect: success, failureRedirect: fail })(req,res,next);
+    github_callback: (req, res, next) => {
+        let success = (req.session.redirecturi + '/#/admin').replace('//#', '/#');
+        let fail = (req.session.redirecturi + '/#/loginfail').replace('//#', '/#');
+        sails.passport.authenticate('github', { successRedirect: success, failureRedirect: fail })(req, res, next);
     },
 
     /**
@@ -147,27 +160,25 @@ module.exports = {
      * @apiPermission domainparse
      * 
      */
-    me: async (req,res)=>{
-        try
-        {
+    me: async (req, res) => {
+        try {
             var user = await User.findOne(req.session.passport.user.id)
-            .populate('owner')
-            .populate('registrations',{
-                course: req.course.domain
-            });
+                .populate('owner')
+                .populate('registrations', {
+                    course: req.course.domain
+                });
 
             user.registration = _.first(user.registrations);
-            user = _.omit(user,'registrations','account_credentials');
+            user = _.omit(user, 'registrations', 'account_credentials');
 
             let roles = ['user'];
 
             //normal admin
-            if (_.includes(user.admin,req.course.domain))
+            if (_.includes(user.admin, req.course.domain))
                 roles.push('admin');
 
             //owner
-            if (user.owner && req.session.passport.allowedrepos && _.includes(req.session.passport.allowedrepos,req.course.repo))
-            {
+            if (user.owner && req.session.passport.allowedrepos && _.includes(req.session.passport.allowedrepos, req.course.repo)) {
                 roles.push('owner');
             }
 
@@ -178,20 +189,18 @@ module.exports = {
             if (_.size(codes) > 0)
                 roles.push('teacher');
 
-            if (req.isSocket)
-            {
-                sails.log.verbose('Subscribed to WS for user',req.session.passport.user.id);
-                User.subscribe(req,req.session.passport.user.id);
+            if (req.isSocket) {
+                sails.log.verbose('Subscribed to WS for user', req.session.passport.user.id);
+                User.subscribe(req, req.session.passport.user.id);
             }
-            
+
             user.roles = roles;
 
             return res.json({
                 user: user
             });
         }
-        catch (e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     },
@@ -211,40 +220,35 @@ module.exports = {
      * @apiParam  {String} hub_id ID of the chosen hub
      * 
      */
-    profile: async (req,res)=>{
+    profile: async (req, res) => {
 
         req.checkBody('email').isEmail();
         req.checkBody('lang').notEmpty();
         req.checkBody('hub_id').notEmpty();
 
-        try
-        {
+        try {
             let result = await req.getValidationResult();
             result.throw();
         }
-        catch (e)
-        {
+        catch (e) {
             return res.badRequest(e.mapped());
         }
 
 
         //check that lang is in the available list for this course:
         let course = await CacheEngine.getSpec(req);
-        if (!_.contains(course.langs, req.body.lang))
-        {
+        if (!_.contains(course.langs, req.body.lang)) {
             return res.badRequest('Selected language not supported by this course. Available are ' + course.langs);
         }
 
         let hubs = await CacheEngine.getHubs(req);
-        if (!_.contains(_.pluck(hubs,'id'), req.body.hub_id))
-        {
-            return res.badRequest('Selected hub not avaialable for this course. Available are ' + _.pluck(hubs,'id'));
+        if (!_.contains(_.pluck(hubs, 'id'), req.body.hub_id)) {
+            return res.badRequest('Selected hub not avaialable for this course. Available are ' + _.pluck(hubs, 'id'));
         }
 
-        try
-        {
+        try {
             var registration = await Registration.findOne({
-                user:req.session.passport.user.id,
+                user: req.session.passport.user.id,
                 course: req.course.domain
             }).populate('user');
 
@@ -257,15 +261,14 @@ module.exports = {
 
             registration.user.email = req.body.email;
 
-            registration.save(function(err){
+            registration.save(function (err) {
                 if (err)
                     return res.serverError(err);
                 else
                     return res.ok('Profile updated');
             });
         }
-        catch(e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     },
@@ -281,10 +284,9 @@ module.exports = {
      * @apiPermission user
      * 
      */
-    registrationquestions: async (req,res)=>{
-        try
-        {
-            let questions = await CacheEngine.getQuestions(req,res);
+    registrationquestions: async (req, res) => {
+        try {
+            let questions = await CacheEngine.getQuestions(req, res);
             //randomly pick a question:
             let data = {
                 release: questions.release,
@@ -292,8 +294,7 @@ module.exports = {
             };
             return res.json(data);
         }
-        catch (e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     },
@@ -317,9 +318,8 @@ module.exports = {
      * 
      * 
      */
-    register: async (req,res) =>{
-        try
-        {
+    register: async (req, res) => {
+        try {
             req.checkBody('email').isEmail();
             req.checkBody('lang').notEmpty();
             req.checkBody('hub_id').notEmpty();
@@ -327,29 +327,25 @@ module.exports = {
             req.checkBody('registration_info').notEmpty();
             req.checkBody('consent').isBoolean();
 
-            try
-            {
+            try {
                 let result = await req.getValidationResult();
                 result.throw();
             }
-            catch (e)
-            {
+            catch (e) {
                 return res.badRequest(e.mapped());
             }
 
             if (!req.body.consent)
                 return res.badRequest('Consent not given');
 
-             let course = await CacheEngine.getSpec(req);
-            if (!_.contains(course.langs, req.body.lang))
-            {
+            let course = await CacheEngine.getSpec(req);
+            if (!_.contains(course.langs, req.body.lang)) {
                 return res.badRequest('Selected language not supported by this course. Available are ' + course.langs);
             }
 
             let hubs = await CacheEngine.getHubs(req);
-            if (!_.contains(_.pluck(hubs,'id'), req.body.hub_id))
-            {
-                return res.badRequest('Selected hub not avaialable for this course. Available are ' + _.pluck(hubs,'id'));
+            if (!_.contains(_.pluck(hubs, 'id'), req.body.hub_id)) {
+                return res.badRequest('Selected hub not avaialable for this course. Available are ' + _.pluck(hubs, 'id'));
             }
 
             let user = await User.findOne(req.session.passport.user.id).populate('registrations');
@@ -358,30 +354,26 @@ module.exports = {
             // console.log(user);
 
             //check there is not an existing registration for this course
-            if (!_.find(user.registrations,{course:req.course.domain}))
-            {
+            if (!_.find(user.registrations, { course: req.course.domain })) {
                 req.body.course = req.course.domain;
                 let email = req.body.email;
                 delete req.body.email;
                 user.registrations.add(req.body);
                 user.email = email;
-                user.save(function(err){
+                user.save(function (err) {
                     if (err)
                         return res.serverError(err);
-                    else
-                    {
-                        NotificationEngine.signup(req,user);
+                    else {
+                        NotificationEngine.signup(req, user);
                         return res.ok('Registration Complete');
                     }
                 });
             }
-            else
-            {
+            else {
                 return res.badRequest('Already registered for this course');
             }
         }
-        catch(e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     }

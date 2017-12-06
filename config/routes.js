@@ -62,7 +62,7 @@ module.exports.routes = {
   
   'GET /v1/teacher/classrooms/:class?':'AdminController.classes',
   'GET /v1/admin/classrooms/:class?':'AdminController.allclasses',
-  
+
   'GET /v1/admin/students/:class?':'AdminController.users',
   'GET /v1/teacher/students/:class?':'AdminController.classusers',
   
@@ -96,6 +96,8 @@ module.exports.routes = {
   // 'GET /v1/auth/testadminlogin':'AuthController.testadminlogin',
   'GET /v1/auth/testuserlogin':'AuthController.testuserlogin',
   'GET /v1/auth/loginexistinguser':'AuthController.loginexistinguser',  
+  'GET /v1/auth/cleartestaccount':'AuthController.cleartestaccount',  
+  
   
 
   // DISCUSSION MODULE
