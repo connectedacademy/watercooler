@@ -5,15 +5,20 @@ let URL = require('url').URL;
 module.exports = {
 
     testuserlogin: (req,res)=>{
-        
+
         req.session.redirecturi = req.query.callback || req.get('origin') || req.get('referer');
 
         if (process.env.CI || req.query.psk == process.env.TESTKEY)
         {
-            let testuser = require('../../spec/examples/normaluser.json');
-
-            User.create(testuser).exec((err,user)=>{
-                // console.log()
+            User.create({
+                service:'twitter',
+                account:'Test Account',
+                name: "Test Account",
+                lang: "en",
+                profile: "http://lorempixel.com/60/60/people",
+                link: "http://bbc.co.uk",
+                email:"test@connectedacademy.io"
+            }).exec((err,user)=>{
                 req.login(user, (err)=>
                 {
                     return res.redirect(req.session.redirecturi + '/#/');
