@@ -56,7 +56,7 @@ module.exports = function (sails) {
 
                     let lastupdate = _.last(user.history);
 
-                    if (moment(lastupdate.updatedAt).isAfter(moment().add(15, 'min'))) {
+                    if (lastupdate && moment(lastupdate.updatedAt).isBefore(moment().subtract(15, 'min'))) {
 
                         let resp = await requestify.get(`https://api.twitter.com/1.1/users/show.json?screen_name=${user.account}&include_entities=false`, {
                             headers: {
