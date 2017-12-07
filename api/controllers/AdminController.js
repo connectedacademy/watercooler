@@ -360,7 +360,7 @@ module.exports = {
                 klass = req.param('class');
 
             let messages = await GossipmillApi.listForUserForClass(req.course.domain, klass, req.session.passport.user, false, req.session.passport.user.id);
-            return res.json(messages);
+            return res.json(User.removeCircularReferences(messages));
         }
         catch (e) {
             return res.serverError(e);
@@ -633,9 +633,10 @@ module.exports = {
                 users = await User.find({ id: code.students }).populate('submissions', {
                     where: {
                         course: req.course.domain,
-                        cached: true,
+                        verified: true,
                     }
                 });
+
                 let promises = [];
 
                 for (let user of users) {
@@ -648,9 +649,9 @@ module.exports = {
                 //is just a user -- return nothing (bad request)
                 users = [];
             }
-            // }
+            
 
-            return res.json(users);
+            return res.json(User.removeCircularReferences(users));
         }
         catch (e) {
             return res.serverError(e);
@@ -662,7 +663,9 @@ let applyMessagesForClass = async function (req, course, klass, filteruser) {
     let messages = await GossipmillApi.listForUserForClass(course, klass, req.session.passport.user, false, filteruser.id);
     filteruser.messages = _.size(messages.data);
     filteruser.homework = _.size(filteruser.submissions);
-    filteruser.submissions = null;
+    // filteruser.submissions = null;
+    // filteruser.submissions = false;
+    // filteruser = _.omit(filteruser,'submissions');
     // filteruser = _.omit(filteruser, 'submissions');
 }
 
