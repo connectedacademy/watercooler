@@ -152,7 +152,14 @@ module.exports = {
                 class: req.param('class'),
                 user: req.session.passport.user.id,
                 verified: true,
-                moderationstate: { '!': ['denied'] }
+                or:[
+                    {
+                        moderationstate: { '!': 'denied' }
+                    },
+                    {
+                        moderationstate: null
+                    }
+                ]
             }).populate('discussion').populate('user');
 
             let mapped = _.map(submissions, (sub) => {
@@ -209,7 +216,14 @@ module.exports = {
                             course: req.course.domain,
                             class: req.param('class'),
                             verified: true,
-                            moderationstate: { '!': ['denied'] },
+                            or:[
+                                {
+                                    moderationstate: { '!': 'denied' }
+                                },
+                                {
+                                    moderationstate: null
+                                }
+                            ],
                             user: _.map(classroom.students, (v) => v.toString())
                         }).populate('discussion').populate('user');
                     }

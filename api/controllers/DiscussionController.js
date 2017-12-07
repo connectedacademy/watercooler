@@ -21,7 +21,7 @@ module.exports = {
 
         try {
             let query = "SELECT *, $discussion.size() as discussion FROM submission LET $discussion = (SELECT FROM discussionmessage WHERE relates_to = $parent.current) \
-            WHERE verified=true AND course=:course AND class=:class AND content=:content AND user <> :user AND moderationstate <> 'denied'\
+            WHERE verified=true AND course=:course AND class=:class AND content=:content AND user <> :user AND moderationstate NOT IN ['denied']\
             AND $discussion CONTAINSALL (fromuser <> :user)\
             ORDER BY discussion ASC LIMIT 9 FETCHPLAN user:1";
             let data = await Submission.query(query, {
@@ -72,7 +72,14 @@ module.exports = {
             content: req.param('content'),
             course: req.course.domain,
             verified: true,
-            moderationstate: { '!': 'denied' }
+            or:[
+                {
+                    moderationstate: { '!': 'denied' }
+                },
+                {
+                    moderationstate: null
+                }
+            ]
         }).populate('user');
         return res.json(submissions);
     },
@@ -359,11 +366,17 @@ module.exports = {
     submission: async (req, res) => {
         let submission = await Submission.findOne({
             id: req.param('submission'),
-            moderationstate: { '!': 'denied' }
+            or:[
+                {
+                    moderationstate: { '!': 'denied' }
+                },
+                {
+                    moderationstate: null
+                }
+            ]
         }).populate('user');
 
         if (submission) {
-            submission.user = _.omit(submission.user, ['account_credentials']);
             return res.json(submission);
         }
         else
@@ -436,7 +449,14 @@ module.exports = {
         //list all messages for this submission
         let submission = await Submission.findOne({
             id: req.param('submission'),
-            moderationstate: { '!': 'denied' }
+            or:[
+                {
+                    moderationstate: { '!': 'denied' }
+                },
+                {
+                    moderationstate: null
+                }
+            ]
         });
 
         if (submission) {
@@ -548,7 +568,7 @@ module.exports = {
                 AND relates_to.class=:class \
                 AND relates_to.content=:content \
                 AND relates_to.verified=true\
-                AND moderationstate <> 'denied' \
+                AND moderationstate NOT IN ['denied'] \
                 GROUP BY relates_to FETCHPLAN submission:2 discussion:1";
 
             let p = Submission.query(query, {
