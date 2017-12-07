@@ -664,7 +664,6 @@ module.exports = {
                 users = [];
             }
             
-
             return res.json(User.removeCircularReferences(users));
         }
         catch (e) {
@@ -677,7 +676,9 @@ let applyMessagesForClass = async function (req, course, klass, filteruser) {
     let messages = await GossipmillApi.listForUserForClass(course, klass, req.session.passport.user, false, filteruser.id);
     filteruser.messages = _.size(messages.data);
     filteruser.homework = _.size(filteruser.submissions);
-    // filteruser.submissions = null;
+    filteruser.submissions = undefined;
+    // filteruser = filteruser.toObject();
+    // delete filteruser.submissions;
     // filteruser.submissions = false;
     // filteruser = _.omit(filteruser,'submissions');
     // filteruser = _.omit(filteruser, 'submissions');

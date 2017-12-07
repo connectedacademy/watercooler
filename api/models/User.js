@@ -32,6 +32,7 @@ module.exports = {
       via: 'user'
     },
     admin:'array',
+    history:'array',
 
     toJSON :function()
     {
@@ -42,6 +43,8 @@ module.exports = {
       delete obj['@type'];
       delete obj['@class'];
       delete obj['@version'];
+      obj.stats = _.last(obj.history);
+      delete obj.history;
       return obj;
     }
   },
