@@ -140,8 +140,7 @@ module.exports = {
      * @apiParam  {Boolean} clearcache Force non-cached version
      * @apiParam  {Boolean} justmine Only visualise my own messages
      * @apiParam  {Boolean} segments Use segment numbers as keys rather than relative timings (i.e. 0-1).
-     * 
-     * 
+     * @apiParam  {Boolean} scale Type of scale to use (raw,lin,log) default is lin (linear) raw is actual message counts.
      * 
      */
     visualisation: async (req, res) => {
@@ -156,7 +155,6 @@ module.exports = {
             req.checkQuery('justmine').optional().isBoolean();
             req.checkQuery('segments').optional().isBoolean();
             req.checkQuery('scale').optional().isIn(['lin','log','raw']);
-            
 
             try {
                 let result = await req.getValidationResult();
@@ -166,12 +164,33 @@ module.exports = {
                 return res.badRequest(e.mapped());
             }
         }
-
-        let lang = await LangService.lang(req);
+        
         try {
+
+            let lang = await LangService.lang(req);
+
             let justmine = req.param('justmine');
+
             if (justmine && req.session.passport && req.session.passport.user)
                 justmine = req.session.passport.user.id;
+
+            let user = null;
+            if (req.session.passport && req.session.passport.user)
+                user = req.session.passport.user;
+            else {
+                let spec = await CacheEngine.getSpec(req);
+                user = {
+                    service: 'twitter',
+                    account: _.first(spec.accounts)
+                };
+            }
+
+            //subscribe to vis updates
+            let subscribed = undefined;
+            if (req.isSocket) {
+                //subscribeToVis: async (req, course, klass, content, user, language) =>{
+                subscribed = await GossipmillApi.subscribeToVis(req, req.course.domain, req.param('class'), req.param('content'), lang, user, justmine);
+            }
 
             let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'),  req.param('limit'), justmine, req.param('clearcache'), req.param('segments'),req.param('scale'));
 
@@ -182,7 +201,8 @@ module.exports = {
                     groupby: req.param('groupby'),
                     whitelist: req.param('whitelist'),
                     limit: req.param('limit'),
-                    justmine: req.param('justmine')
+                    justmine: req.param('justmine'),
+                    subscribed: subscribed
                 },
                 data: data
             });

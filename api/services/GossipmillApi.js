@@ -121,7 +121,7 @@ module.exports = {
                 if (segments)
                     return k * groupby;
                 else
-                    return k / maxk;
+                    return (k / maxk).toFixed(3);
             });
             return nordered;
         };
@@ -584,6 +584,76 @@ module.exports = {
         return response;
     },
 
+    //TODO: create subscribe connection for a shared 'room'
+    subscribeToVis: async (req, course, klass, content, language, user, justmine) =>{
+
+        let query = [
+            {
+                name: 'course',
+                query: course
+            },
+            {
+                name: 'class',
+                query: klass
+            },
+            {
+                name: 'content',
+                query: content
+            }
+        ];
+
+        if (justmine)
+        {
+            query.push({
+                name: 'user',
+                query: justmine
+            })
+        }
+
+        let socketid = `${course}-${klass}-${content}`;
+
+        io.socket.post(`/messages/subscribe/${user.service}/${user.account}?psk=${process.env.GOSSIPMILL_PSK}`,{
+                lang: language,
+                socketid: socketid,
+                depth: 5,
+                filter_by:query,
+                whitelist: true
+            },function(data){
+
+            // console.log(data);
+            //subscribe to this roomname
+            sails.sockets.join(req.socket,data.room);
+
+            if (sockethandlers[data.room])
+                io.socket.off(data.room,sockethandlers[data.room]);
+
+            // io.socket.off(data.room, function(){
+
+            sockethandlers[data.room] = async function(msg){
+
+                let wrapped = {
+                    msgtype: 'visupdate',
+                    msg: _.pick(msg,['updatedAt','class','content','segment','user.id'])
+                };
+
+                // check if this user is in the classroom:
+                sails.log.silly("Broadcasting Socket message into visualisation with " + msg.message_id);
+                sails.sockets.broadcast(data.room, wrapped);
+            };
+
+            io.socket.on(data.room,sockethandlers[data.room]);
+        });
+
+        return {
+            scope:{
+                class:klass,
+                content: content
+            },
+            msg:'Subscribed to Vis Updates'
+        };
+    },
+
+
     subscribeToClass: async (req, course, klass, user, language, classroom) =>{
         
         let klassroom = classroom;
@@ -872,6 +942,9 @@ module.exports = {
         //create lookup for this user:
         let lookupkey = `wc:lookup:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${user.id}`;
         ResponseCache.setCache(lookupkey,true);
+
+
+        // console.log("MESSAGE CREATED");
 
         return response;
     }

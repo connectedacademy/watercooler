@@ -8,7 +8,7 @@ All messages come back with the following:
 
 ```json
 {
-    "msgtype": "message", // message|classroom|discussion
+    "msgtype": "message", // message|classroom|discussion|visupdate
     "msg": ...
 }
 ```
@@ -38,3 +38,11 @@ For a time window:
 For static content (i.e. webinar):
 
 `/v1/messages/content/:class/:content`
+
+### Visualisation Updates
+
+For liveclass visualisation updates:
+
+`/v1/messages/visualisation/:class/:content/:groupby/:limit?whitelist=true`
+
+Emits `visupdate` messages throttled on new messages related to the liveclass.
