@@ -39,7 +39,7 @@ let sockethandlers = {};
 
 module.exports = {
 
-    visualisation: async (course, klass, content, language, whitelist, groupby, limit, justmine, clearcache = false) => {
+    visualisation: async (course, klass, content, language, whitelist, groupby, limit, justmine, clearcache = false, segments=false, scale='lin') => {
         let query = {
             lang: language,
             whitelist: whitelist,
@@ -92,15 +92,36 @@ module.exports = {
             }
 
             let max_val = _.max(_.values(ordered));
+            
+            let max_val_log = Math.max(Math.log(_.max(_.values(ordered))),Math.log(10));
+
+            // console.log(max_val_log);
+
+            let yoffset = 1;
 
             ordered = _.mapValues(ordered, (o) => {
-                return (o / max_val).toFixed(3);
+                switch(scale)
+                {
+                    case 'raw':
+                        return o;
+                    case 'log':
+                    if (o == 0)
+                        return 0;
+                    else
+                        return +(((Math.log(o) + yoffset) / (max_val_log + yoffset))).toFixed(3);
+                    case 'lin':
+                    default:
+                        return +(o / max_val).toFixed(3);
+                }  
             });
 
             let maxk = _.size(ordered) - 1;
 
             let nordered = _.mapKeys(ordered, (v, k) => {
-                return k / maxk;
+                if (segments)
+                    return k * groupby;
+                else
+                    return k / maxk;
             });
             return nordered;
         };

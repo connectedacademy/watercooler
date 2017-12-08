@@ -138,18 +138,25 @@ module.exports = {
      * @apiParam  {int} limit Upper block number by which to normalise results
      * @apiParam  {Boolean} whitelist Limit to messages from registered users 
      * @apiParam  {Boolean} clearcache Force non-cached version
+     * @apiParam  {Boolean} justmine Only visualise my own messages
+     * @apiParam  {Boolean} segments Use segment numbers as keys rather than relative timings (i.e. 0-1).
+     * 
+     * 
      * 
      */
     visualisation: async (req, res) => {
 
         if (!req.isSocket) {
-            req.checkQuery('whitelist').optional().isBoolean();
             req.checkParams('class').notEmpty();
             req.checkParams('content').notEmpty();
             req.checkParams('groupby').isInt();
             req.checkParams('limit').optional().isInt();            
-            req.checkQuery('justmine').optional().isBoolean();
+            req.checkQuery('whitelist').optional().isBoolean();
             req.checkQuery('clearcache').optional().isBoolean();
+            req.checkQuery('justmine').optional().isBoolean();
+            req.checkQuery('segments').optional().isBoolean();
+            req.checkQuery('scale').optional().isIn(['lin','log','raw']);
+            
 
             try {
                 let result = await req.getValidationResult();
@@ -165,7 +172,8 @@ module.exports = {
             let justmine = req.param('justmine');
             if (justmine && req.session.passport && req.session.passport.user)
                 justmine = req.session.passport.user.id;
-            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'),  req.param('limit'), justmine, req.param('clearcache'));
+
+            let data = await GossipmillApi.visualisation(req.course.domain, req.param('class'), req.param('content'), lang, req.param('whitelist'), req.param('groupby'),  req.param('limit'), justmine, req.param('clearcache'), req.param('segments'),req.param('scale'));
 
             return res.json({
                 scope: {
