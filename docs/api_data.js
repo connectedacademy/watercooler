@@ -1875,6 +1875,20 @@ define({ "api": [
             "optional": false,
             "field": "clearcache",
             "description": "<p>Force non-cached version</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "justmine",
+            "description": "<p>Only visualise my own messages</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "segments",
+            "description": "<p>Use segment numbers as keys rather than relative timings (i.e. 0-1).</p>"
           }
         ]
       }
