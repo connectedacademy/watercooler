@@ -3,7 +3,7 @@ const omitDeep = require('omit-deep-lodash');
 module.exports = {
 
     /**
-     * @api {post} /v1/moderate/report/:item Report For Moderation
+     * @api {post} /v1/moderation/report Report For Moderation
      * @apiDescription Report any item for moderation
      * @apiName moderationreport
      * @apiGroup Moderation
@@ -11,16 +11,16 @@ module.exports = {
      * @apiPermission domainparse
      * @apiPermission admin
      * 
-     * @apiParam  {String} item Item ID
+     * @apiParam  {String} body.item Item ID
      * 
      */
     report: async (req, res) => {
 
         try {
             //do not let on that it is a valid object:
-            let obj = await Submission.query(`SELECT FROM ${req.param('item')}`);
+            let obj = await Submission.query(`SELECT FROM ${req.body.item}`);
             if (obj) {
-                let query = `UPDATE ${req.param('item')} SET moderationstate="pending" ADD moderation=${JSON.stringify({
+                let query = `UPDATE ${req.body.item} SET moderationstate="pending" ADD moderation=${JSON.stringify({
                     user: req.session.passport.user.id,
                     date: new Date(),
                     action: 'report'
@@ -44,7 +44,7 @@ module.exports = {
     },
 
     /**
-     * @api {post} /v1/moderate/change/:item Change Moderation Status
+     * @api {post} /v1/moderation/change/:item Change Moderation Status
      * @apiDescription Change status for any item getting moderated
      * @apiName moderationchange
      * @apiGroup Moderation
@@ -86,7 +86,7 @@ module.exports = {
     },
 
     /**
-    * @api {get} /v1/moderate/pending Pending Moderation
+    * @api {get} /v1/moderation/pending Pending Moderation
     * @apiDescription Get a list of items pending moderation
     * @apiName moderationlist
     * @apiGroup Moderation

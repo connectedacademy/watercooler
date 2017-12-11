@@ -586,7 +586,7 @@ module.exports = {
         return response;
     },
 
-    //TODO: create subscribe connection for a shared 'room'
+    //Create subscribe connection for a shared 'room'
     subscribeToVis: async (req, course, klass, content, language, user, justmine) =>{
 
         let query = [

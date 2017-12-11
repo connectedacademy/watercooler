@@ -117,7 +117,7 @@ module.exports.routes = {
   //MODERATION
   'GET /v1/moderation/pending':'ModerationController.pending',
   'POST /v1/moderation/change/:item':'ModerationController.change',
-  'POST /v1/moderation/report/:item':'ModerationController.report',
+  'POST /v1/moderation/report':'ModerationController.report',
   
 
   //GLOBAL
