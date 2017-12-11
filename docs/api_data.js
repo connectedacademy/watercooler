@@ -1575,7 +1575,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "Number",
             "optional": false,
-            "field": "depth",
+            "field": "limit",
             "description": "<p>Number of messages to return</p>"
           }
         ]
