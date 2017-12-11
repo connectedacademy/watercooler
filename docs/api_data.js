@@ -1889,6 +1889,13 @@ define({ "api": [
             "optional": false,
             "field": "segments",
             "description": "<p>Use segment numbers as keys rather than relative timings (i.e. 0-1).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "scale",
+            "description": "<p>Type of scale to use (raw,lin,log) default is lin (linear) raw is actual message counts.</p>"
           }
         ]
       }
