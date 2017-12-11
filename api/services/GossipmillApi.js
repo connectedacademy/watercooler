@@ -35,6 +35,8 @@ let request = requestBase.defaults({
 
 let baseURI = process.env.GOSSIPMILL_URL;
 
+const DEFAULT_LIMIT = 100;
+
 let sockethandlers = {};
 
 module.exports = {
@@ -400,7 +402,7 @@ module.exports = {
             body: {
                 filter_by: query,
                 whitelist: whitelist,
-                depth: 100,
+                depth: DEFAULT_LIMIT,
                 lang: '*'
             },
             qs: {
@@ -443,7 +445,7 @@ module.exports = {
             body: {
                 filter_by: query,
                 whitelist: whitelist,
-                depth: 100,
+                depth: DEFAULT_LIMIT,
                 lang: '*'
             },
             qs: {
@@ -478,7 +480,7 @@ module.exports = {
             body: {
                 filter_by: query,
                 whitelist: whitelist,
-                depth: 100,
+                depth: DEFAULT_LIMIT,
                 lang: '*'
             },
             qs: {
@@ -531,7 +533,7 @@ module.exports = {
             body: {
                 filter_by: query,
                 whitelist: whitelist,
-                depth: depth || 10,
+                depth: depth || DEFAULT_LIMIT,
                 lang: language
             },
             qs: {
@@ -573,7 +575,7 @@ module.exports = {
             body: {
                 filter_by: query,
                 whitelist: whitelist,
-                depth: depth || 10,
+                depth: depth || DEFAULT_LIMIT,
                 lang: language
             },
             qs: {
@@ -615,7 +617,7 @@ module.exports = {
         io.socket.post(`/messages/subscribe/${user.service}/${user.account}?psk=${process.env.GOSSIPMILL_PSK}`,{
                 lang: language,
                 socketid: socketid,
-                depth: 5,
+                depth: DEFAULT_LIMIT,
                 filter_by:query,
                 whitelist: true
             },function(data){
@@ -672,7 +674,7 @@ module.exports = {
         io.socket.post('/messages/subscribe/'+user.service + '/' + user.account+'?psk=' + process.env.GOSSIPMILL_PSK,{
                 lang: language,
                 socketid: sails.sockets.getId(req),
-                depth: 5,
+                depth: DEFAULT_LIMIT,
                 filter_by:query,
                 whitelist: true
             },function(data){
@@ -748,7 +750,7 @@ module.exports = {
         io.socket.post('/messages/subscribe/' + user.service + '/' + user.account + '?psk=' + process.env.GOSSIPMILL_PSK, {
             lang: language,
             socketid: sails.sockets.getId(req),
-            depth: 5,
+            depth: DEFAULT_LIMIT,
             filter_by: query,
             whitelist: whitelist
         }, function (data) {
@@ -818,7 +820,7 @@ module.exports = {
         io.socket.post('/messages/subscribe/' + user.service + '/' + user.account + '?psk=' + process.env.GOSSIPMILL_PSK, {
             lang: language,
             socketid: sails.sockets.getId(req),
-            depth: 5,
+            depth: DEFAULT_LIMIT,
             filter_by: query,
             whitelist: whitelist
         }, function (data) {

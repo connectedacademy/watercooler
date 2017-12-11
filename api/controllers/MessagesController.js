@@ -515,7 +515,7 @@ module.exports = {
      * @apiParam  {Number} startsegment Starting segment number
      * @apiParam  {Number} endsegment Ending segment number
      * @apiParam  {Boolean} whitelist Use only registered users messages
-     * @apiParam  {Number} depth Number of messages to return
+     * @apiParam  {Number} limit Number of messages to return
      * 
      */
     list: async (req, res) => {
@@ -526,7 +526,7 @@ module.exports = {
             req.checkParams('startsegment').notEmpty().isInt();
             req.checkParams('endsegment').notEmpty().isInt();
             req.checkQuery('whitelist').isBoolean();
-            req.checkQuery('depth').optional().isInt({gt: 0});
+            req.checkQuery('limit').optional().isInt({gt: 0});
             req.checkQuery('justmine').optional().isBoolean();
 
             try {
@@ -544,10 +544,10 @@ module.exports = {
             if (justmine && req.session.passport && req.session.passport.user)
                 justmine = req.session.passport.user.id;
 
-            let depth = req.param('depth');
+            let limit = req.param('limit');
             let lang = await LangService.lang(req);
             let course = req.course.domain;
-            //course, klass, user, language,contentid, startsegment, endsegment, depth
+            //course, klass, user, language,contentid, startsegment, endsegment, limit
             let user = {};
             if (req.session.passport && req.session.passport.user)
                 user = req.session.passport.user;
@@ -559,7 +559,7 @@ module.exports = {
                 };
             }
 
-            let data = await GossipmillApi.list(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), depth, whitelist, justmine);
+            let data = await GossipmillApi.list(course, req.param('class'), user, lang, req.param('content'), req.param('startsegment'), req.param('endsegment'), limit, whitelist, justmine);
             return res.json({
                 scope: {
                     class: req.param('class'),
@@ -568,7 +568,8 @@ module.exports = {
                     endsegment: req.param('endsegment'),
                     length: data.scope.length,
                     whitelist: req.param('whitelist'),
-                    justmine: req.param('justmine')
+                    justmine: req.param('justmine'),
+                    limit: limit
                 },
                 data: data.data
             });
@@ -616,10 +617,10 @@ module.exports = {
             let justmine = req.param('justmine');
             if (justmine && req.session.passport && req.session.passport.user)
                 justmine = req.session.passport.user.id;
-            let depth = req.param('limit');
+            let limit = req.param('limit');
             let lang = await LangService.lang(req);
             let course = req.course.domain;
-            //course, klass, user, language,contentid, startsegment, endsegment, depth
+            //course, klass, user, language,contentid, startsegment, endsegment, limit
             let user = {};
             if (req.session.passport && req.session.passport.user)
                 user = req.session.passport.user;
@@ -640,14 +641,15 @@ module.exports = {
                 }
             }
 
-            let data = await GossipmillApi.listcontent(course, req.param('class'), user, lang, req.param('content'), depth, whitelist, justmine);
+            let data = await GossipmillApi.listcontent(course, req.param('class'), user, lang, req.param('content'), limit, whitelist, justmine);
             return res.json({
                 scope: {
                     class: req.param('class'),
                     content: req.param('content'),
                     length: data.scope.length,
                     whitelist: req.param('whitelist'),
-                    justmine: req.param('justmine')
+                    justmine: req.param('justmine'),
+                    limit:limit
                 },
                 data: data.data
             });
