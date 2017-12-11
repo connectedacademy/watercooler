@@ -19,7 +19,7 @@ module.exports = {
         try {
             //do not let on that it is a valid object:
             let obj = await Submission.query(`SELECT FROM ${req.body.item}`);
-            if (obj) {
+            if (obj.length>0) {
                 let query = `UPDATE ${req.body.item} SET moderationstate="pending" ADD moderation=${JSON.stringify({
                     user: req.session.passport.user.id,
                     date: new Date(),
@@ -34,7 +34,7 @@ module.exports = {
             }
             else {
                 return res.json({
-                    msg: 'Thanks for your report'
+                    msg: 'Thanks for your report.'
                 });
             }
         }
@@ -105,7 +105,8 @@ module.exports = {
         
         let pending = await Promise.all(queries);
 
-        let msgs = omitDeep( pending[2],['rid','@version','@type','_raw','@class','credentials','account_credentials','replyto','user_from','out_reply','in','replytolink','admin','user','user2']);
+        let msgs = omitDeep( Message.removeCircularReferences(pending[2]),['rid','@version','@type','_raw','@class','credentials','account_credentials','replyto','user_from','out_reply','in','replytolink','admin','user','user2']);
+        // let msgs = pending[2];
 
         let output = {
             submissions: pending[0],
