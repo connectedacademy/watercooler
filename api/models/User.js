@@ -44,6 +44,8 @@ module.exports = {
       delete obj['@class'];
       delete obj['@version'];
       obj.stats = _.last(obj.history);
+      if (obj.stats)
+        delete obj.stats['@type'];
       delete obj.history;
       return obj;
     }

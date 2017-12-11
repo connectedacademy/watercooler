@@ -99,14 +99,20 @@ module.exports = {
 
         let queries = [];
 
-        queries.push(Submission.find({moderationstate:'pending'}));
-        queries.push(DiscussionMessage.find({moderationstate:'pending'}));
-        queries.push(Message.find({moderationstate:'pending'}));
+        queries.push(Submission.find({moderationstate:'pending'}).populate('user'));
+        queries.push(DiscussionMessage.find({moderationstate:'pending'}).populate('fromuser'));
+        queries.push(Message.find({moderationstate:'pending'}).populate('user'));
         
         let pending = await Promise.all(queries);
+        // let msgs = _.map(pending[2],function(m){
+            // m = m.toObject();
+            // console.log(m);
+            // return m.toObject();
+        // })
 
-        let msgs = omitDeep( Message.removeCircularReferences(pending[2]),['rid','@version','@type','_raw','@class','credentials','account_credentials','replyto','user_from','out_reply','in','replytolink','admin','user','user2']);
-        // let msgs = pending[2];
+        // msgs = omitDeep( msgs,['rid','@version','@type','_raw','@class','credentials','account_credentials','replyto','user_from','out_reply','in','replytolink','admin','user2']);
+
+        let msgs = Message.removeCircularReferences(pending[2]);
 
         let output = {
             submissions: pending[0],

@@ -23,34 +23,37 @@ module.exports = function (sails) {
             // console.log("accesstoken: "+access_token);
 
             sails.log.verbose('Refreshing Twitter Profiles');
-            let users = await User.find({ service: 'twitter' });
+            let users = await User.find({ service: 'twitter', account:{'!':'Test Account'}});
 
             //REMEMBER -- CALLS TO TWITTER ARE RATE LIMITED AT 900 EVERY 15 MINS!
 
             for (let user of users) {
                 try {
                     //attempt to get profile image:
-                    let profile_resp = await requestify.request(user.profile, { method: 'HEAD' });
-                    // if (true)
-                    if (profile_resp.code != 200 && profile_resp.code != 301) {
-                        let resp = await requestify.get(`https://api.twitter.com/1.1/users/show.json?screen_name=${user.account}&include_entities=false`, {
-                            headers: {
-                                Authorization: 'Bearer ' + access_token
-                            }
-                        });
-
-                        if (resp.code == 200) {
-
-                            let json = JSON.parse(resp.body);
-                            // console.log(json.profile_image_url_https);
-                            user['_raw'] = json;
-                            user.profile = json.profile_image_url_https;
-                            sails.log.verbose('ProfileImageUpdate', user.id, json.profile_image_url_https);
-                            await new Promise((resolve) => {
-                                user.save(function (err) {
-                                    resolve();
-                                });
+                    if (user.profile)
+                    {
+                        let profile_resp = await requestify.request(user.profile, { method: 'HEAD' });
+                        // if (true)
+                        if (profile_resp.code != 200 && profile_resp.code != 301) {
+                            let resp = await requestify.get(`https://api.twitter.com/1.1/users/show.json?screen_name=${user.account}&include_entities=false`, {
+                                headers: {
+                                    Authorization: 'Bearer ' + access_token
+                                }
                             });
+
+                            if (resp.code == 200) {
+
+                                let json = JSON.parse(resp.body);
+                                // console.log(json.profile_image_url_https);
+                                user['_raw'] = json;
+                                user.profile = json.profile_image_url_https;
+                                sails.log.verbose('ProfileImageUpdate', user.id, json.profile_image_url_https);
+                                await new Promise((resolve) => {
+                                    user.save(function (err) {
+                                        resolve();
+                                    });
+                                });
+                            }
                         }
                     }
 
