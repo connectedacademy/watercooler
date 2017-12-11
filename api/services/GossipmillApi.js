@@ -308,7 +308,7 @@ module.exports = {
             let userblockcache = await ResponseCache.getFromKey(userkey);
             if (userblockcache)
             {
-                console.log('user in block cache - ' + user.account);
+                // console.log('user in block cache - ' + user.account);
                 return userblockcache;
             }
             else
@@ -696,9 +696,13 @@ module.exports = {
                     msg: msg
                 };
                 wrapped.msg.author = wrapped.msg.user;
+                delete wrapped.msg.user;
                 // check if this user is in the classroom:
                 let klassroom = await Classroom.findOne({code:classroom});
-                if (_.includes(klassroom.students, wrapped.msg.author.id))
+
+                // console.log(klassroom);
+                // console.log(wrapped.msg.author.id);
+                if (_.includes(klassroom.students, wrapped.msg.author.id.toString()))
                 {
                     sails.log.silly("Broadcasting Socket message into classroom with " + msg.message_id);
                     sails.sockets.broadcast(data.room, wrapped);
@@ -759,6 +763,7 @@ module.exports = {
                         msg: msg
                     };
                     wrapped.msg.author = wrapped.msg.user;
+                    delete wrapped.msg.user;            
                     sails.log.silly("Broadcasting Socket message with " + msg.message_id);
                     sails.sockets.broadcast(data.room, wrapped);
                 };

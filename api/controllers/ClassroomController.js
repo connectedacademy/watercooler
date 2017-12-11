@@ -15,7 +15,7 @@ module.exports = {
      * @apiParam  {String} class Class slug
      * 
      */
-    mycode: async (req,res) => {
+    mycode: async (req, res) => {
 
         let course = req.course.domain;
         let klass = req.param('class');
@@ -28,29 +28,28 @@ module.exports = {
             class: klass,
             teacher: req.session.passport.user.id
         },
-        {
-            course: course,
-            class: klass,
-            teacher: req.session.passport.user.id,
-            code: hash
-        }).exec((err,result)=>{
-            if (err)
-                return res.serverError(err);
-
-            //if socket connection -- subscribe to updates:
-            if (req.isSocket)
             {
-                sails.log.verbose('Classroom subscription', result.id);
-                Classroom.subscribe(req, result.id);
-                //req, course, klass, user, language,contentid, classroom
-                GossipmillApi.subscribeToClass(req, course, klass, req.session.passport.user, lang, result.code);
-            }
+                course: course,
+                class: klass,
+                teacher: req.session.passport.user.id,
+                code: hash
+            }).exec((err, result) => {
+                if (err)
+                    return res.serverError(err);
 
-            return res.json({
-                code: result.code,
-                students: _.size(result.students)
+                //if socket connection -- subscribe to updates:
+                if (req.isSocket) {
+                    sails.log.verbose('Classroom subscription', result.id);
+                    Classroom.subscribe(req, result.id);
+                    //req, course, klass, user, language,contentid, classroom
+                    GossipmillApi.subscribeToClass(req, course, klass, req.session.passport.user, lang, result.code);
+                }
+
+                return res.json({
+                    code: result.code,
+                    students: _.size(result.students)
+                });
             });
-        });
 
     },
 
@@ -67,30 +66,26 @@ module.exports = {
      * @apiParam  {String} class Class slug
      * @apiParam  {String} content Content slug
      */
-    getclass: async (req,res)=>{
-        try
-        {
+    getclass: async (req, res) => {
+        try {
             let course = req.course.domain;
             let klass = req.param('class');
             let mystudent = await Classroom.findOne(
                 {
-                    students:[req.session.passport.user.id],
+                    students: [req.session.passport.user.id],
                     course: course,
                     class: klass
                 }
             ).populate('teacher');
 
-            if (mystudent)
-            {
-                return res.json(_.omit(mystudent,'students'));
+            if (mystudent) {
+                return res.json(_.omit(mystudent, 'students'));
             }
-            else
-            {
+            else {
                 return res.notFound('Not registered in this classroom');
             }
         }
-        catch(e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     },
@@ -107,12 +102,11 @@ module.exports = {
      * 
      * @apiParam  {String} code Classroom code provided by the teacher
      */
-    inclass: async (req,res)=>{
-        try
-        {
+    inclass: async (req, res) => {
+        try {
             let code = req.body.code.toUpperCase();
             let classroom = await Classroom.findOne({
-                code:code
+                code: code
             });
 
             if (!classroom)
@@ -120,32 +114,27 @@ module.exports = {
 
             if (!classroom.students)
                 classroom.students = [];
-            if (!_.includes(classroom.students,req.session.passport.user.id))
-            {
-                classroom.students.push(req.session.passport.user.id);
+            if (!_.includes(classroom.students, req.session.passport.user.id)) {
 
-                classroom.save((err)=>{
-                    if (err)
-                        return res.serverError(err);
+                let query = `UPDATE classroom ADD students = "${req.session.passport.user.id}" WHERE code = "${code}"`;
 
-                    //publish update via message:
-                    let wrapped = {
-                        msgtype: 'classroom',
-                        msg: req.session.passport.user
-                    };
+                await Classroom.query(query);
 
-                    Classroom.message(classroom.id, wrapped, req);
-                    
-                    return res.ok('Registered');
-                });
+                //publish update via message:
+                let wrapped = {
+                    msgtype: 'classroom',
+                    msg: req.session.passport.user
+                };
+
+                Classroom.message(classroom.id, wrapped, req);
+
+                return res.ok('Registered');
             }
-            else
-            {
+            else {
                 return res.ok('Already registered in this classroom');
             }
         }
-        catch(e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     },
@@ -160,49 +149,48 @@ module.exports = {
      * 
      * @apiParam  {String} code Classroom code provided by the teacher
      */
-    rss: async (req,res)=>{
-        try
-        {
+    rss: async (req, res) => {
+        try {
             let code = req.param('code');
             //console.log(code);
             let classroom = await Classroom.findOne({
-                code:code
+                code: code
             }).populate('teacher');
 
             if (!classroom)
                 return res.notFound('No classroom found');
-            
+
             // let users = await User.find({
             //     id: classroom.students
             // });
 
             // console.log(users);
             req.course = {
-                url:'https://' + classroom.course
+                url: 'https://' + classroom.course
             };
 
             let lang = await LangService.lang(req);
 
 
-            let data = await CacheEngine.getSpec(req,res);
-            let klass = _.find(data.classes,{
+            let data = await CacheEngine.getSpec(req, res);
+            let klass = _.find(data.classes, {
                 slug: classroom.class
             });
             // console.log(klass);
-            let content = _.find(klass.content,function (s){
+            let content = _.find(klass.content, function (s) {
                 return s.schedule;
             });
             // console.log(content);
 
             let metadata = await CacheEngine.getFrontmatter(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + content.url);
-            
+
             // console.log(metadata);
 
             let feed = new RSS({
                 title: 'Connected Academy - ' + metadata.title,
                 description: 'Live feed of CA classroom',
                 feed_url: 'https://api.connectedacademy.io/v1/classroom/rss/' + code,
-                site_url: 'https://'+classroom.course + '/#/course/' + klass.slug,
+                site_url: 'https://' + classroom.course + '/#/course/' + klass.slug,
                 language: lang,
                 pubDate: new Date().toISOString(),
                 ttl: '1',
@@ -212,16 +200,14 @@ module.exports = {
             });
 
             //if there is an image prompts file:
-            if (metadata.images)
-            {
+            if (metadata.images) {
                 //load the prompts file:
                 let images = await CacheEngine.getSubs(req.course.url + '/course/content/' + lang + '/' + klass.dir + '/' + metadata.images);
                 let i = 0;
-                for (let image of images)
-                {
+                for (let image of images) {
                     feed.item({
-                        title:  'Image ' + i,
-                        description: '<img src="'+req.course.url + '/course/content/media/medium/' + image.text+'" />',
+                        title: 'Image ' + i,
+                        description: '<img src="' + req.course.url + '/course/content/media/medium/' + image.text + '" />',
                         url: req.course.url + '/course/content/media/medium/' + image.text, // link to the item
                         author: 'Connected Academy', // optional - defaults to feed author property 
                         date: new Date().toISOString() // any format that js Date can parse. 
@@ -229,7 +215,7 @@ module.exports = {
                     i++;
                 }
             }
-            
+
             // latest messages / notes
 
             let messages = await GossipmillApi.listForUsers(classroom.course, klass.slug, classroom.teacher, classroom.students || [], true);
@@ -237,23 +223,20 @@ module.exports = {
             // console.log(messages);
 
             // let items = [];
-            getItems(messages.data,feed, klass, content, req.course.url);
+            getItems(messages.data, feed, klass, content, req.course.url);
 
             res.type('xml');
             return res.send(feed.xml());
         }
-        catch(e)
-        {
+        catch (e) {
             return res.serverError(e);
         }
     }
 }
 
-function getItems(messages, feed, klass, content, url)
-{
-    for (let message of messages)
-    {
-        
+function getItems(messages, feed, klass, content, url) {
+    for (let message of messages) {
+
         let author = 'Unknown';
 
         // console.log(message);
@@ -262,12 +245,12 @@ function getItems(messages, feed, klass, content, url)
             author = message.author.name
         // console.log(message.segment);
         feed.item({
-            title:  message.text,
-            description: 'by @'+author + ' on ' + message.createdAt,
-            url: url + '/#/course/' +  klass.slug + '/' + content.slug + '/' + message.segment, // + ((message.segment)? '/' + message.segment:''), // link to the item
-            author: '@'+ author, // optional - defaults to feed author property 
+            title: message.text,
+            description: 'by @' + author + ' on ' + message.createdAt,
+            url: url + '/#/course/' + klass.slug + '/' + content.slug + '/' + message.segment, // + ((message.segment)? '/' + message.segment:''), // link to the item
+            author: '@' + author, // optional - defaults to feed author property 
             date: message.createdAt // any format that js Date can parse. 
         });
-        getItems(message.in_reply,feed, klass, content, url);
+        getItems(message.in_reply, feed, klass, content, url);
     }
 }

@@ -111,7 +111,7 @@ module.exports = {
 
             if (account_user && account_user.account_credentials && account_user.account_credentials.key && account_user.account_credentials.secret) {
                 let data = await GossipmillApi.create(account_user.account_credentials, me_user, req.body);
-                return res.json(data);
+                return res.json(Message.removeCircularReferences(data));
             }
             else {
                 return res.serverError('No Application credentials supplied for ' + service + " - " + account);

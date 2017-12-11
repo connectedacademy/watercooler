@@ -16,7 +16,11 @@ module.exports = {
                 lang: "en",
                 profile: "http://lorempixel.com/60/60/people",
                 link: "http://bbc.co.uk",
-                email: "test@connectedacademy.io"
+                email: "test@connectedacademy.io",
+                credentials:{
+                    token:"token",
+                    tokenSecret:"secret"
+                }
             }).exec((err, user) => {
                 req.login(user, (err) => {
                     return res.redirect(req.session.redirecturi + '/#/registration');
