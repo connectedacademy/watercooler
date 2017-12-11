@@ -104,14 +104,6 @@ module.exports = {
         queries.push(Message.find({moderationstate:'pending'}).populate('user'));
         
         let pending = await Promise.all(queries);
-        // let msgs = _.map(pending[2],function(m){
-            // m = m.toObject();
-            // console.log(m);
-            // return m.toObject();
-        // })
-
-        // msgs = omitDeep( msgs,['rid','@version','@type','_raw','@class','credentials','account_credentials','replyto','user_from','out_reply','in','replytolink','admin','user2']);
-
         let msgs = Message.removeCircularReferences(pending[2]);
 
         let output = {

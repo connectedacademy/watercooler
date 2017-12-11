@@ -639,7 +639,7 @@ module.exports = {
                 };
 
                 // check if this user is in the classroom:
-                sails.log.silly("Broadcasting Socket message into visualisation with " + msg.message_id);
+                sails.log.verbose("Broadcasting Socket message into visualisation with " + msg.message_id);
                 sails.sockets.broadcast(data.room, wrapped);
             };
 
@@ -835,6 +835,7 @@ module.exports = {
                         msg: msg
                     };
                     wrapped.msg.author = wrapped.msg.user;
+                    delete wrapped.msg.user;
                     sails.log.silly("Socket message with " + msg.message_id);
                     sails.sockets.broadcast(data.room, wrapped);
                 };
