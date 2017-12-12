@@ -328,7 +328,7 @@ module.exports = {
             });
         }
         catch (e) {
-            // console.log(e);
+            console.log(e);
             return res.serverError({
                 msg: 'Cannot parse submission from this URL'
             });

@@ -23,6 +23,8 @@ module.exports = {
         },
         html:'text',
         thumbnail:'string',
+        mediatype:'string',
+        title: 'string',
         discussion:{
             collection:'DiscussionMessage',
             via: 'relates_to'

@@ -28,7 +28,7 @@ module.exports = function serverError (data) {
   return res.status(500).json(
     {
       err: (data.name) ? data.name.toUpperCase() : 'SERVER_ERROR',
-      msg: data.reason || data.toString() || 'Server Error',
+      msg: data.msg || JSON.stringify(data) || 'Server Error',
       data: data
     });
 };

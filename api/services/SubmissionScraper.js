@@ -1,3 +1,4 @@
+
 // let settings = require('./settings.json').cache;
 // let _ = require('lodash');
 let request = require('request-promise-native');
@@ -12,9 +13,10 @@ let sharp = require('sharp');
 
 module.exports = {
     scrapeForSubmission: async function (req, klass, content, url) {
-
+        let spec = {};
         //scape and return found objects
-        let spec = await CacheEngine.getSubs(`https://${req.course.domain}/course/config/submission.json`);
+        // console.log(`https://${req.course.domain}/course/config/submission.json`);
+        spec = await CacheEngine.getSubs(`https://${req.course.domain}/course/config/submission.json`);
 
         //process each of these as a submission
         let submissions = await putToS3(spec, req.session.passport.user.id, url, req.course.domain, klass, content);
@@ -72,6 +74,9 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
     sails.log.verbose('Getting url', url, user);
     // get the target content
 
+    if (!settings.mediatype)
+        settings.mediatype = 'image';
+
     let content = '';
     try
     {
@@ -88,24 +93,19 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
         content = url;
     }
 
-
-
-
+    // console.log(content);
 
     // //DEBUG:
     // settings = {
-    //           "denominator":["(<img.*?data-4c.*?>)"],
-    //           "capture": [
-    //             {
-    //               "pattern": "(<script.*src.*\/dist\/4c\\.js.*?<\/script>)"
-    //             },
-    //             {
-    //               "ident":"data-4c=[\"'](.*)[\"']",
-    //               "pattern":"(<script.*?data-4c-meta=[\"']{{ident}}[\"'][\\s\\S]*?<\/script>)"
-    //             }
-    //           ],
-    //           "preview": "<img.+src\\=[\"'](.*?)[\"'].*>"
-    //     };
+    //     "denominator":["(<article[\\s\\W\\w]*<\\/article>)"],
+    //     "capture": [
+    //       {
+    //         "pattern": "<div class=\"the-content\".*>([\\s\\W\\w]*)<\\/div>"
+    //       }
+    //     ],
+    //     "preview": "<h1 class=\"title\">([\\s\\W\\w]*)<\\/h1>",
+    //     "mediatype":"text"
+    // };
 
     // parse for the capture object
 
@@ -122,8 +122,10 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
         }
     }
 
+    // console.log(content);
+
     if (_.size(capture_denom) == 0)
-        throw new Exception('No submissions captured');
+        throw new Error('No submissions captured');
 
     let promises = [];
 
@@ -167,22 +169,41 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
         //add original capture
         capturedcontent.push(itemonpage);
 
+        // console.log(captured_content);
+
         if (capturedcontent.length > 0) {
+            
+            let parsed = URL.parse(url);
+            let preview = false;
+            let title = '';
+            
             // console.log(capturedcontent);
+           
             //cache the capture object and all references (i.e. src, data-4c links: img, json, sidecar)
             let regex = new RegExp(settings.preview.replace("\\\\", "\\"));
-
             // console.log(regex);
             // console.log("looking for preview");
             // console.log(capturedcontent.join());
             let preview_results = regex.exec(itemonpage);
-
+            
             // console.log(preview_results);
-
             //get resources:
-            //change the links in the doc:
-            let parsed = URL.parse(url);
+            // PREVIEW LINK
+            preview = preview_results[1];
 
+
+            if (settings.mediatype == 'image')
+            {
+                if (!preview.startsWith('http')) {
+                    preview = URL.resolve(parsed.protocol + '//' + parsed.host + parsed.pathname, preview);
+                }
+            }
+            else
+            {
+                title = preview;
+            }
+            
+            //change the links in the doc:
             capturedcontent = _.map(capturedcontent, (c) => {
                 return c.replace(/(src=")(.*?)"/, function (all, src, token) {
                     if (!token.startsWith('http')) {
@@ -194,18 +215,18 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
                 });
             });
 
-            // PREVIEW LINK
-            let preview = preview_results[1];
-            if (!preview.startsWith('http')) {
-                preview = URL.resolve(parsed.protocol + '//' + parsed.host + parsed.pathname, preview);
-            }
+            // console.log(capturedcontent);
+
+
 
             promises.push(new Promise(function (resolve, reject) {
 
                 Submission.create({
                     matched: true,
                     html: capturedcontent.join(''),
-                    thumbnail: preview,
+                    thumbnail: (!title)?preview:undefined,
+                    title: (title)?title:undefined,
+                    mediatype: settings.mediatype, 
                     user: user,
                     course: course,
                     original: url,
@@ -219,8 +240,11 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
                     let folder_name = submission.id;
                     let promises = [];
 
+                    if (settings.mediatype == 'image')
+                    {
                     //resize and upload thumbnail of submission:
-                    promises.push(putFileToS3(folder_name, 'content', preview, true));
+                        promises.push(putFileToS3(folder_name, 'content', preview, true));
+                    }
                     //upload content that was scraped
                     promises.push(putFileToS3(folder_name, 'content', url, false, content));
                     await Promise.all(promises);
