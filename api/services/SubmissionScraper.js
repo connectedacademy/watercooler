@@ -1,15 +1,16 @@
 
 // let settings = require('./settings.json').cache;
 // let _ = require('lodash');
-let request = require('request-promise-native');
+const request = require('request-promise-native');
 // let request_orig = require('request');
 const URL = require('url');
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const uuid = require('uuid');
-let s3 = new AWS.S3();
+const s3 = new AWS.S3();
 const path = require('path');
-let sharp = require('sharp');
+const sharp = require('sharp');
+const sanitize = require('sanitize-html');
 
 module.exports = {
     scrapeForSubmission: async function (req, klass, content, url) {
@@ -89,27 +90,36 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
     }
     catch (exception)
     {
+        sails.log.verbose("SubmissionScraper",{msg: 'Not a url', url:url});
         //assume that the content is not a url, but the actual content
         content = url;
+        //replace regex for capture to collect content rather than url from the input
+        if (settings.mediatype == 'text')
+        {
+            settings.denominator = ["^([\\s\\S]*)$"];
+            settings.capture = [{
+                pattern:"^([\\s\\S]*)$"
+            }]
+        }
     }
 
     // console.log(content);
 
     // //DEBUG:
-    // settings = {
-    //     "denominator":["(<article[\\s\\W\\w]*<\\/article>)"],
-    //     "capture": [
-    //       {
-    //         "pattern": "<div class=\"the-content\".*>([\\s\\W\\w]*)<\\/div>"
-    //       }
-    //     ],
-    //     "preview": "<h1 class=\"title\">([\\s\\W\\w]*)<\\/h1>",
-    //     "mediatype":"text"
-    // };
+    settings = {
+        "denominator":["(<article[\\s\\W\\w]*<\\/article>)"],
+        "capture": [
+          {
+            "pattern": "<div class=\"the-content\".*>([\\s\\W\\w]*?)<\\/div>"
+          }
+        ],
+        "preview": "<h1 class=\"title\">([\\s\\W\\w]*)<\\/h1>",
+        "mediatype":"text"
+    };
 
     // parse for the capture object
 
-    
+    // console.log(settings);
     let denominators = settings.denominator;
 
     let capture_denom = [];
@@ -122,8 +132,6 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
         }
     }
 
-    // console.log(content);
-
     if (_.size(capture_denom) == 0)
         throw new Error('No submissions captured');
 
@@ -133,14 +141,13 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
     for (let itemonpage of capture_denom) {
 
         //START FROM itemonpage...
-
         let capturedcontent = [];
 
         for (let cap of settings.capture) {
             if (cap.ident)
             {
                 //find ident:
-                let regex = new RegExp(cap.ident.replace("\\\\", "\\"));
+                let regex = new RegExp(cap.ident.replace("\\\\", "\\"),'g');
                 let ident_capture = regex.exec(itemonpage);
                 // console.log(ident_capture);
                 if (ident_capture)
@@ -149,7 +156,7 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
 
                     // console.log("identity",identity);
 
-                    let regex = new RegExp(cap.pattern.replace("\\\\", "\\").replace('{{ident}}',identity));
+                    let regex = new RegExp(cap.pattern.replace("\\\\", "\\").replace('{{ident}}',identity),'g');
                     // console.log(regex);
 
                     let captured_content = regex.exec(content);
@@ -159,7 +166,7 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
             }
             else
             {
-                let regex = new RegExp(cap.pattern.replace("\\\\", "\\"));
+                let regex = new RegExp(cap.pattern.replace("\\\\", "\\"),'g');
                 let captured_content = regex.exec(content);
                 if (captured_content)
                     capturedcontent.push(captured_content[1]);
@@ -167,9 +174,9 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
         }
         
         //add original capture
-        capturedcontent.push(itemonpage);
+        if (settings.rawtext == 'image')
+            capturedcontent.push(itemonpage);
 
-        // console.log(captured_content);
 
         if (capturedcontent.length > 0) {
             
@@ -189,7 +196,8 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
             // console.log(preview_results);
             //get resources:
             // PREVIEW LINK
-            preview = preview_results[1];
+            if (preview_results > 1)
+                preview = preview_results[1];
 
 
             if (settings.mediatype == 'image')
@@ -215,15 +223,18 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
                 });
             });
 
-            // console.log(capturedcontent);
-
-
+            //sanitize:
+            let capturedhtml = capturedcontent.join('');
+            if (settings.mediatype == 'text')
+                capturedhtml = sanitize(capturedhtml,{
+                    allowedTags: sanitize.defaults.allowedTags.concat([ 'img' ])
+                });
 
             promises.push(new Promise(function (resolve, reject) {
 
                 Submission.create({
                     matched: true,
-                    html: capturedcontent.join(''),
+                    html: capturedhtml,
                     thumbnail: (!title)?preview:undefined,
                     title: (title)?title:undefined,
                     mediatype: settings.mediatype, 

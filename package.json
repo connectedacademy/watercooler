@@ -47,7 +47,8 @@
     "md5": "2.2.1",
     "sharp": "0.18.4",
     "omit-deep-lodash": "1.0.0",
-    "oauth": "0.9.15"
+    "oauth": "0.9.15",
+    "sanitize-html":"1.16.3"
   },
   "scripts": {
     "debug": "node --harmony-async-await debug app.js",
