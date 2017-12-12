@@ -26,7 +26,7 @@
 
         <pre id="content">
             
-        </pre>        
+        </pre>
 
 
         <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
@@ -56,7 +56,14 @@
                     xhrFields: {
                       withCredentials: true
                     },
-                    crossDomain: true
+                    crossDomain: true,
+                    data: JSON.stringify({
+                        email:"test@connectedacademy.io",
+                        lang:"en",
+                        hub_id:"ncl",
+                        registration_info:{},
+                        consent:true
+                        })
                 }).then(function(response){
                     $('#content').html(JSON.stringify(response,null,'  '));
                     console.log(response);
@@ -65,7 +72,7 @@
 
             function coursespec()
             {
-                $.get('http://localhost:4000/v1/course/spec').then(function(response){
+                $.get('http://localhost:4000/v1/course/spec/evidence').then(function(response){
                     $('#content').html(JSON.stringify(response,null,'  '));
                     
                     console.log(response);
@@ -93,11 +100,11 @@
                 //     console.log(data);
                 // });
 
-                // io.socket.get('/v1/messages/subscribe/interpretation/liveclass/20/40',function(data,res){
-                //     console.log(data);
-                // });
+                io.socket.get('/v1/messages/subscribe/interpretation/liveclass/0/3000',function(data,res){
+                    console.log(data);
+                });
 
-                io.socket.get('/v1/messages/visualisation/evidence/liveclass/5/3000?whitelist=true',function(data,res){
+                io.socket.get('/v1/messages/visualisation/interpretation/liveclass/5/3000?whitelist=true',function(data,res){
                     console.log(data);
                 });
 
@@ -111,7 +118,7 @@
                 // io.socket.get('/v1/messages/subscribe/evidence/liveclass/0/100',function(data,res){
                 //     console.log(data);
                 // });
-                io.socket.get('/v1/classroom/mycode/evidence',function(data,res){
+                io.socket.get('/v1/classroom/mycode/interpretation',function(data,res){
                     console.log(data);
                 });
             }
