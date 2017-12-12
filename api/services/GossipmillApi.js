@@ -123,7 +123,7 @@ module.exports = {
                 if (segments)
                     return k * groupby;
                 else
-                    return (k / maxk).toFixed(3);
+                    return (k / maxk);
             });
             return nordered;
         };
