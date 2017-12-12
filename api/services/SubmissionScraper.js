@@ -106,16 +106,16 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
     // console.log(content);
 
     // //DEBUG:
-    settings = {
-        "denominator":["(<article[\\s\\W\\w]*<\\/article>)"],
-        "capture": [
-          {
-            "pattern": "<div class=\"the-content\".*>([\\s\\W\\w]*?)<\\/div>"
-          }
-        ],
-        "preview": "<h1 class=\"title\">([\\s\\W\\w]*)<\\/h1>",
-        "mediatype":"text"
-    };
+    // settings = {
+    //     "denominator":["(<article[\\s\\W\\w]*<\\/article>)"],
+    //     "capture": [
+    //       {
+    //         "pattern": "<div class=\"the-content\".*>([\\s\\W\\w]*?)<\\/div>"
+    //       }
+    //     ],
+    //     "preview": "<h1 class=\"title\">([\\s\\W\\w]*)<\\/h1>",
+    //     "mediatype":"text"
+    // };
 
     // parse for the capture object
 
@@ -192,11 +192,13 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
             // console.log("looking for preview");
             // console.log(capturedcontent.join());
             let preview_results = regex.exec(itemonpage);
+            // console.log(regex);
+            // console.log(preview_results);
             
             // console.log(preview_results);
             //get resources:
             // PREVIEW LINK
-            if (preview_results > 1)
+            if (preview_results && preview_results.length > 1)
                 preview = preview_results[1];
 
 
@@ -209,7 +211,11 @@ let putToS3 = async function (settings, user, url, course, klass, cnt) {
             else
             {
                 title = preview;
+                if (title == "")
+                    title = `${_.trunc(itemonpage)}`;
             }
+
+            // console.log(title);
             
             //change the links in the doc:
             capturedcontent = _.map(capturedcontent, (c) => {
