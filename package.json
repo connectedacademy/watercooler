@@ -1,6 +1,6 @@
 {
   "name": "watercooler",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "API for Connected Academy",
   "main": "app.js",
   "repository": {
