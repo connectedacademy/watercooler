@@ -51,7 +51,7 @@
     "sanitize-html": "1.16.3"
   },
   "scripts": {
-    "debug": "node --harmony-async-await debug app.js",
+    "debug": "node debug app.js",
     "start": "node app.js",
     "test-speed": "mocha test/speed.test.js test/speed/**/*.test.js",
     "loadtest": "node test/loadtest.js",

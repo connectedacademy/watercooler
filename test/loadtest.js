@@ -6,9 +6,9 @@ const START_VARIATION = 60;
 // What is the length of the content (seconds)
 const MAX_TIME = 1700;
 // Speed of scrolling through each block (seconds)
-const DELAY = 5000;
+const DELAY = 1000;
 // Number of virtual users
-const NUM_AGENTS = 1;
+const NUM_AGENTS = 50;
 // Range of time within which virtual users will start (seconds)
 const INIT_DELAY = 1700;
 // If true, users will randomly scroll to a new block within the class each cycle
@@ -32,7 +32,8 @@ const FAKE_USER_LOGIN = true;
 // Probability that each user will create a message in each block they visit.
 const CREATION_PROBABILITY = 1;
 // URL of the api operating on
-const API = 'https://api.connectedacademy.io';
+// const API = 'https://api.connectedacademy.io';
+const API = 'http://localhost:4000';
 
 
 /* DO NOT EDIT BELOW THIS LINE */

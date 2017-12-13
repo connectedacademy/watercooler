@@ -36,8 +36,11 @@ let request = requestBase.defaults({
 let baseURI = process.env.GOSSIPMILL_URL;
 
 const DEFAULT_LIMIT = 100;
+const VIS_THROTTLE = 1000;
 
 let sockethandlers = {};
+let visqueues = {};
+let lastfired = {};
 
 module.exports = {
 
@@ -622,7 +625,6 @@ module.exports = {
                 whitelist: true
             },function(data){
 
-            // console.log(data);
             //subscribe to this roomname
             sails.sockets.join(req.socket,data.room);
 
@@ -630,19 +632,30 @@ module.exports = {
                 io.socket.off(data.room,sockethandlers[data.room]);
 
             // io.socket.off(data.room, function(){
+            if (!visqueues[data.room])
+                visqueues[data.room] = [];
 
             if (!sockethandlers[data.room])
             {
                 sockethandlers[data.room] = async function(msg){
 
+                    sails.log.verbose("Incoming vis msg " + msg.message_id);                    
+
                     let wrapped = {
                         msgtype: 'visupdate',
                         msg: _.pick(msg,['updatedAt','class','content','segment','user.id'])
                     };
+                    
+                    visqueues[data.room].push(wrapped);
 
-                    // check if this user is in the classroom:
-                    sails.log.verbose("Broadcasting Socket message into visualisation with " + msg.message_id);
-                    sails.sockets.broadcast(data.room, wrapped);
+                    let NOW = new Date().getTime();
+                    if ((NOW - (lastfired[data.room]||0)) > VIS_THROTTLE)
+                    {
+                        sails.log.verbose("VisEvent",`Broadcasting Socket message into visualisation ${data.room}`);
+                        sails.sockets.broadcast(data.room, visqueues[data.room]);
+                        lastfired[data.room] = NOW;
+                        visqueues[data.room] = [];
+                    }
                 };
             }
 
