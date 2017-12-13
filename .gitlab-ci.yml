@@ -3,11 +3,11 @@
 # https://hub.docker.com/r/library/node/tags/
 image: docker:git
 
-services:
-  - docker:dind
+# services:
+#   - docker:dind
 
-variables:
-  DOCKER_DRIVER: overlay2
+# variables:
+#   DOCKER_DRIVER: overlay2
 
 variables:
   ORIENTDB_ROOT_PASSWORD: testpassword

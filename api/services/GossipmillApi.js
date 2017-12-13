@@ -631,17 +631,20 @@ module.exports = {
 
             // io.socket.off(data.room, function(){
 
-            sockethandlers[data.room] = async function(msg){
+            if (!sockethandlers[data.room])
+            {
+                sockethandlers[data.room] = async function(msg){
 
-                let wrapped = {
-                    msgtype: 'visupdate',
-                    msg: _.pick(msg,['updatedAt','class','content','segment','user.id'])
+                    let wrapped = {
+                        msgtype: 'visupdate',
+                        msg: _.pick(msg,['updatedAt','class','content','segment','user.id'])
+                    };
+
+                    // check if this user is in the classroom:
+                    sails.log.verbose("Broadcasting Socket message into visualisation with " + msg.message_id);
+                    sails.sockets.broadcast(data.room, wrapped);
                 };
-
-                // check if this user is in the classroom:
-                sails.log.verbose("Broadcasting Socket message into visualisation with " + msg.message_id);
-                sails.sockets.broadcast(data.room, wrapped);
-            };
+            }
 
             io.socket.on(data.room,sockethandlers[data.room]);
         });
