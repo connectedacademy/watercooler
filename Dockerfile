@@ -1,4 +1,4 @@
-FROM node:7
+FROM node:8.9.3
 
 # RUN apk --no-cache add git make gcc g++ python
 
@@ -14,7 +14,7 @@ WORKDIR /usr/src/app
 
 COPY package.json /usr/src/app/package.json
 
-RUN npm i --production --silent && npm cache clean
+RUN npm i --production --silent
 
 COPY . /usr/src/app
 
