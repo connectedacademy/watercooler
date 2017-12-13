@@ -1,28 +1,47 @@
-let _ = require('lodash');
-
-var request = require('supertest-as-promised');
-// var async = require('async');
-var bluebird = require('bluebird');
-
+/* OPTIONS */
+// How tall in blocks is the virtual 'window' each user is scrolling with.
 const WINDOW_RANGE = 60;
+// What is the range of blocks that a users can start from
 const START_VARIATION = 60;
-const MAX_TIME = 3000;
-// const MAX_TIME = 200;
+// What is the length of the content (seconds)
+const MAX_TIME = 1700;
+// Speed of scrolling through each block (seconds)
 const DELAY = 5000;
-// const NUM_AGENTS = 2;
-const NUM_AGENTS = 2;
-const INIT_DELAY = 3000;
-const RANDOM_PLAYBACK = false;
+// Number of virtual users
+const NUM_AGENTS = 1;
+// Range of time within which virtual users will start (seconds)
+const INIT_DELAY = 1700;
+// If true, users will randomly scroll to a new block within the class each cycle
+const RANDOM_PLAYBACK = true;
+// If true, users will create messages as well as scroll content
 const CREATE_MESSAGES = true;
+// If true, all users will login as USER (pre-existing user)
 const USER_LOGIN = true;
+// Pre-existing user account to log in as
 const USER = 'tombartindale';
-const PSK = '';
+// Course to operate on
 const URL = 'talkingpictures.connectedacademy.io';
-const KLASS = 'interpretation';
+// Class to operate on
+const KLASS = 'evidence';
+// Live class content to operate on
 const CONTENT = 'liveclass';
-const INCLASSROOM = true;
+// If true, the first user will become a teacher and the rest of the users will join a classroom
+const INCLASSROOM = false;
+// If true, users will login as individual fake users with clean registrations
 const FAKE_USER_LOGIN = true;
+// Probability that each user will create a message in each block they visit.
+const CREATION_PROBABILITY = 1;
+// URL of the api operating on
+const API = 'https://api.connectedacademy.io';
 
+
+/* DO NOT EDIT BELOW THIS LINE */
+let _ = require('lodash');
+var request = require('supertest-as-promised');
+var bluebird = require('bluebird');
+let PSK = '';
+
+PSK = process.env.PSK;
 go();
 
 async function go()
@@ -30,8 +49,7 @@ async function go()
     let agents = [];
     for (let i=0;i<NUM_AGENTS;i++)
     {
-        // let a = request.agent('https://api.connectedacademy.io');
-        let a = request.agent('http://localhost:4000');        
+        let a = request.agent(API);    
         a.min = Number.MAX_VALUE;
         a.calls = [];
         agents.push(a);
@@ -117,14 +135,29 @@ async function go()
 
                 if (CREATE_MESSAGES)
                 {
-                    // if (Math.random() > 0.1)
+                    // if (Math.random() > 0.91)
+                    if (Math.random() > (1-CREATION_PROBABILITY))
                     {
+
+                        let text = `#test loadtest message from ${name} at ${new Date()} https://${URL}/#/course/${KLASS}/${CONTENT}/${start}`;
                         await agent.post(`/v1/messages/create`)
                         .send({
-                            text:`#test loadtest message from ${name} at ${new Date()} https://${URL}/#/course/${KLASS}/${CONTENT}/${start}`
+                            text: text
                         })
                         .set('Referer', `https://${URL}`);
                         console.log(`[${name}] created message at ${start}`);
+
+
+                        await bluebird.delay(1000);
+                        let checkblock = await agent.get(`/v1/messages/list/${KLASS}/${CONTENT}/${start}/${end}?whitelist=false`)
+                        .set('Referer',`https://${URL}`)
+                        .expect(200);
+                        // console.log(_.map(checkblock.body.data,'text'));
+                        let expected = `${text}`;
+                        // console.log(`expecting ${expected}`);
+                        let exists = _.find(checkblock.body.data,{text:expected});
+                        if (!exists)
+                            console.error('Message NOT FOUND');
                     }
                 }
 
