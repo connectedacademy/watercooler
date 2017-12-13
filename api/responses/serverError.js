@@ -15,6 +15,7 @@
 module.exports = function serverError (data) {
 
   // Get access to `req`, `res`, & `sails`
+  // data = User.removeCircularReferences(data);
   var req = this.req;
   var res = this.res;
   var sails = req._sails;
@@ -28,8 +29,7 @@ module.exports = function serverError (data) {
   return res.status(500).json(
     {
       err: (data.name) ? data.name.toUpperCase() : 'SERVER_ERROR',
-      msg: data.msg || JSON.stringify(data) || 'Server Error',
-      data: data
+      msg: data.msg || data.message || 'Server Error'
     });
 };
 
