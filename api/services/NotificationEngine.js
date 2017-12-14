@@ -2,17 +2,25 @@ let helper = require('sendgrid').mail;
 let sg = require('sendgrid')(process.env.SENDGRID_KEY);
 let fs = require('fs-promise');
 
-let sendEmail = async function (user, subject, content) {
+let sendEmail = async function (course, user, subject, content) {
 
     var from_email = new helper.Email(process.env.FROM_EMAIL, process.env.FROM_NAME);
     var to_email = new helper.Email(user.email);
     var subject = subject;
+    // console.log(subject);
+
+    let spec = await CacheEngine.getFrontmatter(`${course.url}/course/content/en/info.md`);
+    // console.log(spec);
+    let title = spec.title;
 
     let template = await fs.readFile(__dirname + '/../../views/email.html');
     let realcontent = template.toString().replace('{{body}}', content)
     realcontent = realcontent.replace('{{user}}', user.name);
     realcontent = realcontent.replace('{{date}}', new Date().toString());
-
+    realcontent = realcontent.replace('{{title}}', title);
+    realcontent = realcontent.replace('{{subject}}', subject);
+    
+    
     var content = new helper.Content('text/html', realcontent);
     var mail = new helper.Mail(from_email, subject, to_email, content);
 
@@ -23,6 +31,7 @@ let sendEmail = async function (user, subject, content) {
     });
 
     sg.API(request, function (error, response) {
+        // console.log(response.body.errors);
         if (error)
             sails.log.error(error);
         else
@@ -64,7 +73,7 @@ module.exports = {
             sails.log.verbose('Sending signup notification', user.id);
             let lang = await LangService.lang(req);
             let email = await CacheEngine.getEmail(req.course, lang, 'intro');
-            await sendEmail(user, email.subject, email.body);
+            await sendEmail(req.course, user, email.subject, email.body);
         }
         catch (e) {
             sails.log.error(e);
@@ -83,7 +92,7 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'coursestarting_week');
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
                 await markSent(course.domain, 'weekbefore');
             }
@@ -105,7 +114,7 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'coursestarting_day');
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
                 await markSent(course.domain, 'daybefore');
             }
@@ -127,7 +136,7 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'courseclose');
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
                 await markSent(course.domain, 'courseclose');
             }
@@ -150,7 +159,7 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'readprecontent');
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
 
                 await markSent(course.domain, 'precontent', klass);
@@ -175,7 +184,7 @@ module.exports = {
                 if (reg)
                 {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'postsubmission');
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
 
                 await markSent(course.domain, 'submitwork', currentClass, user.id);
@@ -203,7 +212,7 @@ module.exports = {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'joindiscussion');
                     email.body = email.replace('{{class}}',currentClass).body;
                     email.body = email.replace('{{content}}',content).body;
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
                 await markSent(course.domain, 'submitfeedback', currentClass+'-'+content, user.id);
             }
@@ -224,7 +233,7 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'joinliveclass');
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
 
                 await markSent(course.domain, 'liveclasswarning', klass, hub);
@@ -246,7 +255,7 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'readdeepdive');
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
 
                 await markSent(course.domain, 'afterliveclass', klass, hub);
@@ -267,7 +276,7 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'webinarsoon');
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
 
                 await markSent(course.domain, 'webinarsoon', klass);
@@ -289,7 +298,7 @@ module.exports = {
 
                 for (let reg of registrations) {
                     let email = await CacheEngine.getEmail(course, reg.lang || process.env.DEFAULT_LANG, 'nextweek');
-                    sendEmail(reg.user, email.subject, email.body);
+                    sendEmail(course, reg.user, email.subject, email.body);
                 }
 
                 await markSent(course.domain, 'nextweek', klass);
@@ -319,7 +328,7 @@ module.exports = {
             email.body = email.body.replace('{{id}}', message.relates_to.replace('#','%23'));
             email.body = email.body.replace('{{class}}',message.class);
             email.body = email.body.replace('{{content}}',message.content);
-            sendEmail(user, email.subject, email.body);
+            sendEmail(req.course, user, email.subject, email.body);
             // }
             // }
         }

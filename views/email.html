@@ -1,13 +1,104 @@
 <html>
-    <head>
-        <style>
-            body {
-                font-family: sans-serif;
-                color: #3f3f3f;
-            }
-        </style>
-    </head>
-<body>
-{{body}}
-</body>
-</html>
+        <head>
+                <style>
+                        body {
+                            font-family: sans-serif;
+                            color: #3f3f3f;
+                            margin:0;
+                            padding:0;
+                            background: #efefef;
+                            font-family: Avenir,Helvetica,Arial,sans-serif;
+                        }
+                        .header
+                        {
+                            background: #29b474;
+                            padding-left: 42px;
+                            line-height:50px;
+                            color:white;
+                            /* text-align:center; */
+                            border-bottom:1px solid rgba(0,0,0,.1);
+                            font-weight: 700;
+                        }
+                        .subheader
+                        {
+                            background: #29b474;
+                            line-height:70px;
+                            min-height:px;
+                            /* text-align:center; */
+                            font-size: 28px;
+                            font-weight: bold;
+                            color:white;
+                            padding-left: 42px;
+                            box-shadow: 0 0 10px 5px rgba(0,0,0,.01);
+                            -moz-box-shadow: 0 0 10px 5px rgba(0,0,0,.01);
+                            -webkit-box-shadow: 0 0 10px 5px rgba(0,0,0,.01);
+                        }
+                        .content
+                        {
+                            padding-left:30px;
+                            padding-right:30px;                
+                            padding-top:30px;
+                            background:white;
+                            border-radius: 4px;
+                            margin:14px;
+                            box-shadow: 0 0 10px 5px rgba(0,0,0,.01);
+                            -moz-box-shadow: 0 0 10px 5px rgba(0,0,0,.01);
+                            -webkit-box-shadow: 0 0 10px 5px rgba(0,0,0,.01);
+                            min-height:200px;
+                            margin-top:-50px;
+                            position:relative;
+                        }
+            
+                        hr
+                        {
+                            height:1px;
+                            color: #dfdfdf;
+                            background-color: #dfdfdf;
+                            border:none;
+                            margin-top:40px;
+                            margin-bottom:40px;
+                        }
+            
+                        em:last-of-type
+                        {
+                            text-align: center;
+                            margin-top:100px;
+                            display:block;
+                            position:absolute;
+                            width:100%;
+                            left:0;
+                            bottom:-30px;
+                            color:#3333;
+                            font-size: 14px;
+                        }
+            
+                        a {
+                            border: 1px solid #29b474;
+                            border-radius: 10px;
+                            text-decoration: none;
+                            padding:8px;
+                            color: #29b474;
+                            display:inline-block;
+                            clear:both;
+                            margin:auto auto;
+                        }
+
+                        a:visited
+                        {
+                            color: #29b474;
+                        }
+                    </style>
+        </head>
+    <body>
+            
+        <div class="header">
+            {{title}}
+        </div>
+        <div class="subheader">
+            {{subject}}            
+        </div>
+        <div style="padding-left:30px;padding-right:30px;padding-top:30px;background:white;border-radius: 4px;margin:14px;box-shadow: 0 0 10px 5px rgba(0,0,0,.01);-moz-box-shadow: 0 0 10px 5px rgba(0,0,0,.01);-webkit-box-shadow: 0 0 10px 5px rgba(0,0,0,.01);min-height:200px;margin-top:-50px;position:relative;">
+            {{body}}
+        </div>
+    </body>
+    </html>
