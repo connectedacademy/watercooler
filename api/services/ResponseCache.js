@@ -12,7 +12,7 @@ let rediscache = redis.createClient({
 let Promise = require('bluebird');
 Promise.promisifyAll(redis.RedisClient.prototype);
 
-let md5 = require('md5');
+// let md5 = require('md5');
 let requestBase = require('request-promise-native');
 let request = requestBase.defaults({
     pool: { maxSockets: 1024 }
@@ -37,11 +37,11 @@ module.exports = {
 
     setCache: async function (key, data) {
         try {
-            rediscache.set(key, JSON.stringify(data));
             sails.log.silly('Written ' + key);
+            await rediscache.setAsync(key, JSON.stringify(data));
         }
         catch (e) {
-            return false;
+            return Promise.resolve(false);
         }
     },
 
@@ -56,8 +56,8 @@ module.exports = {
                 results = processing(results);
 
             //if succeeds, put in cache
-            rediscache.set(key, JSON.stringify(results));
-            rediscache.expire(key, ttl); //60 seconds
+            await rediscache.setAsync(key, JSON.stringify(results));
+            await rediscache.expireAsync(key, ttl); //60 seconds
             return results;
         }
         else {
@@ -79,9 +79,9 @@ module.exports = {
                         results = processing(results);
 
                     //if succeeds, put in cache
-                    rediscache.set(key, JSON.stringify(results));
+                    await rediscache.setAsync(key, JSON.stringify(results));
                     if (ttl>0)
-                        rediscache.expire(key, ttl); //60 seconds
+                        await rediscache.expireAsync(key, ttl); //60 seconds
 
                     return results;
                 }
@@ -95,7 +95,7 @@ module.exports = {
 
     removeMatching: function (keyPattern) {
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             var stream = redisIO.scanStream({
                 match: keyPattern
             });

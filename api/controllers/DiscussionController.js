@@ -410,7 +410,7 @@ module.exports = {
         if (submission)
             if (submission.user.toString() == req.session.passport.user.id.toString()) {
                 let q = 'UPDATE submission SET verified = false WHERE @rid=:id';
-                let result = await Submission.query(q, {
+                await Submission.query(q, {
                     params: {
                         id: submission.id
                     }

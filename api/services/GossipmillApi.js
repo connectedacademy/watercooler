@@ -953,21 +953,23 @@ module.exports = {
 
         // console.log(parsed);
         //caches which include this segment
-
+        
+        
+        let promises = [];
         //remove anything matching the summary endpoint which includes this segment
         let pattern = `wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:*|${parsed.segment}|*:*`;
-        await ResponseCache.removeMatching(pattern);
-
+        promises.push(ResponseCache.removeMatching(pattern));
+        
         //caches which are based on this specific user
         //invalidate segment user cache let userkey = `${course}:${klass}:${contentid}:|${segments.join('|')}|:${user.service}/${user.account}`;
         pattern = `wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:*|${parsed.segment}|*:${user.service}/${user.account}`;
-        await ResponseCache.removeMatching(pattern);
-
+        promises.push(ResponseCache.removeMatching(pattern));
+        
         //create lookup for this user:
         let lookupkey = `wc:lookup:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${user.id}`;
-        ResponseCache.setCache(lookupkey,true);
-
-
+        promises.push(ResponseCache.setCache(lookupkey,true));
+        
+        await Promise.all(promises);
         // console.log("MESSAGE CREATED");
 
         return response;

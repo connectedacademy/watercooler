@@ -183,7 +183,7 @@ async function go()
     }
 
     console.log(`Starting ${requests.length} agents`);
-    let results = await Promise.all(requests);
+    await Promise.all(requests);
     console.log("--- AGENTS ---");
     for (let agent of agents)
     {
