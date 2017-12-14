@@ -298,7 +298,7 @@ module.exports = {
         let segments = _.pluck(_.filter(queryKey,{name:'segment'}),'query');
 
         
-        let userkey = `wc:summary:${course}:${klass}:${contentid}:|${segments.join('|')}|:${user.service}/${user.account}`;
+        let userkey = `wc:summaryuser:${course}:${klass}:${contentid}:${_.first(segments)}:${user.service}/${user.account}`;
 
         
         // console.log(userkey);
@@ -341,15 +341,15 @@ module.exports = {
                     // if (response.data.message && response.data.message.ismine)
                     // {
                         // set the user submitted key:
-                    ResponseCache.setCache(userkey, response);
+                    await ResponseCache.setCache(userkey, response);
                     return response;
                     // }
                 }
             }
         }
         //if there is not a key, then serve the main response
-        
-        let key = `${course}:${klass}:${contentid}:|${segments.join('|')}|:${language}:${whitelist}`;
+        //`wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${language}`;
+        let key = `${course}:${klass}:${contentid}:${_.first(segments)}:${language}`;
         // use the existing cache (which will get invalidated when ANYONE posts to this block)
 
         let response = await ResponseCache.cachedRequest('summary',key, params, -1);
@@ -882,6 +882,11 @@ module.exports = {
 
     create: async (credentials, user, message) => {
         
+        
+
+        let time = new Date().getTime();
+        
+
         let response = await request({
             url: baseURI + 'messages/create',
             method: 'POST',
@@ -902,6 +907,8 @@ module.exports = {
                 psk: process.env.GOSSIPMILL_PSK
             }
         });
+
+        
 
         // invalidate all redis cache which match the obtained criteria from this link:
         let tokens = [
@@ -940,6 +947,7 @@ module.exports = {
                 // if the token is found, then find or create node for it
                 try {
                     parsed[token.name] = result.replace('/', '\/');
+                    response[token.name] = parsed[token.name];
                     sails.log.verbose("Created Token Relationship", token.name, result);
                 }
                 catch (e) {
@@ -951,19 +959,24 @@ module.exports = {
             }
         }
 
+        
+
         // console.log(parsed);
         //caches which include this segment
         
-        
         let promises = [];
+
+        //TODO get language:
+        let language = response.lang;
+
         //remove anything matching the summary endpoint which includes this segment
-        let pattern = `wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:*|${parsed.segment}|*:*`;
-        promises.push(ResponseCache.removeMatching(pattern));
+        let pattern = `wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${language}`;
+        promises.push(ResponseCache.deleteKey(pattern));
         
         //caches which are based on this specific user
-        //invalidate segment user cache let userkey = `${course}:${klass}:${contentid}:|${segments.join('|')}|:${user.service}/${user.account}`;
-        pattern = `wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:*|${parsed.segment}|*:${user.service}/${user.account}`;
-        promises.push(ResponseCache.removeMatching(pattern));
+        // console.log(`wc:summaryuser:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${user.service}/${user.account}`);
+        pattern = `wc:summaryuser:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${user.service}/${user.account}`;
+        promises.push(ResponseCache.deleteKey(pattern));
         
         //create lookup for this user:
         let lookupkey = `wc:lookup:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${user.id}`;
@@ -971,7 +984,9 @@ module.exports = {
         
         await Promise.all(promises);
         // console.log("MESSAGE CREATED");
+        // return {};
 
+        console.log(new Date().getTime() - time);
         return response;
     }
 }

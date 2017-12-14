@@ -5,7 +5,8 @@ let os = require('os');
 // A console transport logging debug and above.
 customLogger.add(winston.transports.Console, {
   level: (process.env.NODE_ENV == 'production')?'error':'verbose',
-  colorize: true
+  colorize: true,
+  timestamp:true
 });
 
 //REMOTE LOGGING

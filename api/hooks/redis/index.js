@@ -1,10 +1,15 @@
 let Redis = require('ioredis');
-let redis = new Redis(process.env.REDIS_PORT, process.env.REDIS_HOST); //new Redis(6379, '192.168.1.1')
+let redis = new Redis(
+    {
+        port: process.env.REDIS_PORT,           // Redis port
+        host: process.env.REDIS_HOST,   // Redis host
+        db: 2
+      });
 
-let RedisIO = require('ioredis');
-let redisIO = new RedisIO(process.env.REDIS_PORT, process.env.REDIS_HOST, {
-    db: 0
-});
+// let RedisIO = require('ioredis');
+// let redisIO = new RedisIO(process.env.REDIS_PORT, process.env.REDIS_HOST, {
+//     db: 4
+// });
 
 module.exports = function(sails)
 {
@@ -13,7 +18,7 @@ module.exports = function(sails)
 
             sails.on('hook:orm:loaded', async function() {
 
-                //TODO: fill up redis cache for each segment and each user that has submitted in the block:
+                //Fill up redis cache for each segment and each user that has submitted in the block:
                 sails.log.info('Loading message lookup into redis');
                 
                 let messages = await Message.find({},{

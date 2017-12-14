@@ -79,7 +79,6 @@ module.exports.http = {
       'handleBodyParserError',
       'compress',
       'methodOverride',
-      'poweredBy',
       'version',
       '$custom',
       'router',

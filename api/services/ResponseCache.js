@@ -1,18 +1,18 @@
 let redis = require('redis');
 let RedisIO = require('ioredis');
 let redisIO = new RedisIO(process.env.REDIS_PORT, process.env.REDIS_HOST, {
-    db: 0
+    db: 2
 });
 
 let rediscache = redis.createClient({
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-    db: 0
+    db: 2
 });
+
 let Promise = require('bluebird');
 Promise.promisifyAll(redis.RedisClient.prototype);
 
-// let md5 = require('md5');
 let requestBase = require('request-promise-native');
 let request = requestBase.defaults({
     pool: { maxSockets: 1024 }
@@ -25,6 +25,16 @@ module.exports = {
             sails.log.silly('Attempting to find ' + key);
             let resp = JSON.parse(await rediscache.getAsync(key));
             return resp;
+        }
+        catch (e) {
+            return false;
+        }
+    },
+
+    deleteKey: async function (key) {
+        try {
+            sails.log.silly('Deleting key ' + key);
+            await rediscache.delAsync(key);
         }
         catch (e) {
             return false;
@@ -96,20 +106,31 @@ module.exports = {
     removeMatching: function (keyPattern) {
 
         return new Promise((resolve) => {
+
+            let keystorem = [];
+
             var stream = redisIO.scanStream({
                 match: keyPattern
             });
-            stream.on('data', function (keys) {
+            stream.on('data', async function (keys) {
                 // `keys` is an array of strings representing key names
-                if (keys.length) {
+                // console.log("data",keys.length); 
+
+                keystorem.push(keys);
+
+
+            });
+            stream.on('end', async function () {
+                console.log("stream ended"); 
+
+                if (keystorem.length) {
                     var pipeline = redisIO.pipeline();
-                    keys.forEach(function (key) {
+                    keystorem.forEach(function (key) {
                         pipeline.del(key);
                     });
-                    pipeline.exec();
+                    await pipeline.exec();
                 }
-            });
-            stream.on('end', function () {
+                
                 resolve();
             });
         });
