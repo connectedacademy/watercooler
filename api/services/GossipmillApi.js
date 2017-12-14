@@ -141,9 +141,9 @@ module.exports = {
             }
         };
 
-        let key = `${md5(_.extend(query,{limit:limit}))}`;
+        let key = `${md5(JSON.stringify(_.extend(query,{limit:limit,segments:segments,scale:scale})))}`;
 
-        let results = await ResponseCache.cachedRequest('visualisation', key, params, 10, processing, clearcache);
+        let results = await ResponseCache.cachedRequest('visualisation', key, params, 30, processing, clearcache);
 
         return results;
     },
@@ -320,19 +320,9 @@ module.exports = {
             {
                 //lookup if this user has submitted int this block range (from redis, never invalidates) -- this gets pregenerates on boot, and updated on message submit
 
-                let commands = [];
-                for (let segment = parseInt(startsegment); segment <= parseInt(endsegment); segment++) 
-                {
-                    // console.log(`wc:lookup:${course}:${klass}:${contentid}:${segment}:${user.id}`);
-                    commands.push(['get',`wc:lookup:${course}:${klass}:${contentid}:${segment}:${user.id}`]);
-                }
-
-                let possibles = await ResponseCache.pipeline(commands);
-        
-                // console.log(possibles);
-
                 // lookup says that this user has submitted into this block
-                if (_.includes(_.flatten(possibles),'true'))
+                let possible = await ResponseCache.getFromKey(`wc:lookup:${course}:${klass}:${contentid}:${_.first(segments)}:${user.id}`);
+                if (possible == true)
                 {
                     // console.log('is in lookup');
                     //if the user has submitted, then do query without cache:
@@ -347,6 +337,7 @@ module.exports = {
                 }
             }
         }
+        
         //if there is not a key, then serve the main response
         //`wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${language}`;
         let key = `${course}:${klass}:${contentid}:${_.first(segments)}:${language}`;
@@ -881,12 +872,8 @@ module.exports = {
     },
 
     create: async (credentials, user, message) => {
-        
-        
 
-        let time = new Date().getTime();
-        
-
+        // let time = new Date().getTime();
         let response = await request({
             url: baseURI + 'messages/create',
             method: 'POST',
@@ -986,7 +973,7 @@ module.exports = {
         // console.log("MESSAGE CREATED");
         // return {};
 
-        console.log(new Date().getTime() - time);
+        // console.log(new Date().getTime() - time);
         return response;
     }
 }
