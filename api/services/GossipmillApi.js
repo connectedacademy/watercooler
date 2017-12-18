@@ -337,7 +337,7 @@ module.exports = {
                 }
             }
         }
-        
+
         //if there is not a key, then serve the main response
         //`wc:summary:${parsed.course}:${parsed.class}:${parsed.content}:${parsed.segment}:${language}`;
         let key = `${course}:${klass}:${contentid}:${_.first(segments)}:${language}`;
@@ -704,8 +704,8 @@ module.exports = {
                     msgtype: 'message',
                     msg: msg
                 };
-                wrapped.msg.author = wrapped.msg.user;
-                delete wrapped.msg.user;
+                // wrapped.msg.author = wrapped.msg.user;
+                // delete wrapped.msg.user;
                 // check if this user is in the classroom:
                 let klassroom = await Classroom.findOne({code:classroom});
 
@@ -771,8 +771,8 @@ module.exports = {
                         msgtype: 'message',
                         msg: msg
                     };
-                    wrapped.msg.author = wrapped.msg.user;
-                    delete wrapped.msg.user;            
+                    // wrapped.msg.author = wrapped.msg.user;
+                    // delete wrapped.msg.user;            
                     sails.log.silly("Broadcasting Socket message with " + msg.message_id);
                     sails.sockets.broadcast(data.room, wrapped);
                 };
@@ -841,8 +841,9 @@ module.exports = {
                         msgtype: 'message',
                         msg: msg
                     };
-                    wrapped.msg.author = wrapped.msg.user;
-                    delete wrapped.msg.user;
+                    // wrapped.msg.author = wrapped.msg.user;
+                    // delete wrapped.msg.user;
+                    // console.log(msg);
                     sails.log.silly("Socket message with " + msg.message_id);
                     sails.sockets.broadcast(data.room, wrapped);
                 };
@@ -953,7 +954,7 @@ module.exports = {
         
         let promises = [];
 
-        //TODO get language:
+        //get language:
         let language = response.lang;
 
         //remove anything matching the summary endpoint which includes this segment

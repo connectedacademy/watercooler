@@ -100,11 +100,11 @@
                 //     console.log(data);
                 // });
 
-                // io.socket.get('/v1/messages/subscribe/interpretation/liveclass/0/3000',function(data,res){
-                //     console.log(data);
-                // });
+                io.socket.get('/v1/messages/subscribe/interpretation/liveclass/0/1',function(data,res){
+                    console.log(data);
+                });
 
-                io.socket.get('/v1/messages/visualisation/evidence/liveclass/5/3000?whitelist=true',function(data,res){
+                io.socket.get('/v1/messages/visualisation/interpretation/liveclass/1/800?whitelist=true',function(data,res){
                     console.log(data);
                 });
 

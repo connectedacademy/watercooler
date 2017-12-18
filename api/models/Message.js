@@ -1,5 +1,6 @@
 module.exports = {
     schema: false,
+    orientdbClass : 'V',
     attributes: {
         user: {
             model: 'User'

@@ -4,15 +4,15 @@ const WINDOW_RANGE = 60;
 // What is the range of blocks that a users can start from
 const START_VARIATION = 60;
 // What is the length of the content (seconds)
-const MAX_TIME = 1700;
-// Speed of scrolling through each block (seconds)
-const DELAY = 1000;
+const MAX_TIME = 500;
+// Speed of scrolling through each block (miliseconds)
+const DELAY = 5000;
 // Number of virtual users
-const NUM_AGENTS = 2;
-// Range of time within which virtual users will start (seconds)
+const NUM_AGENTS = 50;
+// Range of time within which virtual users will start (miliseconds)
 const INIT_DELAY = 1700;
 // If true, users will randomly scroll to a new block within the class each cycle
-const RANDOM_PLAYBACK = true;
+const RANDOM_PLAYBACK = false;
 // If true, users will create messages as well as scroll content
 const CREATE_MESSAGES = true;
 // If true, all users will login as USER (pre-existing user)
@@ -30,10 +30,10 @@ const INCLASSROOM = false;
 // If true, users will login as individual fake users with clean registrations
 const FAKE_USER_LOGIN = true;
 // Probability that each user will create a message in each block they visit.
-const CREATION_PROBABILITY = 1;
+const CREATION_PROBABILITY = 0.16; //approx every 30 secs
 // URL of the api operating on
-// const API = 'https://api.connectedacademy.io';
-const API = 'http://localhost:4000';
+const API = 'https://api.connectedacademy.io';
+// const API = 'http://localhost:4000';
 
 
 /* DO NOT EDIT BELOW THIS LINE */
@@ -140,6 +140,7 @@ async function go()
                     if (Math.random() > (1-CREATION_PROBABILITY))
                     {
 
+                        let ctime = new Date();
                         let text = `#test loadtest message from ${name} at ${new Date()} https://${URL}/#/course/${KLASS}/${CONTENT}/${start}`;
                         await agent.post(`/v1/messages/create`)
                         .send({
@@ -147,18 +148,23 @@ async function go()
                         })
                         .set('Referer', `https://${URL}`);
                         console.log(`[${name}] created message at ${start}`);
+                        let croundtrip = new Date().getTime() - ctime.getTime();
 
-
-                        await bluebird.delay(1000);
+                        await bluebird.delay(2000);
                         let checkblock = await agent.get(`/v1/messages/list/${KLASS}/${CONTENT}/${start}/${end}?whitelist=false`)
                         .set('Referer',`https://${URL}`)
                         .expect(200);
+
+                        console.log(`[${name}] Create Time: ${croundtrip}`);
+
                         // console.log(_.map(checkblock.body.data,'text'));
                         let expected = `${text}`;
                         // console.log(`expecting ${expected}`);
                         let exists = _.find(checkblock.body.data,{text:expected});
+                        
+                        // console.log(exists);
                         if (!exists)
-                            console.error('Message NOT FOUND');
+                            console.error(`[${name}] Message NOT FOUND`);
                     }
                 }
 
