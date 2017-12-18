@@ -881,7 +881,7 @@ module.exports = {
             json: true,
             body: {
                 text: message.text,
-                replyto: message.replyto,
+                replyto: message.in_reply_to,
                 retweet: message.retweet,
                 credentials: {
                     service: user.service,
@@ -951,7 +951,7 @@ module.exports = {
 
         // console.log(parsed);
         //caches which include this segment
-        
+
         let promises = [];
 
         //get language:

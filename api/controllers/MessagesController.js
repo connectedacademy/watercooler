@@ -85,7 +85,7 @@ module.exports = {
 
         if (!req.isSocket) {
             req.checkBody('text').notEmpty();
-            req.checkBody('replyto').optional().notEmpty();
+            req.checkBody('in_reply_to').optional().matches(/#\d+:\d+/);
 
             try {
                 let result = await req.getValidationResult();
