@@ -20,6 +20,17 @@ let request = requestBase.defaults({
 
 module.exports = {
 
+    flush: async function()
+    {
+        try {
+            sails.log.silly('Flushing Redis');
+            await rediscache.flushdb();
+        }
+        catch (e) {
+            return;
+        }
+    },
+
     getFromKey: async function (key) {
         try {
             sails.log.silly('Attempting to find ' + key);

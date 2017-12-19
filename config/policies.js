@@ -40,6 +40,7 @@ module.exports.policies = {
         'mymessages':['verifyDomain','cors','isUser'],
         'mycontent':['verifyDomain','cors','isUser'],
         'clearcache':true,
+        'cleardebugcache':true,        
         'allclasses':['verifyDomain','cors','isAdmin'],
         'content':['verifyDomain','cors','isAdmin'],
         'classcontent':['verifyDomain','cors','isUser']

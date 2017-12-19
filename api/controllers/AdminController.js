@@ -42,6 +42,21 @@ module.exports = {
 
     /**
      * 
+     * @api {get} /cleardebugcache Clear Debug Cache
+     * @apiName cleardebugcache
+     * @apiGroup Admin
+     * @apiVersion  1.0.0 
+     * 
+     */
+    cleardebugcache: async (req, res) => {
+        //clear redis cache:
+        await ResponseCache.flush();
+        sails.log.verbose('MessageCacheCleared');
+        return res.ok('Message Cached cleared');
+    },
+
+    /**
+     * 
      * @api {get} /v1/admin/editor Content Editor
      * @apiDescription Redirect to prose.io for editing the current course.
      * @apiName editor
