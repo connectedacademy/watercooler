@@ -8,7 +8,7 @@ All messages come back with the following:
 
 ```json
 {
-    "msgtype": "message", // message|classroom|discussion|visupdate
+    "msgtype": "message", // message|classroom-user|classroom-position|discussion|visupdate
     "msg": ...
 }
 ```

@@ -302,6 +302,21 @@ module.exports = {
             }
         }
 
+        //if the user is in a classroom, broadcast current position:
+        console.log("****"+req.session.classroom);
+        if (req.session.classroom)
+        {
+            let wrapped = {
+                msgtype: 'classroom-position',
+                msg: {
+                    user: req.session.passport.user.id,
+                    segment: req.param('startsegment')
+                }
+            };
+
+            Classroom.message(req.session.classroom, wrapped, req);
+        }
+
         try {
             let lang = await LangService.lang(req);
 
@@ -443,6 +458,20 @@ module.exports = {
             let promises = [];
             for (let i = start; i < end; i = i + group) {
                 promises.push(GossipmillApi.summary(course, req.param('class'), user, lang, req.param('content'), i, (i + group) - 1, req.param('whitelist'), justmine, (req.session.passport)?true:false));
+            }
+
+            //broadcast the current position
+            if (req.session.classroom)
+            {
+                let wrapped = {
+                    msgtype: 'classroom-position',
+                    msg: {
+                        user: req.session.passport.user.id,
+                        segment: end
+                    }
+                };
+
+                Classroom.message(req.session.classroom, wrapped, req);
             }
 
             let results = await Promise.all(promises);

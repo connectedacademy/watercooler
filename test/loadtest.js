@@ -8,7 +8,7 @@ const MAX_TIME = 500;
 // Speed of scrolling through each block (miliseconds)
 const DELAY = 5000;
 // Number of virtual users
-const NUM_AGENTS = 50;
+const NUM_AGENTS = 2;
 // Range of time within which virtual users will start (miliseconds)
 const INIT_DELAY = 1700;
 // If true, users will randomly scroll to a new block within the class each cycle
@@ -26,14 +26,14 @@ const KLASS = 'evidence';
 // Live class content to operate on
 const CONTENT = 'liveclass';
 // If true, the first user will become a teacher and the rest of the users will join a classroom
-const INCLASSROOM = false;
+const INCLASSROOM = true;
 // If true, users will login as individual fake users with clean registrations
 const FAKE_USER_LOGIN = true;
 // Probability that each user will create a message in each block they visit.
-const CREATION_PROBABILITY = 0.16; //approx every 30 secs
+const CREATION_PROBABILITY = 0; //approx every 30 secs
 // URL of the api operating on
-const API = 'https://api.connectedacademy.io';
-// const API = 'http://localhost:4000';
+// const API = 'https://api.connectedacademy.io';
+const API = 'http://localhost:4000';
 
 
 /* DO NOT EDIT BELOW THIS LINE */

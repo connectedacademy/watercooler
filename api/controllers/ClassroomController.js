@@ -56,7 +56,7 @@ module.exports = {
     /**
      * 
      * @api {get} /v1/classroom/getclass/:class My Classroom
-     * @apiDescription Get status on ths current user in a classroom
+     * @apiDescription Get status on ths current user in a classroom.
      * @apiName getclass
      * @apiGroup Classroom
      * @apiVersion  1.0.0
@@ -78,7 +78,9 @@ module.exports = {
                 }
             ).populate('teacher');
 
+            
             if (mystudent) {
+                req.session.classroom = mystudent.id;
                 return res.json(_.omit(mystudent, 'students'));
             }
             else {
@@ -122,15 +124,21 @@ module.exports = {
 
                 //publish update via message:
                 let wrapped = {
-                    msgtype: 'classroom',
+                    msgtype: 'classroom-user',
                     msg: req.session.passport.user
                 };
 
                 Classroom.message(classroom.id, wrapped, req);
 
+                //add to session
+                req.session.classroom = classroom.id.toString();
+
                 return res.ok('Registered');
             }
             else {
+
+                //add to session
+                req.session.classroom = classroom.id.toString();
                 return res.ok('Already registered in this classroom');
             }
         }
