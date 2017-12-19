@@ -22,7 +22,7 @@ module.exports = function badRequest(data) {
   var res = this.res;
   var sails = req._sails;
 
-  sails.log.verbose('Sending 400 ("Bad Request") response: ',data);
+  sails.log.verbose('PageNotFound',{data:data});
 
   return res.status(400).jsonx({
     msg: 'Bad Request',

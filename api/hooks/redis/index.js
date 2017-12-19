@@ -19,7 +19,7 @@ module.exports = function(sails)
             sails.on('hook:orm:loaded', async function() {
 
                 //Fill up redis cache for each segment and each user that has submitted in the block:
-                sails.log.info('Loading message lookup into redis');
+                sails.log.info('RedisConsumer',{msg:'Loading message lookup into redis'});
                 
                 let messages = await Message.find({},{
                     select:['user','course','class','content','segment']
@@ -37,7 +37,7 @@ module.exports = function(sails)
 
 
                 redis.subscribe('submissions', function (err, count) {
-                    sails.log.info('Subscribed to submissions channel on Redis');
+                    sails.log.info('RedisConsumer',{msg:'Subscribed to submissions channel on Redis'});
                 });
 
                 redis.on('message', async function (channel, message) {

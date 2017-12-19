@@ -39,7 +39,7 @@ module.exports = {
 
                 //if socket connection -- subscribe to updates:
                 if (req.isSocket) {
-                    sails.log.verbose('Classroom subscription', result.id);
+                    sails.log.verbose('ClassroomSubscription', result.id);
                     Classroom.subscribe(req, result.id);
                     //req, course, klass, user, language,contentid, classroom
                     GossipmillApi.subscribeToClass(req, course, klass, req.session.passport.user, lang, result.code);

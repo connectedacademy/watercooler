@@ -105,7 +105,7 @@ module.exports = function (sails) {
         try {
             if (!running) {
                 running = true;
-                sails.log.verbose('Running Notification Scheduler');
+                sails.log.verbose('Scheduler', {msg:'Running Notification Scheduler'});
 
                 let NOW = moment();
 
@@ -114,7 +114,7 @@ module.exports = function (sails) {
                 //FOR EACH COURSE IN WHITELIST
                 for (let c in whitelist.courses) {
                     // console.log(course);
-                    sails.log.verbose('Processing notifications for ' + whitelist.courses[c].domain);
+                    sails.log.verbose('Scheduler', {msg: `Processing notifications for ${whitelist.courses[c].domain}`});
                     let course = whitelist.courses[c];
                     let spec = await CacheEngine.getYaml(whitelist.courses[c].domain, whitelist.courses[c].url + '/course/config/spec.yaml');
                     let startdate = moment(spec.starts);
@@ -124,7 +124,7 @@ module.exports = function (sails) {
                      * Notification of course starting 1 week before
                      */
                     if (NOW.diff(startdate) < moment.duration(7, 'days').asMilliseconds()) {
-                        sails.log.verbose('Triggering week before ' + course.domain);
+                        sails.log.verbose('Scheduler', {msg:`Triggering week before ${course.domain}`});
                         NotificationEngine.weekBefore(course);
                     }
 
@@ -132,7 +132,7 @@ module.exports = function (sails) {
                      * Notification of course starting 1 day before
                      */
                     if (NOW.diff(startdate) < moment.duration(1, 'day').asMilliseconds()) {
-                        sails.log.verbose('Triggering day before ' + course.domain);
+                        sails.log.verbose('Scheduler', {msg:`Triggering day before ${course.domain}`});
                         NotificationEngine.dayBefore(course);
                     }
 
@@ -140,7 +140,7 @@ module.exports = function (sails) {
                      * Notification of course closed 2 days after
                      */
                     if (NOW.diff(enddate) > moment.duration(2, 'day').asMilliseconds()) {
-                        sails.log.verbose('Triggering 2 days after ' + course.domain);
+                        sails.log.verbose('Scheduler', {msg:`Triggering 2 days after ${course.domain}`});
                         NotificationEngine.courseClose(course);
                     }
 
@@ -318,7 +318,7 @@ module.exports = function (sails) {
                 running = false;
             }
             else {
-                sails.log.verbose("Scheduler cannot run, already running");
+                sails.log.verbose('Scheduler', {msg:"Scheduler cannot run, already running"});
             }
         } catch (e) {
             sails.log.error(e);

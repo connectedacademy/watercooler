@@ -20,10 +20,10 @@ module.exports = function forbidden (data) {
   var sails = req._sails;
 
   // Log error to console
-  if (data !== undefined) {
-    sails.log.verbose('Sending 403 ("Forbidden") response: ',data);
-  }
-  else sails.log.verbose('Sending 403 ("Forbidden") response');
+  // if (data !== undefined) {
+  sails.log.verbose('NotAuthorised',{data:data});
+  // }
+  // else sails.log.verbose('Sending 403 ("Forbidden") response');
 
   return res.status(403).json({
     msg: 'Not Authorised',

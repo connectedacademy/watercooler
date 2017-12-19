@@ -9,23 +9,23 @@ io.sails.reconnection = true;
 io.sails.initialConnectionHeaders = { nosession: true };
 
 io.socket.on('connect', function () {
-    sails.log.info('Gossipmill API Socket Connected');
+    sails.log.info('GossipMillApi',{msg:'Gossipmill API Socket Connected'});
 });
 
 io.socket.on('disconnect', function () {
-    sails.log.info('Gossipmill API Socket disconnect');
+    sails.log.info('GossipMillApi',{msg:'Gossipmill API Socket disconnect'});
 });
 
 io.socket.on('reconnect', function () {
-    sails.log.info('Gossipmill API Socket reconnect');
+    sails.log.info('GossipMillApi',{msg:'Gossipmill API Socket reconnect'});
 });
 
 io.socket.on('reconnect_attempt', function () {
-    sails.log.info('Gossipmill API Socket reconnect_attempt');
+    sails.log.info('GossipMillApi',{msg:'Gossipmill API Socket reconnect_attempt'});
 });
 
 io.socket.on('reconnecting', function (num) {
-    sails.log.error('Gossipmill API Socket reconnecting', num);
+    sails.log.error('GossipMillApi',{msg:'Gossipmill API Socket reconnecting', num:num});
 });
 
 let requestBase = require('request-promise-native');
@@ -630,7 +630,7 @@ module.exports = {
             {
                 sockethandlers[data.room] = async function(msg){
 
-                    sails.log.verbose("Incoming vis msg " + msg.message_id);                    
+                    sails.log.verbose('GossipMillApi',{msg:"Incoming vis msg",data:msg.message_id});
 
                     let wrapped = {
                         msgtype: 'visupdate',
@@ -868,7 +868,7 @@ module.exports = {
         io.socket.post('/messages/unsubscribe/?psk=' + process.env.GOSSIPMILL_PSK, {
             socketid: socket.id
         }, () => {
-            sails.log.verbose('Unsubscribed', socket.id);
+            sails.log.verbose('GossipMillApi',{msg:'Unsubscribed', socket:socket.id});
         });
     },
 
@@ -936,10 +936,10 @@ module.exports = {
                 try {
                     parsed[token.name] = result.replace('/', '\/');
                     response[token.name] = parsed[token.name];
-                    sails.log.verbose("Created Token Relationship", token.name, result);
+                    sails.log.verbose('GossipMillApi',{msg:"Created Token Relationship",token:token.name,result: result});
                 }
                 catch (e) {
-                    sails.log.error(e);
+                    sails.log.error('GossipMillApi',e);
                 }
             }
             else {

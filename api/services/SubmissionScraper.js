@@ -72,7 +72,7 @@ let putFileToS3 = async function (folder, name, url, thumbnail=false, content) {
 };
 
 let putToS3 = async function (settings, user, url, course, klass, cnt) {
-    sails.log.verbose('Getting url', url, user);
+    sails.log.verbose('SubmissionScraperS3', url, user);
     // get the target content
 
     if (!settings.mediatype)

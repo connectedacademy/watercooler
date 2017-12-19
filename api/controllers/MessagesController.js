@@ -303,7 +303,7 @@ module.exports = {
         }
 
         //if the user is in a classroom, broadcast current position:
-        console.log("****"+req.session.classroom);
+        // console.log("****"+req.session.classroom);
         if (req.session.classroom)
         {
             let wrapped = {
@@ -369,7 +369,7 @@ module.exports = {
                     }
                 }
                 else {
-                    sails.log.error('No class found', 'messsages/summary', req.param('class'));
+                    sails.log.error('ClassNotFound', 'messsages/summary', req.param('class'));
                 }
             }
 

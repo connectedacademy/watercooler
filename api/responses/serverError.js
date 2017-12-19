@@ -21,10 +21,10 @@ module.exports = function serverError (data) {
   var sails = req._sails;
 
   // Log error to console
-  if (data !== undefined) {
-    sails.log.error('Sending 500 ("Server Error") response',data);
-  }
-  else sails.log.error('Sending empty 500 ("Server Error") response');
+  // if (data !== undefined) {
+  sails.log.error('ServerError',{data:data});
+  // }
+  // else sails.log.error('Sending empty 500 ("Server Error") response');
 
   return res.status(500).json(
     {

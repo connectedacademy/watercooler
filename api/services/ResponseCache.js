@@ -97,7 +97,7 @@ module.exports = {
                 }
             }
             catch (e) {
-                sails.log.error(e);
+                sails.log.error('CacheFaile',e);
                 throw new Error("No live data or cache available for " + key);
             }
         }

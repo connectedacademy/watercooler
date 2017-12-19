@@ -161,7 +161,7 @@ module.exports = {
                                 //select messages that have been made 
 
                                 let query = "SELECT count(message) as count FROM discussionmessage \
-                                WHERE fromuser = "+ user + " \
+                                WHERE fromuser = :fromuser \
                                 AND relates_to.course=:course \
                                 AND relates_to.class=:class \
                                 AND relates_to.content=:content";
@@ -170,7 +170,8 @@ module.exports = {
                                         {
                                             course: req.course.domain,
                                             class: submission.class,
-                                            content: submission.content
+                                            content: submission.content,
+                                            fromuser: user
                                         }
                                 });
 
@@ -481,12 +482,12 @@ module.exports = {
                 let authors = _.uniq(_.map(msg, (m) => { return m.fromuser.id }));
                 //LIST OF USERS WHO HAVE MADE MESSAGES TO SUBMISSIONS FROM THESE AUTHORS
                 let query = "SELECT set(fromuser.asString()) as messagesfrom, relates_to.user as author FROM discussionmessage \
-            WHERE relates_to.user IN ["+ authors.join(',') + "] \
-            AND relates_to.course=:course \
-            AND relates_to.class=:class \
-            AND relates_to.content=:content \
-            AND relates_to.verified=true \
-            GROUP BY relates_to.user";
+                WHERE relates_to.user IN :authors \
+                AND relates_to.course=:course \
+                AND relates_to.class=:class \
+                AND relates_to.content=:content \
+                AND relates_to.verified=true \
+                GROUP BY relates_to.user";
 
                 // console.log(query);
                 let author_messages = await Submission.query(query, {
@@ -494,7 +495,8 @@ module.exports = {
                         {
                             course: req.course.domain,
                             class: submission.class,
-                            content: submission.content
+                            content: submission.content,
+                            authors: authors
                         }
                 });
 

@@ -34,7 +34,7 @@ module.exports = {
 
             //clear redis cache:
             rediscache.flushdb(function (msg) {
-                sails.log.verbose('Redis cached cleared', msg);
+                sails.log.verbose('CacheCleared', msg);
                 return res.ok('Cached cleared');
             });
         }

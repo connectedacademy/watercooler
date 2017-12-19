@@ -194,7 +194,7 @@ module.exports = {
                 roles.push('teacher');
 
             if (req.isSocket) {
-                sails.log.verbose('Subscribed to WS for user', req.session.passport.user.id);
+                sails.log.verbose('ProfileSubscribe', req.session.passport.user.id);
                 User.subscribe(req, req.session.passport.user.id);
             }
 

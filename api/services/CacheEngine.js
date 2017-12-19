@@ -155,7 +155,7 @@ module.exports = {
             }
         }
         catch (e) {
-            sails.log.error(e);
+            sails.log.error('YamlCacheFail',e);
             throw new Error("No live data or cache available for " + url);
         }
     },

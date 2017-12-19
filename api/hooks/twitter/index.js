@@ -22,7 +22,7 @@ module.exports = function (sails) {
 
             // console.log("accesstoken: "+access_token);
 
-            sails.log.verbose('Refreshing Twitter Profiles');
+            sails.log.verbose('TwitterProfiles', {msg:'Refreshing Twitter Profiles'});
             let users = await User.find({ service: 'twitter', account:{'!':'Test Account'}});
 
             //REMEMBER -- CALLS TO TWITTER ARE RATE LIMITED AT 900 EVERY 15 MINS!
