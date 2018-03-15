@@ -1,3 +1,4 @@
+var path = require('path');
 let yaml = require('js-yaml');
 let fs = require('fs-promise');
 let requestify = require('requestify');
@@ -14,6 +15,10 @@ let markdownconverter = new showdown.Converter();
 let moment = require('moment');
 
 requestify.cacheTransporter(requestify.coreCacheTransporters.redis(rediscache));
+
+function resolve(dir) {
+  return path.join(__dirname, '..', dir)
+}
 
 let get = async (uri) => {
     let response = await requestify.get(uri, {
@@ -166,7 +171,7 @@ module.exports = {
         }
         else {
             sails.log.silly('Should be getting ' + req.course.url + '/course/config/hubs.yaml, actually serving examples/hubs.yaml');
-            let raw = await fs.readFile(__dirname + '/../../spec/examples/hubs.yaml');
+          let raw = await fs.readFile(resolve('/../courses/example/course/config/hubs.yaml'));
             return yaml.safeLoad(raw);
         }
     },
@@ -177,7 +182,7 @@ module.exports = {
         }
         else {
             sails.log.silly('Should be getting ' + req.course.url + '/course/config/spec.yaml, actually serving examples/spec.yaml');
-            let raw = await fs.readFile(__dirname + '/../../spec/examples/spec.yaml');
+            let raw = await fs.readFile(resolve('/../courses/example/course/config/spec.yaml'));
             return yaml.safeLoad(raw);
         }
     },
@@ -189,14 +194,14 @@ module.exports = {
         }
         else {
             // console.log(req.course);
-            sails.log.silly('Should be getting ' + req.course.url + '/course/config/questions.yaml, actually serving examples/questions.yaml');
-            let raw = await fs.readFile(__dirname + '/../../spec/examples/questions.yaml');
+          sails.log.silly('Should be getting ' + req.course.url + '/course/config/questions/en.yaml, actually serving examples/questions/en.yaml');
+            let raw = await fs.readFile(resolve('/../courses/example/course/config/questions/en.yaml'));
             return yaml.safeLoad(raw);
         }
     },
 
     dummyData: async (file) => {
-        let raw = await fs.readFile(__dirname + '/../../spec/examples/' + file);
+        let raw = await fs.readFile(resolve('/../courses/example/course/' + file));
         return raw;
     }
 }
