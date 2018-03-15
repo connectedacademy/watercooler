@@ -167,10 +167,11 @@ module.exports = {
 
     getHubs: async (req) => {
         if (process.env.LIVE_DATA == 'true') {
-            return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/hubs.yaml');
+          sails.log.silly('Getting ' + req.course.url + '/course/config/hubs.yaml');
+          return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/hubs.yaml');
         }
         else {
-            sails.log.silly('Should be getting ' + req.course.url + '/course/config/hubs.yaml, actually serving examples/hubs.yaml');
+          sails.log.silly('Should be getting ' + req.course.url + '/course/config/hubs.yaml, actually serving examples/hubs.yaml');
           let raw = await fs.readFile(resolve('/../courses/example/course/config/hubs.yaml'));
             return yaml.safeLoad(raw);
         }
@@ -178,7 +179,8 @@ module.exports = {
 
     getSpec: async (req) => {
         if (process.env.LIVE_DATA == 'true') {
-            return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/spec.yaml');
+          sails.log.silly('Getting ' + req.course.url + '/course/config/spec.yaml');
+          return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/spec.yaml');
         }
         else {
             sails.log.silly('Should be getting ' + req.course.url + '/course/config/spec.yaml, actually serving examples/spec.yaml');
@@ -190,7 +192,8 @@ module.exports = {
     getQuestions: async (req) => {
         let lang = await LangService.lang(req);
         if (process.env.LIVE_DATA == 'true') {
-            return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/questions/' + lang + '.yaml');
+          sails.log.silly('Getting ' + req.course.url + '/course/config/questions/' + lang + '.yaml');
+          return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/questions/' + lang + '.yaml');
         }
         else {
             // console.log(req.course);
