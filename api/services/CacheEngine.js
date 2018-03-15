@@ -166,7 +166,7 @@ module.exports = {
     },
 
     getHubs: async (req) => {
-        if (process.env.LIVE_DATA == 'true') {
+        if (process.env.LIVE_DATA) {
           sails.log.verbose('Getting ' + req.course.url + '/course/config/hubs.yaml');
           return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/hubs.yaml');
         }
@@ -178,8 +178,6 @@ module.exports = {
     },
 
     getSpec: async (req) => {
-        sails.log.verbose('process.env.LIVE_DATA');
-        sails.log.verbose(process.env.LIVE_DATA);
         if (process.env.LIVE_DATA) {
           sails.log.verbose('Getting ' + req.course.url + '/course/config/spec.yaml');
           return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/spec.yaml');
@@ -193,7 +191,7 @@ module.exports = {
 
     getQuestions: async (req) => {
         let lang = await LangService.lang(req);
-        if (process.env.LIVE_DATA == 'true') {
+        if (process.env.LIVE_DATA) {
           sails.log.verbose('Getting ' + req.course.url + '/course/config/questions/' + lang + '.yaml');
           return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/questions/' + lang + '.yaml');
         }
