@@ -109,6 +109,9 @@ module.exports = {
 
             var data = await CacheEngine.getSpec(req,res);
 
+            sails.log.verbose('data:');
+            sails.log.verbose(data);
+
             let promises = [];
 
             //course info:
