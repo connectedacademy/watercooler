@@ -113,6 +113,7 @@ module.exports = {
     getFrontmatter: async (url, content = false) => {
         sails.log.verbose('Getting frontmatter - ' + url);
         //get from remote
+        url = 'https://talkingpictures.connectedacademy.io/course/content/en/info.md' // REMOVE THIS
         let raw = await get(url);
         try {
             let fm = frontmatter(raw);
