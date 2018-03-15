@@ -178,7 +178,9 @@ module.exports = {
     },
 
     getSpec: async (req) => {
-        if (process.env.LIVE_DATA == 'true') {
+        sails.log.verbose('process.env.LIVE_DATA');
+        sails.log.verbose(process.env.LIVE_DATA);
+        if (process.env.LIVE_DATA) {
           sails.log.verbose('Getting ' + req.course.url + '/course/config/spec.yaml');
           return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/spec.yaml');
         }
