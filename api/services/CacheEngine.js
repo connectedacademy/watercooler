@@ -111,7 +111,7 @@ module.exports = {
     },
 
     getFrontmatter: async (url, content = false) => {
-        sails.log.verbose('Getting ' + url);
+        sails.log.verbose('Getting frontmatter - ' + url);
         //get from remote
         let raw = await get(url);
         try {
