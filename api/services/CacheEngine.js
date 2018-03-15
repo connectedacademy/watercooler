@@ -111,7 +111,7 @@ module.exports = {
     },
 
     getFrontmatter: async (url, content = false) => {
-        sails.log.silly('Getting ' + url);
+        sails.log.verbose('Getting ' + url);
         //get from remote
         let raw = await get(url);
         try {
@@ -129,7 +129,7 @@ module.exports = {
     getEmail: async (course, lang, email_type) => {
         // let lang = await LangService.lang(req);
         let url = course.url + '/course/content/' + lang + '/emails/' + email_type + '.md';
-        sails.log.silly('Getting Email ' + email_type, url);
+        sails.log.verbose('Getting Email ' + email_type, url);
         //get file
         let email = await CacheEngine.getFrontmatter(url, true);
         //parse markdown, title etc
@@ -140,16 +140,16 @@ module.exports = {
     },
 
     getYaml: async (domain,url) => {
-        sails.log.silly('Getting ' + url);
+        sails.log.verbose('Getting ' + url);
 
         try {
             let resp = await rediscache.getAsync(`wc:yaml:${domain}:${url}`);
             if (resp) {
-                sails.log.silly('Using redis cache for ' + url);
+                sails.log.verbose('Using redis cache for ' + url);
                 return JSON.parse(resp);
             }
             else {
-                sails.log.silly('Getting original file ' + url);
+                sails.log.verbose('Getting original file ' + url);
 
                 let raw = await get(url);
                 //try load yaml
@@ -167,11 +167,11 @@ module.exports = {
 
     getHubs: async (req) => {
         if (process.env.LIVE_DATA == 'true') {
-          sails.log.silly('Getting ' + req.course.url + '/course/config/hubs.yaml');
+          sails.log.verbose('Getting ' + req.course.url + '/course/config/hubs.yaml');
           return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/hubs.yaml');
         }
         else {
-          sails.log.silly('Should be getting ' + req.course.url + '/course/config/hubs.yaml, actually serving examples/hubs.yaml');
+          sails.log.verbose('Should be getting ' + req.course.url + '/course/config/hubs.yaml, actually serving examples/hubs.yaml');
           let raw = await fs.readFile(resolve('/../courses/example/course/config/hubs.yaml'));
             return yaml.safeLoad(raw);
         }
@@ -179,11 +179,11 @@ module.exports = {
 
     getSpec: async (req) => {
         if (process.env.LIVE_DATA == 'true') {
-          sails.log.silly('Getting ' + req.course.url + '/course/config/spec.yaml');
+          sails.log.verbose('Getting ' + req.course.url + '/course/config/spec.yaml');
           return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/spec.yaml');
         }
         else {
-            sails.log.silly('Should be getting ' + req.course.url + '/course/config/spec.yaml, actually serving examples/spec.yaml');
+            sails.log.verbose('Should be getting ' + req.course.url + '/course/config/spec.yaml, actually serving examples/spec.yaml');
             let raw = await fs.readFile(resolve('/../courses/example/course/config/spec.yaml'));
             return yaml.safeLoad(raw);
         }
@@ -192,12 +192,12 @@ module.exports = {
     getQuestions: async (req) => {
         let lang = await LangService.lang(req);
         if (process.env.LIVE_DATA == 'true') {
-          sails.log.silly('Getting ' + req.course.url + '/course/config/questions/' + lang + '.yaml');
+          sails.log.verbose('Getting ' + req.course.url + '/course/config/questions/' + lang + '.yaml');
           return CacheEngine.getYaml(req.course.domain, req.course.url + '/course/config/questions/' + lang + '.yaml');
         }
         else {
             // console.log(req.course);
-          sails.log.silly('Should be getting ' + req.course.url + '/course/config/questions/en.yaml, actually serving examples/questions/en.yaml');
+          sails.log.verbose('Should be getting ' + req.course.url + '/course/config/questions/en.yaml, actually serving examples/questions/en.yaml');
             let raw = await fs.readFile(resolve('/../courses/example/course/config/questions/en.yaml'));
             return yaml.safeLoad(raw);
         }
